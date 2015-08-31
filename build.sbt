@@ -21,8 +21,8 @@ def commonSettings: Seq[Setting[_]] = Seq(
   // concurrentRestrictions in Global += Util.testExclusiveRestriction,
   testOptions += Tests.Argument(TestFrameworks.ScalaCheck, "-w", "1"),
   javacOptions in compile ++= Seq("-target", "6", "-source", "6", "-Xlint", "-Xlint:-serial"),
-  incOptions := incOptions.value.withNameHashing(true)
-  // crossScalaVersions := Seq(scala210)
+  incOptions := incOptions.value.withNameHashing(true),
+  crossScalaVersions := Seq(scala210, scala211)
   // bintrayPackage := (bintrayPackage in ThisBuild).value,
   // bintrayRepository := (bintrayRepository in ThisBuild).value
 )
@@ -40,7 +40,8 @@ lazy val root = (project in file(".")).
 lazy val lm = (project in file("librarymanagement")).
   settings(
     commonSettings,
-    libraryDependencies ++= Seq(utilLogging % "compile;test->test", ioProj % "compile;test->test", utilCollection),
+    libraryDependencies ++= Seq(utilLogging % "compile;test->test", sbtIO, utilCollection),
     libraryDependencies ++= Seq(ivy, jsch, sbtSerialization, scalaReflect.value, launcherInterface),
+    resourceGenerators in Compile <+= (version, resourceManaged, streams, compile in Compile) map Util.generateVersionFile,
     name := "librarymanagement"
   )
