@@ -1,7 +1,7 @@
 /* sbt -- Simple Build Tool
  * Copyright 2010 Tony Sloane
  */
-package sbt
+package sbt.util.internal
 
 object StackTrace {
   def isSbtClass(name: String) = name.startsWith("sbt") || name.startsWith("xsbt")
