@@ -1,7 +1,7 @@
 /* sbt -- Simple Build Tool
  * Copyright 2008, 2009, 2010 Mark Harrah
  */
-package sbt
+package sbt.util.internal
 
 /** Implements the level-setting methods of Logger.*/
 abstract class BasicLogger extends AbstractLogger {

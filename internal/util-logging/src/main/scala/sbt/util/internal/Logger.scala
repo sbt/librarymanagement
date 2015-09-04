@@ -1,7 +1,7 @@
 /* sbt -- Simple Build Tool
  * Copyright 2008, 2009, 2010  Mark Harrah
  */
-package sbt
+package sbt.util.internal
 
 import xsbti.{ Logger => xLogger, F0 }
 import xsbti.{ Maybe, Position, Problem, Severity }
