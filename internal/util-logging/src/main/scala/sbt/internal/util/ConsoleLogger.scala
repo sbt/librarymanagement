@@ -1,7 +1,7 @@
 /* sbt -- Simple Build Tool
  * Copyright 2008, 2009, 2010, 2011 Mark Harrah
  */
-package sbt.util.internal
+package sbt.internal.util
 
 import java.io.{ BufferedWriter, PrintStream, PrintWriter }
 import java.util.Locale

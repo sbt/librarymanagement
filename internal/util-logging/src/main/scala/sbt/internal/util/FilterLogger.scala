@@ -1,7 +1,7 @@
 /* sbt -- Simple Build Tool
  * Copyright 2008, 2009, 2010 Mark Harrah
  */
-package sbt.util.internal
+package sbt.internal.util
 
 /**
  * A filter logger is used to delegate messages but not the logging level to another logger.  This means

@@ -1,7 +1,7 @@
 /* sbt -- Simple Build Tool
  * Copyright 2008, 2009, 2010 Mark Harrah
  */
-package sbt.util.internal
+package sbt.internal.util
 
 /**
  * Provides a `java.io.Writer` interface to a `Logger`.  Content is line-buffered and logged at `level`.
