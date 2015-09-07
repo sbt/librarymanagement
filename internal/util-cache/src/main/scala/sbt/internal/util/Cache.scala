@@ -1,7 +1,7 @@
 /* sbt -- Simple Build Tool
  * Copyright 2009 Mark Harrah
  */
-package sbt.util.internal
+package sbt.internal.util
 
 import sbinary.{ CollectionTypes, DefaultProtocol, Format, Input, JavaFormats, Output => Out }
 import java.io.{ ByteArrayInputStream, ByteArrayOutputStream, File, InputStream, OutputStream }

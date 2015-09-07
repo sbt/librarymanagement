@@ -2,7 +2,9 @@
 /* sbt -- Simple Build Tool
  * Copyright 2008, 2009, 2010 Mark Harrah
  */
-package sbt.util.internal
+package sbt.internal.util
+
+import sbt.util._
 
 // note that setting the logging level on this logger has no effect on its behavior, only
 //   on the behavior of the delegates.

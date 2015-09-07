@@ -1,8 +1,9 @@
 /* sbt -- Simple Build Tool
  * Copyright 2010 Mark Harrah
  */
-package sbt.util.internal
+package sbt.internal.util
 
+import sbt.util._
 import java.io.{ File, PrintWriter }
 
 /**

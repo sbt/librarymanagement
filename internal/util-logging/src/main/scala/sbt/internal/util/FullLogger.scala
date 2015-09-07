@@ -1,7 +1,9 @@
 /* sbt -- Simple Build Tool
  * Copyright 2010 Mark Harrah
  */
-package sbt.util.internal
+package sbt.internal.util
+
+import sbt.util._
 
 /** Promotes the simple Logger interface to the full AbstractLogger interface. */
 class FullLogger(delegate: Logger) extends BasicLogger {
