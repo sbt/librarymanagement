@@ -19,11 +19,12 @@ import sbt.util.Logger
 import sbt.librarymanagement._
 
 private[sbt] case class SbtChainResolver(
-    name: String,
-    resolvers: Seq[DependencyResolver],
-    settings: IvySettings,
-    updateOptions: UpdateOptions,
-    log: Logger) extends ChainResolver {
+  name: String,
+  resolvers: Seq[DependencyResolver],
+  settings: IvySettings,
+  updateOptions: UpdateOptions,
+  log: Logger
+) extends ChainResolver {
 
   override def equals(o: Any): Boolean = o match {
     case o: SbtChainResolver =>

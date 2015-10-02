@@ -20,10 +20,11 @@ import sbt.io.{ IO, PathFinder }
 import sbt.util.Logger
 import sbt.internal.util.{ ShowLines, SourcePosition, LinePosition, RangePosition, LineRange }
 import sbt.librarymanagement._
+import sbt.internal.librarymanagement.syntax._
 
 final class DeliverConfiguration(val deliverIvyPattern: String, val status: String, val configurations: Option[Seq[Configuration]], val logging: UpdateLogging.Value)
 final class PublishConfiguration(val ivyFile: Option[File], val resolverName: String, val artifacts: Map[Artifact, File], val checksums: Seq[String], val logging: UpdateLogging.Value,
-    val overwrite: Boolean) {
+  val overwrite: Boolean) {
   def this(ivyFile: Option[File], resolverName: String, artifacts: Map[Artifact, File], checksums: Seq[String], logging: UpdateLogging.Value) =
     this(ivyFile, resolverName, artifacts, checksums, logging, false)
 }
@@ -32,7 +33,8 @@ final class UpdateConfiguration(val retrieve: Option[RetrieveConfiguration], val
   private[sbt] def copy(
     retrieve: Option[RetrieveConfiguration] = this.retrieve,
     missingOk: Boolean = this.missingOk,
-    logging: UpdateLogging.Value = this.logging): UpdateConfiguration =
+    logging: UpdateLogging.Value = this.logging
+  ): UpdateConfiguration =
     new UpdateConfiguration(retrieve, missingOk, logging)
 }
 final class RetrieveConfiguration(val retrieveDirectory: File, val outputPattern: String, val sync: Boolean, val configurationsToRetrieve: Option[Set[Configuration]]) {
@@ -45,7 +47,8 @@ final case class GetClassifiersConfiguration(module: GetClassifiersModule, exclu
 final case class GetClassifiersModule(id: ModuleID, modules: Seq[ModuleID], configurations: Seq[Configuration], classifiers: Seq[String])
 
 final class UnresolvedWarningConfiguration private[sbt] (
-  val modulePositions: Map[ModuleID, SourcePosition])
+  val modulePositions: Map[ModuleID, SourcePosition]
+)
 object UnresolvedWarningConfiguration {
   def apply(): UnresolvedWarningConfiguration = apply(Map())
   def apply(modulePositions: Map[ModuleID, SourcePosition]): UnresolvedWarningConfiguration =
@@ -379,9 +382,10 @@ object IvyActions {
   }
 }
 final class ResolveException(
-    val messages: Seq[String],
-    val failed: Seq[ModuleID],
-    val failedPaths: Map[ModuleID, Seq[ModuleID]]) extends RuntimeException(messages.mkString("\n")) {
+  val messages: Seq[String],
+  val failed: Seq[ModuleID],
+  val failedPaths: Map[ModuleID, Seq[ModuleID]]
+) extends RuntimeException(messages.mkString("\n")) {
   def this(messages: Seq[String], failed: Seq[ModuleID]) =
     this(messages, failed, Map(failed map { m => m -> Nil }: _*))
 }
@@ -391,7 +395,8 @@ final class ResolveException(
  */
 final class UnresolvedWarning private[sbt] (
   val resolveException: ResolveException,
-  val failedPaths: Seq[Seq[(ModuleID, Option[SourcePosition])]])
+  val failedPaths: Seq[Seq[(ModuleID, Option[SourcePosition])]]
+)
 object UnresolvedWarning {
   private[sbt] def apply(err: ResolveException, config: UnresolvedWarningConfiguration): UnresolvedWarning = {
     def modulePosition(m0: ModuleID): Option[SourcePosition] =

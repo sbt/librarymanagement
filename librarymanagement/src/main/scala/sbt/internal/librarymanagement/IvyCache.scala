@@ -15,9 +15,10 @@ import org.apache.ivy.util.FileUtil
 import sbt.io.Path
 import sbt.util.Logger
 import sbt.librarymanagement._
+import sbt.internal.librarymanagement.syntax._
 
 class NotInCache(val id: ModuleID, cause: Throwable)
-    extends RuntimeException(NotInCache(id, cause), cause) {
+  extends RuntimeException(NotInCache(id, cause), cause) {
   def this(id: ModuleID) = this(id, null)
 }
 private object NotInCache {

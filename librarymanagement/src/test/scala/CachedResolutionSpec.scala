@@ -8,8 +8,10 @@ class CachedResolutionSpec extends BaseIvySpecification {
 
   "Resolving the same module twice" should "work" in {
     cleanIvyCache()
-    val m = module(ModuleID("com.example", "foo", "0.1.0", Some("compile")),
-      Seq(commonsIo13), Some("2.10.2"), UpdateOptions().withCachedResolution(true))
+    val m = module(
+      ModuleID("com.example", "foo", "0.1.0", Some("compile")),
+      Seq(commonsIo13), Some("2.10.2"), UpdateOptions().withCachedResolution(true)
+    )
     val report = ivyUpdate(m)
     cleanCachedResolutionCache(m)
     val report2 = ivyUpdate(m)
@@ -22,8 +24,10 @@ class CachedResolutionSpec extends BaseIvySpecification {
 
   "Resolving the unsolvable module should" should "not work" in {
     // log.setLevel(Level.Debug)
-    val m = module(ModuleID("com.example", "foo", "0.2.0", Some("compile")),
-      Seq(mavenCayennePlugin302), Some("2.10.2"), UpdateOptions().withCachedResolution(true))
+    val m = module(
+      ModuleID("com.example", "foo", "0.2.0", Some("compile")),
+      Seq(mavenCayennePlugin302), Some("2.10.2"), UpdateOptions().withCachedResolution(true)
+    )
     ivyUpdateEither(m) match {
       case Right(_) => sys.error("this should've failed")
       case Left(uw) =>
@@ -32,7 +36,7 @@ class CachedResolutionSpec extends BaseIvySpecification {
     ivyUpdateEither(m) match {
       case Right(_) => sys.error("this should've failed 2")
       case Left(uw) =>
-        uw.lines should contain allOf("\n\tNote: Unresolved dependencies path:",
+        uw.lines should contain allOf ("\n\tNote: Unresolved dependencies path:",
           "\t\tfoundrylogic.vpp:vpp:2.2.1",
           "\t\t  +- org.apache.cayenne:cayenne-tools:3.0.2",
           "\t\t  +- org.apache.cayenne.plugins:maven-cayenne-plugin:3.0.2",
@@ -47,17 +51,19 @@ class CachedResolutionSpec extends BaseIvySpecification {
   "Resolving a module with a pseudo-conflict" should "work" in {
     // log.setLevel(Level.Debug)
     cleanIvyCache()
-    val m = module(ModuleID("com.example", "foo", "0.3.0", Some("compile")),
+    val m = module(
+      ModuleID("com.example", "foo", "0.3.0", Some("compile")),
       Seq(avro177, dataAvro1940, netty320),
-      Some("2.10.2"), UpdateOptions().withCachedResolution(true))
+      Some("2.10.2"), UpdateOptions().withCachedResolution(true)
+    )
     // first resolution creates the minigraph
     val report0 = ivyUpdate(m)
     cleanCachedResolutionCache(m)
     // second resolution reads from the minigraph
     val report = ivyUpdate(m)
-    val modules: Seq[String] = report.configurations.head.modules map {_.toString}
-    assert(modules exists { x: String => x contains """org.jboss.netty:netty:3.2.0.Final"""})
-    assert(!(modules exists { x: String => x contains """org.jboss.netty:netty:3.2.1.Final"""}))
+    val modules: Seq[String] = report.configurations.head.modules map { _.toString }
+    assert(modules exists { x: String => x contains """org.jboss.netty:netty:3.2.0.Final""" })
+    assert(!(modules exists { x: String => x contains """org.jboss.netty:netty:3.2.1.Final""" }))
   }
 
   def commonsIo13 = ModuleID("commons-io", "commons-io", "1.3", Some("compile"))
