@@ -13,10 +13,10 @@ object Configurations {
   def auxiliary: Seq[Configuration] = Seq(Sources, Docs, Pom)
   def names(cs: Seq[Configuration]) = cs.map(_.name)
 
-  lazy val RuntimeInternal = optionalInternal(Runtime)
-  lazy val TestInternal = fullInternal(Test)
-  lazy val IntegrationTestInternal = fullInternal(IntegrationTest)
-  lazy val CompileInternal = fullInternal(Compile)
+  private lazy val RuntimeInternal = optionalInternal(Runtime)
+  private lazy val TestInternal = fullInternal(Test)
+  private lazy val IntegrationTestInternal = fullInternal(IntegrationTest)
+  private lazy val CompileInternal = fullInternal(Compile)
 
   def internalMap(c: Configuration) = c match {
     case Compile         => CompileInternal
