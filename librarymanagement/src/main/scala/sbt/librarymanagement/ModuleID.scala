@@ -6,9 +6,12 @@ package sbt.librarymanagement
 import java.net.URL
 
 import sbt.internal.librarymanagement.mavenint.SbtPomExtraProperties
-import sbt.serialization._
 
-final case class ModuleID(organization: String, name: String, revision: String, configurations: Option[String] = None, isChanging: Boolean = false, isTransitive: Boolean = true, isForce: Boolean = false, explicitArtifacts: Seq[Artifact] = Nil, inclusions: Seq[InclusionRule] = Nil, exclusions: Seq[ExclusionRule] = Nil, extraAttributes: Map[String, String] = Map.empty, crossVersion: CrossVersion = CrossVersion.Disabled, branchName: Option[String] = None) {
+final class RichModuleID(val moduleID: ModuleID) extends AnyVal {
+  import moduleID._
+
+  // Semi-workaround for sbt/sbt-datatype#39
+  def to_s: String = toString
   override def toString: String =
     organization + ":" + name + ":" + revision +
       (configurations match { case Some(s) => ":" + s; case None => "" }) +
@@ -21,10 +24,10 @@ final case class ModuleID(organization: String, name: String, revision: String, 
   def extraDependencyAttributes: Map[String, String] = extraAttributes.filterKeys(!_.startsWith(SbtPomExtraProperties.POM_INFO_KEY_PREFIX))
 
   @deprecated("Use `cross(CrossVersion)`, the variant accepting a CrossVersion value constructed by a member of the CrossVersion object instead.", "0.12.0")
-  def cross(v: Boolean): ModuleID = cross(if (v) CrossVersion.binary else CrossVersion.Disabled)
+  def cross(v: Boolean): ModuleID = cross(if (v) CrossVersionUtil.binary else Disabled())
 
   @deprecated("Use `cross(CrossVersion)`, the variant accepting a CrossVersion value constructed by a member of the CrossVersion object instead.", "0.12.0")
-  def cross(v: Boolean, verRemap: String => String): ModuleID = cross(if (v) CrossVersion.binaryMapped(verRemap) else CrossVersion.Disabled)
+  def cross(v: Boolean, verRemap: String => String): ModuleID = cross(if (v) CrossVersionUtil.binaryMapped(verRemap) else Disabled())
 
   /** Specifies the cross-version behavior for this module.  See [CrossVersion] for details.*/
   def cross(v: CrossVersion): ModuleID = copy(crossVersion = v)
@@ -38,7 +41,7 @@ final case class ModuleID(organization: String, name: String, revision: String, 
 
   /**
    * Marks this dependency as "changing".  Ivy will always check if the metadata has changed and then if the artifact has changed,
-   * redownload it.  sbt configures all -SNAPSHOT dependencies to be changing.
+   * re-download it.  sbt configures all -SNAPSHOT dependencies to be changing.
    *
    * See the "Changes in artifacts" section of https://ant.apache.org/ivy/history/trunk/concept.html for full details.
    */
@@ -64,22 +67,22 @@ final case class ModuleID(organization: String, name: String, revision: String, 
    * Declares the explicit artifacts for this module.  If this ModuleID represents a dependency,
    * these artifact definitions override the information in the dependency's published metadata.
    */
-  def artifacts(newArtifacts: Artifact*) = copy(explicitArtifacts = newArtifacts ++ this.explicitArtifacts)
+  def artifacts(newArtifacts: Artifact*) = copy(explicitArtifacts = newArtifacts.toVector ++ explicitArtifacts)
 
   /**
    * Applies the provided exclusions to dependencies of this module.  Note that only exclusions that specify
    * both the exact organization and name and nothing else will be included in a pom.xml.
    */
-  def excludeAll(rules: InclExclRule*) = copy(exclusions = this.exclusions ++ rules)
+  def excludeAll(rules: InclExclRule*) = copy(exclusions = exclusions ++ rules)
 
   /** Excludes the dependency with organization `org` and `name` from being introduced by this dependency during resolution. */
-  def exclude(org: String, name: String) = excludeAll(InclExclRule(org, name))
+  def exclude(org: String, name: String) = excludeAll(InclExclRule(org, name, "*", Vector.empty))
 
   /**
    * Adds extra attributes for this module.  All keys are prefixed with `e:` if they are not already so prefixed.
    * This information will only be published in an ivy.xml and not in a pom.xml.
    */
-  def extra(attributes: (String, String)*) = copy(extraAttributes = this.extraAttributes ++ ModuleID.checkE(attributes))
+  def extra(attributes: (String, String)*) = copy(extraAttributes = extraAttributes ++ ModuleID.checkE(attributes))
 
   /**
    * Not recommended for new use.  This method is not deprecated, but the `update-classifiers` task is preferred
@@ -111,7 +114,7 @@ final case class ModuleID(organization: String, name: String, revision: String, 
    */
   def withJavadoc() = jarIfEmpty.javadoc()
 
-  private def jarIfEmpty = if (explicitArtifacts.isEmpty) jar() else this
+  private def jarIfEmpty = if (explicitArtifacts.isEmpty) jar() else moduleID
 
   /**
    * Declares a dependency on the main artifact.  This is implied by default unless artifacts are explicitly declared, such
@@ -127,9 +130,7 @@ final case class ModuleID(organization: String, name: String, revision: String, 
   def branch(branchName: Option[String]) = copy(branchName = branchName)
 }
 
-object ModuleID {
-  implicit val pickler: Pickler[ModuleID] with Unpickler[ModuleID] = PicklerUnpickler.generate[ModuleID]
-
+object ModuleIDCompanion {
   /** Prefixes all keys with `e:` if they are not already so prefixed. */
   def checkE(attributes: Seq[(String, String)]) =
     for ((key, value) <- attributes) yield if (key.startsWith("e:")) (key, value) else ("e:" + key, value)

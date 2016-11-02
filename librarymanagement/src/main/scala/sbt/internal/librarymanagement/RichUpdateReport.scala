@@ -40,7 +40,7 @@ final class RichUpdateReport(report: UpdateReport) {
         missingArtifacts = modReport.missingArtifacts filter { art => f(configuration, modReport.module, art) }
       )
     }
-  def substitute(f: (String, ModuleID, Seq[(Artifact, File)]) => Seq[(Artifact, File)]): UpdateReport =
+  def substitute(f: (String, ModuleID, Vector[(Artifact, File)]) => Vector[(Artifact, File)]): UpdateReport =
     moduleReportMap { (configuration, modReport) =>
       val newArtifacts = f(configuration, modReport.module, modReport.artifacts)
       modReport.copy(
@@ -65,10 +65,47 @@ final class RichUpdateReport(report: UpdateReport) {
   def moduleReportMap(f: (String, ModuleReport) => ModuleReport): UpdateReport =
     {
       val newConfigurations = report.configurations.map { confReport =>
-        import confReport._
-        val newModules = modules map { modReport => f(configuration, modReport) }
-        new ConfigurationReport(configuration, newModules, details)
+        val newModules = confReport.modules map { modReport => f(confReport.configuration, modReport) }
+        ConfigurationReport(confReport.configuration, newModules, confReport.details)
       }
-      new UpdateReport(report.cachedDescriptor, newConfigurations, report.stats, report.stamps)
+      UpdateReport(report.cachedDescriptor, newConfigurations, report.stats, report.stamps)
     }
+
+  def to_s: String = toString
+  override def toString = "Update report:\n\t" + report.stats + "\n" + report.configurations.mkString
+
+  /** All resolved modules in all configurations. */
+  def allModules: Vector[ModuleID] =
+    {
+      val key = (m: ModuleID) => (m.organization, m.name, m.revision)
+      report.configurations.flatMap(_.allModules).groupBy(key).toVector map {
+        case (_, v) =>
+          v reduceLeft { (agg, x) =>
+            agg.withConfigurations(
+              (agg.configurations, x.configurations) match {
+                case (None, _)            => x.configurations
+                case (Some(ac), None)     => Some(ac)
+                case (Some(ac), Some(xc)) => Some(s"$ac;$xc")
+              }
+            )
+          }
+      }
+    }
+
+  def retrieve(f: (String, ModuleID, Artifact, File) => File): UpdateReport =
+    new UpdateReport(report.cachedDescriptor, report.configurations map { _ retrieve f }, report.stats, report.stamps)
+
+  /** Gets the report for the given configuration, or `None` if the configuration was not resolved.*/
+  def configuration(s: String) = report.configurations.find(_.configuration == s)
+
+  /** Gets the names of all resolved configurations.  This `UpdateReport` contains one `ConfigurationReport` for each configuration in this list. */
+  def allConfigurations: Seq[String] = report.configurations.map(_.configuration)
+
+  private[sbt] def withStats(us: UpdateStats): UpdateReport =
+    new UpdateReport(
+      report.cachedDescriptor,
+      report.configurations,
+      us,
+      report.stamps
+    )
 }

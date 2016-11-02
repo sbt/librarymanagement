@@ -14,7 +14,7 @@ final class EvictionWarningOptions private[sbt] (
   val warnTransitiveEvictions: Boolean,
   val infoAllEvictions: Boolean,
   val showCallers: Boolean,
-  val guessCompatible: Function1[(ModuleID, Option[ModuleID], Option[IvyScala]), Boolean]
+  val guessCompatible: ((ModuleID, Option[ModuleID], Option[IvyScala])) => Boolean
 ) {
   private[sbt] def configStrings = configurations map { _.name }
 
@@ -30,7 +30,7 @@ final class EvictionWarningOptions private[sbt] (
     copy(infoAllEvictions = infoAllEvictions)
   def withShowCallers(showCallers: Boolean): EvictionWarningOptions =
     copy(showCallers = showCallers)
-  def withGuessCompatible(guessCompatible: Function1[(ModuleID, Option[ModuleID], Option[IvyScala]), Boolean]): EvictionWarningOptions =
+  def withGuessCompatible(guessCompatible: ((ModuleID, Option[ModuleID], Option[IvyScala])) => Boolean): EvictionWarningOptions =
     copy(guessCompatible = guessCompatible)
 
   private[sbt] def copy(
@@ -40,7 +40,7 @@ final class EvictionWarningOptions private[sbt] (
     warnTransitiveEvictions: Boolean = warnTransitiveEvictions,
     infoAllEvictions: Boolean = infoAllEvictions,
     showCallers: Boolean = showCallers,
-    guessCompatible: Function1[(ModuleID, Option[ModuleID], Option[IvyScala]), Boolean] = guessCompatible
+    guessCompatible: ((ModuleID, Option[ModuleID], Option[IvyScala])) => Boolean = guessCompatible
   ): EvictionWarningOptions =
     new EvictionWarningOptions(
       configurations = configurations,
@@ -61,7 +61,7 @@ object EvictionWarningOptions {
   def full: EvictionWarningOptions =
     new EvictionWarningOptions(Vector(Compile), true, true, true, true, true, defaultGuess)
 
-  lazy val defaultGuess: Function1[(ModuleID, Option[ModuleID], Option[IvyScala]), Boolean] =
+  lazy val defaultGuess: ((ModuleID, Option[ModuleID], Option[IvyScala])) => Boolean =
     guessSecondSegment orElse guessSemVer orElse guessFalse
   lazy val guessSecondSegment: PartialFunction[(ModuleID, Option[ModuleID], Option[IvyScala]), Boolean] = {
     case (m1, Some(m2), Some(ivyScala)) if m2.name.endsWith("_" + ivyScala.scalaFullVersion) || m2.name.endsWith("_" + ivyScala.scalaBinaryVersion) =>
@@ -88,7 +88,7 @@ final class EvictionPair private[sbt] (
   val organization: String,
   val name: String,
   val winner: Option[ModuleReport],
-  val evicteds: Seq[ModuleReport],
+  val evicteds: Vector[ModuleReport],
   val includesDirect: Boolean,
   val showCallers: Boolean
 ) {
@@ -116,8 +116,8 @@ object EvictionPair {
       val callers: String =
         if (a.showCallers)
           r.callers match {
-            case Seq() => ""
-            case cs    => (cs map { _.caller.toString }).mkString(" (caller: ", ", ", ")")
+            case Vector() => ""
+            case cs       => (cs map { _.caller.to_s }).mkString(" (caller: ", ", ", ")")
           }
         else ""
       r.module.revision + callers
@@ -168,7 +168,7 @@ object EvictionWarning {
   private[sbt] def processEvictions(module: IvySbt#Module, options: EvictionWarningOptions, reports: Seq[OrganizationArtifactReport]): EvictionWarning = {
     val directDependencies = module.moduleSettings match {
       case x: InlineConfiguration => x.dependencies
-      case _                      => Seq()
+      case _                      => Vector.empty
     }
     val pairs = reports map { detail =>
       val evicteds = detail.modules filter { _.evicted }
