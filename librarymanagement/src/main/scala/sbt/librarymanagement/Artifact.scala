@@ -69,8 +69,8 @@ object ArtifactCompanion {
     {
       import artifact._
       val classifierStr = classifier match { case None => ""; case Some(c) => "-" + c }
-      val cross = CrossVersionUtil(module.crossVersion, scalaVersion.full, scalaVersion.binary)
-      val base = CrossVersionUtil.applyCross(artifact.name, cross)
+      val cross = CrossVersion(module.crossVersion, scalaVersion.full, scalaVersion.binary)
+      val base = CrossVersion.applyCross(artifact.name, cross)
       base + "-" + module.revision + classifierStr + "." + artifact.extension
     }
 

@@ -28,7 +28,7 @@ import scala.collection.mutable
 
 import sbt.util.Logger
 import sbt.librarymanagement._
-import ResolverUtil.PluginPattern
+import ResolverCompanion.PluginPattern
 import ivyint.{ CachedResolutionResolveEngine, CachedResolutionResolveCache, SbtDefaultDependencyDescriptor }
 import sbt.internal.util.CacheStore
 
@@ -426,7 +426,7 @@ private[sbt] object IvySbt {
     }
   private def substituteCross(m: ModuleSettings, scalaFullVersion: String, scalaBinaryVersion: String): ModuleSettings =
     {
-      val sub = CrossVersionUtil(scalaFullVersion, scalaBinaryVersion)
+      val sub = CrossVersion(scalaFullVersion, scalaBinaryVersion)
       m match {
         case ic: InlineConfiguration => ic.copy(module = sub(ic.module), dependencies = ic.dependencies map sub, overrides = ic.overrides map sub)
         case _                       => m
@@ -628,7 +628,7 @@ private[sbt] object IvySbt {
   def addExclude(moduleID: DefaultModuleDescriptor, ivyScala: Option[IvyScala])(exclude0: SbtExclusionRule): Unit =
     {
       // this adds _2.11 postfix
-      val exclude = CrossVersionUtil.substituteCross(exclude0, ivyScala)
+      val exclude = CrossVersion.substituteCross(exclude0, ivyScala)
       val confs =
         if (exclude.configurations.isEmpty) moduleID.getConfigurationsNames.toList
         else exclude.configurations

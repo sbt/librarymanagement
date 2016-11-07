@@ -21,6 +21,7 @@ import sbt.util.Logger
 import sbt.internal.util.{ ShowLines, SourcePosition, LinePosition, RangePosition, LineRange }
 import sbt.librarymanagement._
 import sbt.internal.librarymanagement.syntax._
+import sbt.internal.librarymanagement._
 import ArtifactTypeFilterUtil.toIvyFilter
 
 final class DeliverConfiguration(val deliverIvyPattern: String, val status: String, val configurations: Option[Vector[Configuration]], val logging: UpdateLogging)
@@ -120,13 +121,13 @@ object IvyActions {
     }
   private def crossVersionMap(moduleSettings: ModuleSettings): Option[String => String] =
     moduleSettings match {
-      case i: InlineConfiguration => CrossVersionUtil(i.module, i.ivyScala)
+      case i: InlineConfiguration => CrossVersion(i.module, i.ivyScala)
       case _                      => None
     }
   def mapArtifacts(module: ModuleDescriptor, cross: Option[String => String], artifacts: Map[Artifact, File]): Vector[(IArtifact, File)] =
     {
       val rawa = artifacts.keys.toVector
-      val seqa = CrossVersionUtil.substituteCross(rawa, cross)
+      val seqa = CrossVersion.substituteCross(rawa, cross)
       val zipped = rawa zip IvySbt.mapArtifacts(module, seqa)
       zipped map { case (a, ivyA) => (ivyA, artifacts(a)) }
     }
@@ -208,7 +209,7 @@ object IvyActions {
       import config.{ configuration => c, ivyScala, module => mod }
       import mod.{ id, modules => deps }
       val base = restrictedCopy(id, true).copy(name = id.name + "$" + label)
-      val module = new ivySbt.Module(InlineConfiguration(false, None, base, ModuleInfo(base.name), deps).copy(ivyScala = ivyScala))
+      val module = new ivySbt.Module(InlineConfiguration(base, ModuleInfo(base.name), deps).copy(ivyScala = ivyScala))
       val report = updateEither(module, c, uwconfig, logicalClock, depDir, log) match {
         case Right(r) => r
         case Left(w) =>
@@ -243,7 +244,7 @@ object IvyActions {
       // Adding list of explicit artifacts here.
       val deps = baseModules.distinct flatMap classifiedArtifacts(classifiers, exclude, artifacts)
       val base = restrictedCopy(id, true).copy(name = id.name + classifiers.mkString("$", "_", ""))
-      val module = new ivySbt.Module(InlineConfiguration(false, None, base, ModuleInfo(base.name), deps).copy(ivyScala = ivyScala, configurations = confs))
+      val module = new ivySbt.Module(InlineConfiguration(base, ModuleInfo(base.name), deps).copy(ivyScala = ivyScala, configurations = confs))
       // c.copy ensures c.types is preserved too
       val upConf = c.copy(missingOk = true)
       updateEither(module, upConf, uwconfig, logicalClock, depDir, log) match {

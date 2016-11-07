@@ -15,12 +15,13 @@ private[sbt] class FakeRepository(resolver: DependencyResolver) extends xsbti.Re
 }
 
 trait ResolversSyntax {
-  val DefaultMavenRepository = new MavenRepository("public", ResolverUtil.centralRepositoryRoot(ResolverUtil.useSecureResolvers))
-  val JavaNet2Repository = new MavenRepository(ResolverUtil.JavaNet2RepositoryName, ResolverUtil.JavaNet2RepositoryRoot)
-  val JCenterRepository = new MavenRepository(ResolverUtil.JCenterRepositoryName, ResolverUtil.JCenterRepositoryRoot)
+  import ResolverCompanion._
+  val DefaultMavenRepository = new MavenRepository("public", centralRepositoryRoot(useSecureResolvers))
+  val JavaNet2Repository = new MavenRepository(JavaNet2RepositoryName, JavaNet2RepositoryRoot)
+  val JCenterRepository = new MavenRepository(JCenterRepositoryName, JCenterRepositoryRoot)
 }
 
-object ResolverUtil {
+object ResolverCompanion {
   private[sbt] def useSecureResolvers = sys.props.get("sbt.repository.secure") map { _.toLowerCase == "true" } getOrElse true
 
   val TypesafeRepositoryRoot = typesafeRepositoryRoot(useSecureResolvers)
@@ -58,7 +59,7 @@ object ResolverUtil {
   def sbtPluginRepo(status: String) = url("sbt-plugin-" + status, new URL(SbtRepositoryRoot + "/sbt-plugin-" + status + "/"))(ivyStylePatterns)
   def sonatypeRepo(status: String) = new MavenRepository("sonatype-" + status, SonatypeRepositoryRoot + "/" + status)
   def bintrayRepo(owner: String, repo: String) = new MavenRepository(s"bintray-$owner-$repo", s"https://dl.bintray.com/$owner/$repo/")
-  def bintrayIvyRepo(owner: String, repo: String) = url(s"bintray-$owner-$repo", new URL(s"https://dl.bintray.com/$owner/$repo/"))(ResolverUtil.ivyStylePatterns)
+  def bintrayIvyRepo(owner: String, repo: String) = url(s"bintray-$owner-$repo", new URL(s"https://dl.bintray.com/$owner/$repo/"))(Resolver.ivyStylePatterns)
   def jcenterRepo = JCenterRepository
 
   /** Add the local and Maven Central repositories to the user repositories.  */
@@ -78,7 +79,7 @@ object ResolverUtil {
    * If `mavenCentral` is true, add the Maven Central repository.
    */
   def withDefaultResolvers(userResolvers: Seq[Resolver], jcenter: Boolean, mavenCentral: Boolean): Seq[Resolver] =
-    Seq(ResolverUtil.defaultLocal) ++
+    Seq(Resolver.defaultLocal) ++
       userResolvers ++
       single(JCenterRepository, jcenter) ++
       single(DefaultMavenRepository, mavenCentral)
@@ -89,7 +90,7 @@ object ResolverUtil {
    * If `mavenCentral` is true, add the Maven Central repository.
    */
   private[sbt] def reorganizeAppResolvers(appResolvers: Seq[Resolver], jcenter: Boolean, mavenCentral: Boolean): Seq[Resolver] =
-    appResolvers.partition(_ == ResolverUtil.defaultLocal) match {
+    appResolvers.partition(_ == Resolver.defaultLocal) match {
       case (locals, xs) =>
         locals ++
           (xs.partition(_ == JCenterRepository) match {

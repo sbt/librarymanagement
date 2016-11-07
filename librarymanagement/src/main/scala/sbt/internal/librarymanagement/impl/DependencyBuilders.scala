@@ -27,7 +27,7 @@ trait DependencyBuilders {
 
 final class GroupID private[sbt] (private[sbt] val groupID: String) {
   def %(artifactID: String) = groupArtifact(artifactID, Disabled())
-  def %%(artifactID: String): GroupArtifactID = groupArtifact(artifactID, CrossVersionUtil.binary)
+  def %%(artifactID: String): GroupArtifactID = groupArtifact(artifactID, CrossVersion.binary)
 
   private def groupArtifact(artifactID: String, cross: CrossVersion) =
     {

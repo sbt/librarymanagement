@@ -84,6 +84,6 @@ class IvyRepoSpec extends BaseIvySpecification with DependencyBuilders {
 
   lazy val testIvy = {
     val repoUrl = getClass.getResource("/test-ivy-repo")
-    ResolverUtil.url("Test Repo", repoUrl)(ResolverUtil.ivyStylePatterns)
+    Resolver.url("Test Repo", repoUrl)(Resolver.ivyStylePatterns)
   }
 }

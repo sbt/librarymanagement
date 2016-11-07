@@ -68,7 +68,7 @@ trait BaseIvySpecification extends UnitSpec {
   }
 
   def makeUpdateConfiguration: UpdateConfiguration = {
-    val retrieveConfig = new RetrieveConfiguration(currentManaged, ResolverUtil.defaultRetrievePattern, false, None)
+    val retrieveConfig = new RetrieveConfiguration(currentManaged, Resolver.defaultRetrievePattern, false, None)
     UpdateConfiguration(Some(retrieveConfig), false, UpdateLogging.Full, ArtifactTypeFilterUtil.forbid(Set("src", "doc")))
   }
 

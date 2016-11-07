@@ -7,11 +7,11 @@ class ModuleIdTest extends UnitSpec {
     ModuleID("com.acme", "foo", "1") shouldBe ModuleID("com.acme", "foo", "1")
   }
   it should "return cross-full module id as equal to a copy" in {
-    (ModuleID("com.acme", "foo", "1") cross CrossVersionUtil.full) shouldBe
-      (ModuleID("com.acme", "foo", "1") cross CrossVersionUtil.full)
+    (ModuleID("com.acme", "foo", "1") cross CrossVersion.full) shouldBe
+      (ModuleID("com.acme", "foo", "1") cross CrossVersion.full)
   }
   it should "return cross-binary module id as equal to a copy" in {
-    (ModuleID("com.acme", "foo", "1") cross CrossVersionUtil.binary) shouldBe
-      (ModuleID("com.acme", "foo", "1") cross CrossVersionUtil.binary)
+    (ModuleID("com.acme", "foo", "1") cross CrossVersion.binary) shouldBe
+      (ModuleID("com.acme", "foo", "1") cross CrossVersion.binary)
   }
 }

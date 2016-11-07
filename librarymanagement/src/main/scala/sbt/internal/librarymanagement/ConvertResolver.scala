@@ -117,7 +117,7 @@ private[sbt] object ConvertResolver {
       r match {
         case repo: MavenRepository =>
           {
-            val pattern = Collections.singletonList(ResolverUtil.resolvePattern(repo.root, ResolverUtil.mavenStyleBasePattern))
+            val pattern = Collections.singletonList(Resolver.resolvePattern(repo.root, Resolver.mavenStyleBasePattern))
             final class PluginCapableResolver extends IBiblioResolver with ChecksumFriendlyURLResolver with DescriptorRequired {
               def setPatterns(): Unit = {
                 // done this way for access to protected methods.

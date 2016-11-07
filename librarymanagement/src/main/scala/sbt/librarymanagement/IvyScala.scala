@@ -30,7 +30,7 @@ object ScalaArtifacts {
     if (isDotty)
       Seq(ModuleID(org, DottyIDPrefix, version).copy(
         configurations = Some(Configurations.ScalaTool.name + "->compile"),
-        crossVersion = CrossVersionUtil.binary
+        crossVersion = CrossVersion.binary
       ))
     else
       Seq(
@@ -101,7 +101,7 @@ private[sbt] object IvyScalaCompanion {
     def binaryScalaWarning(dep: DependencyDescriptor): Option[String] =
       {
         val id = dep.getDependencyRevisionId
-        val depBinaryVersion = CrossVersionUtil.binaryScalaVersion(id.getRevision)
+        val depBinaryVersion = CrossVersion.binaryScalaVersion(id.getRevision)
         def isScalaLangOrg = id.getOrganisation == scalaOrganization
         def isScalaArtifact = scalaArtifacts.contains(id.getName)
         def hasBinVerMismatch = depBinaryVersion != scalaBinaryVersion

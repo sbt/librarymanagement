@@ -25,7 +25,7 @@ object ArtifactTypeFilterUtil {
 }
 
 /** See http://ant.apache.org/ivy/history/latest-milestone/settings/conflict-managers.html for details of the different conflict managers.*/
-object ConflictManagerUtil {
+object ConflictManagerCompanion {
   val all = ConflictManager("all")
   val latestTime = ConflictManager("latest-time")
   val latestRevision = ConflictManager("latest-revision")
