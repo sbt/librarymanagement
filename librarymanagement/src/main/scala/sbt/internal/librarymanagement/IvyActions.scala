@@ -304,7 +304,7 @@ object IvyActions {
    * `usage.getDependencyIncludesSet` returns null if there are no (explicit) include rules.
    */
   private def intransitiveModuleWithExplicitArts(module: ModuleID, arts: Vector[Artifact]): ModuleID =
-    module.copy(isTransitive = false, explicitArtifacts = arts, inclusions = Vector(InclExclRuleUtil.everything))
+    module.copy(isTransitive = false, explicitArtifacts = arts, inclusions = Vector(InclExclRule.everything))
 
   def addExcluded(report: UpdateReport, classifiers: Vector[String], exclude: Map[ModuleID, Set[String]]): UpdateReport =
     report.addMissing { id => classifiedArtifacts(id.name, classifiers filter getExcluded(id, exclude)) }
