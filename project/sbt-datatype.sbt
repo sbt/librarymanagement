@@ -1,1 +1,1 @@
-addSbtPlugin("org.scala-sbt" % "sbt-datatype" % "0.2.6")
+addSbtPlugin("org.scala-sbt" % "sbt-datatype" % "0.2.7")
