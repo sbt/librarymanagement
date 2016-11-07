@@ -101,10 +101,10 @@
       "target": "Scala",
       "type": "record",
       "fields": [
-        { "name": "retrieveDirectory",        "type": "java.io.File"                              },
-        { "name": "outputPattern",            "type": "String"                                    },
-        { "name": "sync",                     "type": "boolean"                                   },
-        { "name": "configurationsToRetrieve", "type": "Set[sbt.librarymanagement.Configuration]?" }
+        { "name": "retrieveDirectory",        "type": "java.io.File"                                                                  },
+        { "name": "outputPattern",            "type": "String"                                                                        },
+        { "name": "sync",                     "type": "boolean",                                   "default": "false", "since": "0.1" },
+        { "name": "configurationsToRetrieve", "type": "Set[sbt.librarymanagement.Configuration]?", "default": "None",  "since": "0.2" }
       ]
     },
     {
