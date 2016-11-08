@@ -51,7 +51,7 @@ lazy val lm = (project in file("librarymanagement")).
       ivy, jsch, scalaReflect.value, launcherInterface,
       sjsonnewScalaJson % Optional),
     libraryDependencies ++= scalaXml.value,
-    resourceGenerators in Compile <+= (version, resourceManaged, streams, compile in Compile) map Util.generateVersionFile,
+    resourceGenerators in Compile += Def.task(Util.generateVersionFile(version.value, resourceManaged.value, streams.value, (compile in Compile).value)).taskValue,
     binaryIssueFilters ++= Seq(),
     datatypeFormatsForType in generateDatatypes in Compile := DatatypeConfig.getFormats
   ).
