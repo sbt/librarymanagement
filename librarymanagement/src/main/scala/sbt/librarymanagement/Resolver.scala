@@ -187,17 +187,17 @@ abstract class ResolverCompanion {
      * Constructs a file resolver with the given name.  The patterns to use must be explicitly specified
      * using the `ivys` or `artifacts` methods on the constructed resolver object.
      */
-    def apply(name: String): FileRepository = FileRepository(name, Patterns(Vector.empty, false), defaultFileConfiguration)
+    def apply(name: String): FileRepository = FileRepository(name, defaultFileConfiguration, Patterns(false))
     /** Constructs a file resolver with the given name and base directory. */
     def apply(name: String, baseDirectory: File)(implicit basePatterns: Patterns): FileRepository =
-      baseRepository(new File(baseDirectory.toURI.normalize).getAbsolutePath)(FileRepository(name, _, defaultFileConfiguration))
+      baseRepository(new File(baseDirectory.toURI.normalize).getAbsolutePath)(FileRepository(name, defaultFileConfiguration, _))
   }
   object url {
     /**
      * Constructs a URL resolver with the given name.  The patterns to use must be explicitly specified
      * using the `ivys` or `artifacts` methods on the constructed resolver object.
      */
-    def apply(name: String): URLRepository = URLRepository(name, Patterns(Vector.empty, false))
+    def apply(name: String): URLRepository = URLRepository(name, Patterns(false))
     /** Constructs a file resolver with the given name and base directory. */
     def apply(name: String, baseURL: URL)(implicit basePatterns: Patterns): URLRepository =
       baseRepository(baseURL.toURI.normalize.toString)(URLRepository(name, _))
@@ -255,18 +255,18 @@ abstract class ResolverCompanion {
       new File(sbt.io.Path.userHome, ".m2/repository")
   }
   // TODO - should this just be the *exact* same as mavenLocal?  probably...
-  def publishMavenLocal: MavenCache = MavenCache("publish-m2-local", mavenLocalDir.toURI.toURL.toString, mavenLocalDir)
-  def mavenLocal: IMavenRepository = MavenCache("Maven2 Local", mavenLocalDir.toURI.toURL.toString, mavenLocalDir)
+  def publishMavenLocal: MavenCache = new MavenCache("publish-m2-local", mavenLocalDir)
+  def mavenLocal: IMavenRepository = new MavenCache("Maven2 Local", mavenLocalDir)
   def defaultLocal = defaultUserFileRepository("local")
   def defaultShared = defaultUserFileRepository("shared")
   def defaultUserFileRepository(id: String) =
     {
       val pList = Vector(s"$${ivy.home}/$id/$localBasePattern")
-      FileRepository(id, Patterns(pList, pList, false), defaultFileConfiguration)
+      FileRepository(id, defaultFileConfiguration, Patterns(pList, pList, false))
     }
   def defaultIvyPatterns =
     {
       val pList = Vector(localBasePattern)
-      Patterns(pList, pList, false, false, false)
+      Patterns(pList, pList, false)
     }
 }

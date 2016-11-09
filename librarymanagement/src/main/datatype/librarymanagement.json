@@ -503,6 +503,14 @@
               "doc": "sbt interface for an Ivy filesystem repository.  More convenient construction is done using Resolver.file.",
               "fields": [
                 { "name": "configuration", "type": "sbt.librarymanagement.FileConfiguration" }
+              ],
+              "extra": [
+                "def this(name: String, configuration: sbt.librarymanagement.FileConfiguration, patterns: sbt.librarymanagement.Patterns) = ",
+                "  this(name, patterns, configuration)"
+              ],
+              "extraCompanion": [
+                "def apply(name: String, configuration: sbt.librarymanagement.FileConfiguration, patterns: sbt.librarymanagement.Patterns) = ",
+                "  new FileRepository(name, patterns, configuration)"
               ]
             },
             {
@@ -531,11 +539,11 @@
                     { "name": "publishPermissions", "type": "String?" }
                   ],
                   "extra": [
-                    "def this(name: String, connection: SshConnection, patterns: Patterns, publishPermissions: Option[String]) = ",
+                    "def this(name: String, connection: sbt.librarymanagement.SshConnection, patterns: sbt.librarymanagement.Patterns, publishPermissions: Option[String]) = ",
                     "  this(name, patterns, connection, publishPermissions)"
                   ],
                   "extraCompanion": [
-                    "def apply(name: String, connection: SshConnection, patterns: Patterns, publishPermissions: Option[String]) = ",
+                    "def apply(name: String, connection: sbt.librarymanagement.SshConnection, patterns: sbt.librarymanagement.Patterns, publishPermissions: Option[String]) = ",
                     "  new SshRepository(name, patterns, connection, publishPermissions)"
                   ]
                 },
@@ -546,11 +554,11 @@
                   "type": "record",
                   "doc": "sbt interface for an Ivy repository over sftp.  More convenient construction is done using Resolver.sftp.",
                   "extra": [
-                    "def this(name: String, connection: SshConnection, patterns: Patterns) = ",
+                    "def this(name: String, connection: sbt.librarymanagement.SshConnection, patterns: sbt.librarymanagement.Patterns) = ",
                     "  this(name, patterns, connection)"
                   ],
                   "extraCompanion": [
-                    "def apply(name: String, connection: SshConnection, patterns: Patterns) = ",
+                    "def apply(name: String, connection: sbt.librarymanagement.SshConnection, patterns: sbt.librarymanagement.Patterns) = ",
                     "  new SftpRepository(name, patterns, connection)"
                   ]
                 }
