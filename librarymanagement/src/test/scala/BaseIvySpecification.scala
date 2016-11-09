@@ -22,7 +22,7 @@ trait BaseIvySpecification extends UnitSpec {
   def currentTarget: File = currentBase / "target" / "ivyhome"
   def currentManaged: File = currentBase / "target" / "lib_managed"
   def currentDependency: File = currentBase / "target" / "dependency"
-  def defaultModuleId: ModuleID = ModuleID("com.example", "foo", "0.1.0").copy(configurations = Some("compile"))
+  def defaultModuleId: ModuleID = ModuleID("com.example", "foo", "0.1.0", Some("compile"))
 
   implicit val isoString: IsoString[JValue] = IsoString.iso(CompactPrinter.apply, FixedParser.parseUnsafe)
   val fileToStore = (f: File) => new FileBasedStore(f, Converter)
@@ -32,7 +32,7 @@ trait BaseIvySpecification extends UnitSpec {
   def module(moduleId: ModuleID, deps: Vector[ModuleID], scalaFullVersion: Option[String],
     uo: UpdateOptions = UpdateOptions(), overrideScalaVersion: Boolean = true): IvySbt#Module = {
     val ivyScala = scalaFullVersion map { fv =>
-      IvyScala(
+      new IvyScala(
         scalaFullVersion = fv,
         scalaBinaryVersion = CrossVersionUtil.binaryScalaVersion(fv),
         configurations = Vector.empty,
@@ -43,14 +43,13 @@ trait BaseIvySpecification extends UnitSpec {
     }
 
     val moduleSetting: ModuleSettings = InlineConfiguration(
-      validate = false,
-      ivyScala = ivyScala,
       module = moduleId,
       moduleInfo = ModuleInfo("foo"),
-      dependencies = deps
-    ).copy(
-        configurations = configurations
-      )
+      dependencies = deps,
+      configurations = configurations,
+      validate = false,
+      ivyScala = ivyScala
+    )
     val ivySbt = new IvySbt(mkIvyConfiguration(uo), fileToStore)
     new ivySbt.Module(moduleSetting)
   }
@@ -60,8 +59,9 @@ trait BaseIvySpecification extends UnitSpec {
   def chainResolver = ChainedResolver("sbt-chain", resolvers)
 
   def mkIvyConfiguration(uo: UpdateOptions): IvyConfiguration = {
-    val paths = IvyPaths(currentBase, Some(currentTarget))
-    val moduleConfs = Vector(ModuleConfiguration("*", "*", "*", chainResolver))
+    val paths = new IvyPaths(currentBase, Some(currentTarget))
+    val other = Vector.empty
+    val moduleConfs = Vector(ModuleConfiguration("*", chainResolver))
     val resCacheDir = currentTarget / "resolution-cache"
     InlineIvyConfiguration(None, paths.baseDirectory, log, uo, paths, resolvers, Vector.empty, moduleConfs,
       false, Vector.empty, Some(resCacheDir))

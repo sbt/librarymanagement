@@ -586,6 +586,10 @@
         { "name": "name",         "type": "String"                         },
         { "name": "revision",     "type": "String"                         },
         { "name": "resolver",     "type": "sbt.librarymanagement.Resolver" }
+      ],
+      "extraCompanion": [
+        "def apply(org: String, resolver: sbt.librarymanagement.Resolver): ModuleConfiguration = apply(org, \"*\", \"*\", resolver)",
+        "def apply(org: String, name: String, resolver: sbt.librarymanagement.Resolver): ModuleConfiguration = ModuleConfiguration(org, name, \"*\", resolver)"
       ]
     },
     {
