@@ -179,11 +179,13 @@
       "namespace": "sbt.librarymanagement",
       "target": "Scala",
       "type": "record",
+      "doc": "See http://ant.apache.org/ivy/history/latest-milestone/settings/conflict-managers.html for details of the different conflict managers.",
       "fields": [
         { "name": "name",         "type": "String"                                     },
         { "name": "organization", "type": "String", "default": "\"*\"", "since": "0.1" },
         { "name": "module",       "type": "String", "default": "\"*\"", "since": "0.1" }
-      ]
+      ],
+      "parentsCompanion": "sbt.librarymanagement.ConflictManagerCompanion"
     },
     {
       "name": "IvyScala",
