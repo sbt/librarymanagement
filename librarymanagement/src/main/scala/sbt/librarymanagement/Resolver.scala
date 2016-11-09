@@ -26,6 +26,13 @@ final class RawRepository(val resolver: DependencyResolver) extends Resolver(res
     }
 }
 
+abstract class PatternsCompanion {
+  implicit def defaultPatterns: Patterns = Resolver.defaultPatterns
+
+  def apply(artifactPatterns: String*): Patterns = Patterns(true, artifactPatterns: _*)
+  def apply(isMavenCompatible: Boolean, artifactPatterns: String*): Patterns = Patterns(artifactPatterns.toVector, artifactPatterns.toVector, isMavenCompatible)
+}
+
 /** A repository that conforms to sbt launcher's interface */
 private[sbt] class FakeRepository(resolver: DependencyResolver) extends xsbti.Repository {
   def rawRepository = new RawRepository(resolver)

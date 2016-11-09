@@ -424,7 +424,12 @@
         { "name": "isMavenCompatible",    "type": "boolean", "default": "true",         "since": "0.2" },
         { "name": "descriptorOptional",   "type": "boolean", "default": "false",        "since": "0.4" },
         { "name": "skipConsistencyCheck", "type": "boolean", "default": "false",        "since": "0.4" }
-      ]
+      ],
+      "toString": [
+        "\"Patterns(ivyPatterns=%s, artifactPatterns=%s, isMavenCompatible=%s, descriptorOptional=%s, skipConsistencyCheck=%s)\".format(",
+        "  ivyPatterns, artifactPatterns, isMavenCompatible, descriptorOptional, skipConsistencyCheck)"
+      ],
+      "parentsCompanion": "sbt.librarymanagement.PatternsCompanion"
     },
     {
       "name": "Resolver",
