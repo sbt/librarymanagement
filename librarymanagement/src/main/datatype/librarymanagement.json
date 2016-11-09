@@ -436,15 +436,6 @@
       ],
       "types": [
         {
-          "name": "RawRepository",
-          "namespace": "sbt.librarymanagement",
-          "target": "Scala",
-          "type": "record",
-          "fields": [
-            { "name": "resolver", "type": "org.apache.ivy.plugins.resolver.DependencyResolver" }
-          ]
-        },
-        {
           "name": "ChainedResolver",
           "namespace": "sbt.librarymanagement",
           "target": "Scala",

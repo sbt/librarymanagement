@@ -9,9 +9,26 @@ import scala.xml.XML
 import org.apache.ivy.plugins.resolver.DependencyResolver
 import org.xml.sax.SAXParseException
 
+final class RawRepository(val resolver: DependencyResolver) extends Resolver(resolver.getName) {
+  override def toString = "Raw(" + resolver.toString + ")"
+
+  override def equals(o: Any): Boolean = o match {
+    case o: RawRepository =>
+      this.name == o.name
+    case _ => false
+  }
+
+  override def hashCode: Int =
+    {
+      var hash = 1
+      hash = hash * 31 + this.name.##
+      hash
+    }
+}
+
 /** A repository that conforms to sbt launcher's interface */
 private[sbt] class FakeRepository(resolver: DependencyResolver) extends xsbti.Repository {
-  def rawRepository = RawRepository(resolver.getName, resolver)
+  def rawRepository = new RawRepository(resolver)
 }
 
 trait ResolversSyntax {
