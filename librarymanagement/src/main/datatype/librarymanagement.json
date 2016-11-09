@@ -201,7 +201,8 @@
         { "name": "overrideScalaVersion", "type": "boolean"                                                                                 },
         { "name": "scalaOrganization",    "type": "String",  "since": "0.1", "default": "sbt.librarymanagement.ScalaArtifacts.Organization" },
         { "name": "scalaArtifacts",       "type": "String*", "since": "0.1", "default": "sbt.librarymanagement.ScalaArtifacts.Artifacts"    }
-      ]
+      ],
+      "parentsCompanion": "sbt.librarymanagement.IvyScalaCompanion"
     },
     {
       "name": "ModuleSettings",
