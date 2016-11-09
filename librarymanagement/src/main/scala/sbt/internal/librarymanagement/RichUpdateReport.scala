@@ -65,9 +65,10 @@ final class RichUpdateReport(report: UpdateReport) {
   def moduleReportMap(f: (String, ModuleReport) => ModuleReport): UpdateReport =
     {
       val newConfigurations = report.configurations.map { confReport =>
-        val newModules = confReport.modules map { modReport => f(confReport.configuration, modReport) }
-        ConfigurationReport(confReport.configuration, newModules, confReport.details)
+        import confReport._
+        val newModules = modules map { modReport => f(configuration, modReport) }
+        new ConfigurationReport(configuration, newModules, details)
       }
-      UpdateReport(report.cachedDescriptor, newConfigurations, report.stats, report.stamps)
+      new UpdateReport(report.cachedDescriptor, newConfigurations, report.stats, report.stamps)
     }
 }
