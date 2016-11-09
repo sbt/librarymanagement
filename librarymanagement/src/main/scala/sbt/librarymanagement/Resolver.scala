@@ -15,13 +15,13 @@ private[sbt] class FakeRepository(resolver: DependencyResolver) extends xsbti.Re
 }
 
 trait ResolversSyntax {
-  import ResolverCompanion._
+  import Resolver._
   val DefaultMavenRepository = new MavenRepository("public", centralRepositoryRoot(useSecureResolvers))
   val JavaNet2Repository = new MavenRepository(JavaNet2RepositoryName, JavaNet2RepositoryRoot)
   val JCenterRepository = new MavenRepository(JCenterRepositoryName, JCenterRepositoryRoot)
 }
 
-object ResolverCompanion {
+abstract class ResolverCompanion {
   private[sbt] def useSecureResolvers = sys.props.get("sbt.repository.secure") map { _.toLowerCase == "true" } getOrElse true
 
   val TypesafeRepositoryRoot = typesafeRepositoryRoot(useSecureResolvers)

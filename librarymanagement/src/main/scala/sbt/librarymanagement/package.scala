@@ -17,5 +17,4 @@ package object librarymanagement extends ResolversSyntax {
   implicit def sbtRichInclExclRuleCompanion(x: InclExclRule.type): InclExclRuleCompanion.type = InclExclRuleCompanion
   implicit def sbtRichIvyScalaCompanion(x: IvyScala.type): IvyScalaCompanion.type = IvyScalaCompanion
   implicit def sbtRichModuleIDCompanion(x: ModuleID.type): ModuleIDCompanion.type = ModuleIDCompanion
-  implicit def sbtRichResolverCompanion(x: Resolver.type): ResolverCompanion.type = ResolverCompanion
 }

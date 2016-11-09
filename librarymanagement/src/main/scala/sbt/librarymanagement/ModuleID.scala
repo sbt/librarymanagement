@@ -7,6 +7,22 @@ import java.net.URL
 
 import sbt.internal.librarymanagement.mavenint.SbtPomExtraProperties
 
+final case class OldModuleID(
+  organization: String,
+  name: String,
+  revision: String,
+  configurations: Option[String] = None,
+  isChanging: Boolean = false,
+  isTransitive: Boolean = true,
+  isForce: Boolean = false,
+  explicitArtifacts: Seq[Artifact] = Nil,
+  inclusions: Seq[InclusionRule] = Nil,
+  exclusions: Seq[ExclusionRule] = Nil,
+  extraAttributes: Map[String, String] = Map.empty,
+  crossVersion: CrossVersion = Disabled(),
+  branchName: Option[String] = None
+)
+
 final class RichModuleID(val moduleID: ModuleID) extends AnyVal {
   import moduleID._
 

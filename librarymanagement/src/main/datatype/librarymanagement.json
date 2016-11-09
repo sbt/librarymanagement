@@ -533,7 +533,8 @@
             }
           ]
         }
-      ]
+      ],
+      "parentsCompanion": "sbt.librarymanagement.ResolverCompanion"
     },
     {
       "name": "ModuleConfiguration",

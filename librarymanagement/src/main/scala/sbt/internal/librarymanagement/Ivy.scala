@@ -28,7 +28,7 @@ import scala.collection.mutable
 
 import sbt.util.Logger
 import sbt.librarymanagement._
-import ResolverCompanion.PluginPattern
+import Resolver.PluginPattern
 import ivyint.{ CachedResolutionResolveEngine, CachedResolutionResolveCache, SbtDefaultDependencyDescriptor }
 import sbt.internal.util.CacheStore
 
