@@ -126,10 +126,6 @@ abstract class UpdateReportParent {
   def stats: UpdateStats
   private[sbt] def stamps: Map[File, Long]
 
-  //  @deprecated("Use the variant that provides timestamps of files.", "0.13.0")
-  //  def this(cachedDescriptor: File, configurations: Seq[ConfigurationReport], stats: UpdateStats) =
-  //    this(cachedDescriptor, configurations, stats, Map.empty)
-
   /** All resolved modules in all configurations. */
   def allModules: Vector[ModuleID] =
     {

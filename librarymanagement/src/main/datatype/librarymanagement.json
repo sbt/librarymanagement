@@ -85,7 +85,8 @@
         { "name": "downloadTime", "type": "long"    },
         { "name": "downloadSize", "type": "long"    },
         { "name": "cached",       "type": "boolean" }
-      ]
+      ],
+      "toString": "Seq(\"Resolve time: \" + resolveTime + \" ms\", \"Download time: \" + downloadTime + \" ms\", \"Download size: \" + downloadSize + \" bytes\").mkString(\", \")"
     },
     {
       "name": "UpdateLogging",
