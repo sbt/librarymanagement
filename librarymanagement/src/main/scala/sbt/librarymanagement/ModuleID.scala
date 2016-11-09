@@ -62,7 +62,7 @@ abstract class ModuleIDParent {
 
   /**
    * Marks this dependency as "changing".  Ivy will always check if the metadata has changed and then if the artifact has changed,
-   * re-download it.  sbt configures all -SNAPSHOT dependencies to be changing.
+   * redownload it.  sbt configures all -SNAPSHOT dependencies to be changing.
    *
    * See the "Changes in artifacts" section of https://ant.apache.org/ivy/history/trunk/concept.html for full details.
    */
@@ -94,7 +94,7 @@ abstract class ModuleIDParent {
    * Applies the provided exclusions to dependencies of this module.  Note that only exclusions that specify
    * both the exact organization and name and nothing else will be included in a pom.xml.
    */
-  def excludeAll(rules: InclExclRule*) = copy(exclusions = exclusions ++ rules)
+  def excludeAll(rules: InclExclRule*) = copy(exclusions = this.exclusions ++ rules)
 
   /** Excludes the dependency with organization `org` and `name` from being introduced by this dependency during resolution. */
   def exclude(org: String, name: String) = excludeAll(InclExclRule(org, name, "*", Vector.empty))
@@ -103,7 +103,7 @@ abstract class ModuleIDParent {
    * Adds extra attributes for this module.  All keys are prefixed with `e:` if they are not already so prefixed.
    * This information will only be published in an ivy.xml and not in a pom.xml.
    */
-  def extra(attributes: (String, String)*) = copy(extraAttributes = extraAttributes ++ ModuleID.checkE(attributes))
+  def extra(attributes: (String, String)*) = copy(extraAttributes = this.extraAttributes ++ ModuleID.checkE(attributes))
 
   /**
    * Not recommended for new use.  This method is not deprecated, but the `update-classifiers` task is preferred
@@ -151,7 +151,7 @@ abstract class ModuleIDParent {
   def branch(branchName: Option[String]) = copy(branchName = branchName)
 }
 
-object ModuleIDCompanion {
+abstract class ModuleIDCompanion {
   /** Prefixes all keys with `e:` if they are not already so prefixed. */
   def checkE(attributes: Seq[(String, String)]) =
     for ((key, value) <- attributes) yield if (key.startsWith("e:")) (key, value) else ("e:" + key, value)

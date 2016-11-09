@@ -656,7 +656,8 @@
         "organization + \":\" + name + \":\" + revision +",
         "  (configurations match { case Some(s) => \":\" + s; case None => \"\" }) +",
         "  (if (extraAttributes.isEmpty) \"\" else \" \" + extraString)"
-      ]
+      ],
+      "parentsCompanion": "sbt.librarymanagement.ModuleIDCompanion"
     },
     {
       "name": "ArtifactTypeFilter",

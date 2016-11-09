@@ -6,6 +6,4 @@ package object librarymanagement extends ResolversSyntax {
 
   implicit def sbtRichConfigurationReport(configurationReport: ConfigurationReport): RichConfigurationReport = new RichConfigurationReport(configurationReport)
   implicit def sbtRichModuleReport(moduleReport: ModuleReport): RichModuleReport = new RichModuleReport(moduleReport)
-
-  implicit def sbtRichModuleIDCompanion(x: ModuleID.type): ModuleIDCompanion.type = ModuleIDCompanion
 }
