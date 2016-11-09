@@ -6,7 +6,7 @@ package sbt.librarymanagement
 import org.apache.ivy.core.module.descriptor
 import org.apache.ivy.util.filter.{ Filter => IvyFilter }
 
-object InclExclRuleCompanion {
+abstract class InclExclRuleCompanion {
   def everything = new InclExclRule("*", "*", "*", Vector.empty)
 }
 

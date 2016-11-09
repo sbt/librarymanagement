@@ -278,7 +278,8 @@
         { "name": "name",           "type": "String"  },
         { "name": "artifact",       "type": "String"  },
         { "name": "configurations", "type": "String*" }
-      ]
+      ],
+      "parentsCompanion": "sbt.librarymanagement.InclExclRuleCompanion"
     },
     {
       "name": "CrossVersion",
