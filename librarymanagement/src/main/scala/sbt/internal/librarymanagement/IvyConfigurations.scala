@@ -3,29 +3,9 @@
  */
 package sbt.internal.librarymanagement
 
-import java.io.File
-
 import scala.xml.NodeSeq
 
 import sbt.librarymanagement._
-import xsbti._
-
-object InlineIvyConfigurationCompanion {
-  def apply(
-    paths: IvyPaths,
-    resolvers: Vector[Resolver],
-    otherResolvers: Vector[Resolver],
-    moduleConfigurations: Vector[ModuleConfiguration],
-    localOnly: Boolean,
-    lock: Option[GlobalLock],
-    checksums: Vector[String],
-    resolutionCacheDir: Option[File],
-    updateOptions: UpdateOptions,
-    log: Logger
-  ): InlineIvyConfiguration =
-    new InlineIvyConfiguration(lock, paths.baseDirectory, log, updateOptions, paths, resolvers, otherResolvers,
-      moduleConfigurations, localOnly, checksums, resolutionCacheDir)
-}
 
 object InlineConfigurationCompanion {
   def apply(
