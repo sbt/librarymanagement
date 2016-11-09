@@ -3,11 +3,10 @@ package sbt.internal.librarymanagement
 import org.scalatest.Inside
 import sbt.internal.librarymanagement.impl.DependencyBuilders
 import sbt.librarymanagement._
-import syntax._
 
 class IvyRepoSpec extends BaseIvySpecification with DependencyBuilders {
 
-  val ourModuleID = ModuleID("com.example", "foo", "0.1.0").copy(configurations = Some("compile"))
+  val ourModuleID = ModuleID("com.example", "foo", "0.1.0", Some("compile"))
 
   def makeModuleForDepWithSources = {
     // By default a module seems to only have [compile, test, runtime], yet deps automatically map to
@@ -29,9 +28,9 @@ class IvyRepoSpec extends BaseIvySpecification with DependencyBuilders {
 
     import Inside._
     inside(report.configuration("compile").map(_.modules)) {
-      case Some(Vector(mr)) =>
+      case Some(Seq(mr)) =>
         inside(mr.artifacts) {
-          case Vector((ar, _)) =>
+          case Seq((ar, _)) =>
             ar.`type` shouldBe "jar"
             ar.extension shouldBe "jar"
         }
@@ -59,6 +58,7 @@ class IvyRepoSpec extends BaseIvySpecification with DependencyBuilders {
 
     val clMod = {
       import language.implicitConversions
+      implicit val key = (m: ModuleID) => (m.organization, m.name, m.revision)
       val externalModules = Vector(dep)
       // Note: need to extract ourModuleID so we can plug it in here, can't fish it back out of the IvySbt#Module (`m`)
       GetClassifiersModule(ourModuleID, externalModules, Vector(Configurations.Compile), attemptedClassifiers)
@@ -70,9 +70,9 @@ class IvyRepoSpec extends BaseIvySpecification with DependencyBuilders {
 
     import Inside._
     inside(report2.configuration("compile").map(_.modules)) {
-      case Some(Vector(mr)) =>
+      case Some(Seq(mr)) =>
         inside(mr.artifacts) {
-          case Vector((ar, _)) =>
+          case Seq((ar, _)) =>
             ar.name shouldBe "libmodule-source"
             ar.`type` shouldBe "src"
             ar.extension shouldBe "jar"
