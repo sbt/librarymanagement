@@ -175,11 +175,11 @@ abstract class ResolverCompanion {
   }
   /** A factory to construct an interface to an Ivy SSH resolver.*/
   object ssh extends Define[SshRepository] {
-    protected def construct(name: String, connection: SshConnection, patterns: Patterns) = SshRepository(name, patterns, connection, None)
+    protected def construct(name: String, connection: SshConnection, patterns: Patterns) = SshRepository(name, connection, patterns, None)
   }
   /** A factory to construct an interface to an Ivy SFTP resolver.*/
   object sftp extends Define[SftpRepository] {
-    protected def construct(name: String, connection: SshConnection, patterns: Patterns) = SftpRepository(name, patterns, connection)
+    protected def construct(name: String, connection: SshConnection, patterns: Patterns) = SftpRepository(name, connection, patterns)
   }
   /** A factory to construct an interface to an Ivy filesystem resolver. */
   object file {

@@ -529,6 +529,14 @@
                   "doc": "sbt interface for an Ivy repository over ssh.  More convenient construction is done using Resolver.ssh.",
                   "fields": [
                     { "name": "publishPermissions", "type": "String?" }
+                  ],
+                  "extra": [
+                    "def this(name: String, connection: SshConnection, patterns: Patterns, publishPermissions: Option[String]) = ",
+                    "  this(name, patterns, connection, publishPermissions)"
+                  ],
+                  "extraCompanion": [
+                    "def apply(name: String, connection: SshConnection, patterns: Patterns, publishPermissions: Option[String]) = ",
+                    "  new SshRepository(name, patterns, connection, publishPermissions)"
                   ]
                 },
                 {
@@ -536,7 +544,15 @@
                   "namespace": "sbt.librarymanagement",
                   "target": "Scala",
                   "type": "record",
-                  "doc": "sbt interface for an Ivy repository over sftp.  More convenient construction is done using Resolver.sftp."
+                  "doc": "sbt interface for an Ivy repository over sftp.  More convenient construction is done using Resolver.sftp.",
+                  "extra": [
+                    "def this(name: String, connection: SshConnection, patterns: Patterns) = ",
+                    "  this(name, patterns, connection)"
+                  ],
+                  "extraCompanion": [
+                    "def apply(name: String, connection: SshConnection, patterns: Patterns) = ",
+                    "  new SftpRepository(name, patterns, connection)"
+                  ]
                 }
               ]
             }
