@@ -661,6 +661,7 @@
       "target": "Scala",
       "type": "record",
       "doc": "Work around the inadequacy of Ivy's ArtifactTypeFilter (that it cannot reverse a filter)",
+      "parents": "sbt.librarymanagement.ArtifactTypeFilterParent",
       "fields": [
         {
           "name": "types",
@@ -676,7 +677,8 @@
           "doc": [ "Whether to invert the types filter (i.e. allow only types NOT in the set)" ],
           "type": "boolean"
         }
-      ]
+      ],
+      "parentsCompanion": "sbt.librarymanagement.ArtifactTypeFilterCompanion"
     },
     {
       "name": "UpdateReport",

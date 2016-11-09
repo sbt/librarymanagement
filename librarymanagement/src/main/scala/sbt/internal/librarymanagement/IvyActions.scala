@@ -22,7 +22,6 @@ import sbt.internal.util.{ ShowLines, SourcePosition, LinePosition, RangePositio
 import sbt.librarymanagement._
 import sbt.internal.librarymanagement.syntax._
 import sbt.internal.librarymanagement._
-import ArtifactTypeFilterUtil.toIvyFilter
 
 final class DeliverConfiguration(val deliverIvyPattern: String, val status: String, val configurations: Option[Vector[Configuration]], val logging: UpdateLogging)
 final class PublishConfiguration(val ivyFile: Option[File], val resolverName: String, val artifacts: Map[Artifact, File], val checksums: Vector[String], val logging: UpdateLogging,

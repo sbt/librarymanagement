@@ -10,12 +10,17 @@ abstract class InclExclRuleCompanion {
   def everything = new InclExclRule("*", "*", "*", Vector.empty)
 }
 
-class RichArtifactTypeFilter(val artifactTypeFilter: ArtifactTypeFilter) extends AnyVal {
-  def invert = artifactTypeFilter.withInverted(!artifactTypeFilter.inverted)
-  def apply(a: descriptor.Artifact): Boolean = (artifactTypeFilter.types contains a.getType) ^ artifactTypeFilter.inverted
+abstract class ArtifactTypeFilterParent {
+  def types: Set[String]
+  def inverted: Boolean
+
+  def copy(types: Set[String] = types, inverted: Boolean = inverted): ArtifactTypeFilter
+
+  def invert = copy(inverted = !inverted)
+  def apply(a: descriptor.Artifact): Boolean = (types contains a.getType) ^ inverted
 }
 
-object ArtifactTypeFilterUtil {
+abstract class ArtifactTypeFilterCompanion {
   def allow(types: Set[String]) = ArtifactTypeFilter(types, false)
   def forbid(types: Set[String]) = ArtifactTypeFilter(types, true)
 
