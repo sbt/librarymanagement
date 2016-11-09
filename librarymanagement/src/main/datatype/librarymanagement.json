@@ -682,6 +682,7 @@
         "It does not include information about evicted modules, only about the modules ultimately selected by the conflict manager.",
         "This means that for a given configuration, there should only be one revision for a given organization and module name."
       ],
+      "parents": "sbt.librarymanagement.UpdateReportParent",
       "fields": [
         {
           "name": "cachedDescriptor",
@@ -699,7 +700,8 @@
           "doc": [ "stats information about the update that produced this report" ]
         },
         { "name": "stamps", "type": "Map[java.io.File, Long]" }
-      ]
+      ],
+      "toString": "\"Update report:\\n\\t\" + stats + \"\\n\" + configurations.mkString"
     },
     {
       "name": "ConfigurationReport",

@@ -85,7 +85,7 @@ object IvyRetrieve {
         case Some(dd) => (toExtraAttributes(dd.getExtraAttributes), dd.isForce, dd.isChanging, dd.isTransitive, false)
         case None     => (Map.empty[String, String], false, false, true, false)
       }
-      Caller(m, callerConfigurations, extraAttributes, isForce, isChanging, isTransitive, isDirectlyForce)
+      new Caller(m, callerConfigurations, extraAttributes, isForce, isChanging, isTransitive, isDirectlyForce)
     }
     val revId = dep.getResolvedId
     val moduleId = toModuleID(revId)
@@ -151,13 +151,13 @@ object IvyRetrieve {
     confReport.getEvictedNodes.map(node => toModuleID(node.getId))
 
   def toModuleID(revID: ModuleRevisionId): ModuleID =
-    ModuleID(revID.getOrganisation, revID.getName, revID.getRevision).copy(extraAttributes = IvySbt.getExtraAttributes(revID))
+    ModuleID(revID.getOrganisation, revID.getName, revID.getRevision, extraAttributes = IvySbt.getExtraAttributes(revID))
       .branch(nonEmptyString(revID.getBranch))
 
   def toArtifact(art: IvyArtifact): Artifact =
     {
       import art._
-      Artifact(getName, getType, getExt, Option(getExtraAttribute("classifier")), getConfigurations.toVector map Configurations.config, Option(getUrl), Map.empty)
+      Artifact(getName, getType, getExt, Option(getExtraAttribute("classifier")), getConfigurations.toVector map Configurations.config, Option(getUrl))
     }
 
   def updateReport(report: ResolveReport, cachedDescriptor: File): UpdateReport =

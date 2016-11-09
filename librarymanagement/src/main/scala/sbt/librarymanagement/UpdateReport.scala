@@ -38,9 +38,8 @@ class RichModuleReport(val moduleReport: ModuleReport) extends AnyVal {
 
   private[this] def arts: Seq[String] = artifacts.map(_.toString) ++ missingArtifacts.map(art => "(MISSING) " + art)
 
-  def to_s = toString
   override def toString: String = {
-    s"\t\t${module.toString}: " +
+    s"\t\t$module: " +
       (if (arts.size <= 1) "" else "\n\t\t\t") + arts.mkString("\n\t\t\t") + "\n"
   }
   def detailReport: String =
@@ -82,4 +81,42 @@ class RichModuleReport(val moduleReport: ModuleReport) extends AnyVal {
 
   def retrieve(f: (ModuleID, Artifact, File) => File): ModuleReport =
     copy(artifacts = artifacts.map { case (art, file) => (art, f(module, art, file)) })
+}
+
+abstract class UpdateReportParent {
+  def cachedDescriptor: File
+  def configurations: Vector[ConfigurationReport]
+  def stats: UpdateStats
+  private[sbt] def stamps: Map[File, Long]
+
+  //  @deprecated("Use the variant that provides timestamps of files.", "0.13.0")
+  //  def this(cachedDescriptor: File, configurations: Seq[ConfigurationReport], stats: UpdateStats) =
+  //    this(cachedDescriptor, configurations, stats, Map.empty)
+
+  /** All resolved modules in all configurations. */
+  def allModules: Vector[ModuleID] =
+    {
+      val key = (m: ModuleID) => (m.organization, m.name, m.revision)
+      configurations.flatMap(_.allModules).groupBy(key).toVector map {
+        case (k, v) =>
+          v reduceLeft { (agg, x) =>
+            agg.copy(
+              configurations = (agg.configurations, x.configurations) match {
+              case (None, _)            => x.configurations
+              case (Some(ac), None)     => Some(ac)
+              case (Some(ac), Some(xc)) => Some(s"$ac;$xc")
+            }
+            )
+          }
+      }
+    }
+
+  def retrieve(f: (String, ModuleID, Artifact, File) => File): UpdateReport =
+    new UpdateReport(cachedDescriptor, configurations map { _ retrieve f }, stats, stamps)
+
+  /** Gets the report for the given configuration, or `None` if the configuration was not resolved.*/
+  def configuration(s: String) = configurations.find(_.configuration == s)
+
+  /** Gets the names of all resolved configurations.  This `UpdateReport` contains one `ConfigurationReport` for each configuration in this list. */
+  def allConfigurations: Seq[String] = configurations.map(_.configuration)
 }

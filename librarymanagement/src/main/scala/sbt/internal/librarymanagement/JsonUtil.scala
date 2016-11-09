@@ -15,12 +15,10 @@ private[sbt] object JsonUtil {
 }
 
 private[sbt] class JsonUtil(fileToStore: File => CacheStore) {
-
   def parseUpdateReport(md: ModuleDescriptor, path: File, cachedDescriptor: File, log: Logger): UpdateReport =
     {
       try {
-        val reportStore = fileToStore(path)
-        val lite = reportStore.read[UpdateReportLite]
+        val lite = fileToStore(path).read[UpdateReportLite]
         fromLite(lite, cachedDescriptor)
       } catch {
         case e: Throwable =>
@@ -36,7 +34,7 @@ private[sbt] class JsonUtil(fileToStore: File => CacheStore) {
   def toLite(ur: UpdateReport): UpdateReportLite =
     UpdateReportLite(ur.configurations map { cr =>
       ConfigurationReportLite(cr.configuration, cr.details map { oar =>
-        OrganizationArtifactReport(oar.organization, oar.name, oar.modules map { mr =>
+        new OrganizationArtifactReport(oar.organization, oar.name, oar.modules map { mr =>
           new ModuleReport(
             mr.module, mr.artifacts, mr.missingArtifacts, mr.status,
             mr.publicationDate, mr.resolver, mr.artifactResolver,

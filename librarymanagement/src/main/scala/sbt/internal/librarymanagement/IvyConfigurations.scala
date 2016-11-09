@@ -23,4 +23,14 @@ object InlineConfigurationCompanion {
   ): InlineConfiguration =
     new InlineConfiguration(validate, ivyScala, module, moduleInfo, dependencies, overrides, excludes, ivyXML,
       configurations, defaultConfiguration, conflictManager)
+
+  def configurations(explicitConfigurations: Iterable[Configuration], defaultConfiguration: Option[Configuration]) =
+    if (explicitConfigurations.isEmpty) {
+      defaultConfiguration match {
+        case Some(Configurations.DefaultIvyConfiguration) => Configurations.Default :: Nil
+        case Some(Configurations.DefaultMavenConfiguration) => Configurations.defaultMavenConfigurations
+        case _ => Nil
+      }
+    } else
+      explicitConfigurations
 }
