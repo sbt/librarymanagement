@@ -459,7 +459,8 @@
               "name": "MavenRepository",
               "namespace": "sbt.librarymanagement",
               "target": "Scala",
-              "type": "record"
+              "type": "record",
+              "toString": "s\"$name: $root\""
             },
             {
               "name": "MavenCache",
@@ -472,7 +473,10 @@
               ],
               "fields": [
                 { "name": "rootFile", "type": "java.io.File" }
-              ]
+              ],
+              "extra": "def this(name: String, rootFile: java.io.File) = this(name, rootFile.toURI.toURL.toString, true, rootFile)",
+              "toString": "s\"cache:$name: ${rootFile.getAbsolutePath}\"",
+              "extraCompanion": "def apply(name: String, rootFile: java.io.File): MavenCache = new MavenCache(name, rootFile)"
             }
           ]
         },
