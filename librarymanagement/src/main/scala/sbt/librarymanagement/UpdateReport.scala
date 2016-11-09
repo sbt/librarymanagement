@@ -4,6 +4,7 @@
 package sbt.librarymanagement
 
 import java.io.File
+import java.{ util => ju }
 
 abstract class ConfigurationReportParent {
   def configuration: String
@@ -35,15 +36,49 @@ abstract class ConfigurationReportParent {
     new ConfigurationReport(configuration, modules map { _.retrieve((mid, art, file) => f(configuration, mid, art, file)) }, details)
 }
 
-class RichModuleReport(val moduleReport: ModuleReport) extends AnyVal {
-  import moduleReport._
+abstract class ModuleReportParent {
+  def module: ModuleID
+  def artifacts: Vector[(Artifact, File)]
+  def missingArtifacts: Vector[Artifact]
+  def status: Option[String]
+  def publicationDate: Option[ju.Date]
+  def resolver: Option[String]
+  def artifactResolver: Option[String]
+  def evicted: Boolean
+  def evictedData: Option[String]
+  def evictedReason: Option[String]
+  def problem: Option[String]
+  def homepage: Option[String]
+  def extraAttributes: Map[String, String]
+  def isDefault: Option[Boolean]
+  def branch: Option[String]
+  def configurations: Vector[String]
+  def licenses: Vector[(String, Option[String])]
+  def callers: Vector[Caller]
 
-  private[this] def arts: Seq[String] = artifacts.map(_.toString) ++ missingArtifacts.map(art => "(MISSING) " + art)
+  def copy(
+    module: sbt.librarymanagement.ModuleID = module,
+    artifacts: Vector[(Artifact, File)] = artifacts,
+    missingArtifacts: Vector[Artifact] = missingArtifacts,
+    status: Option[String] = status,
+    publicationDate: Option[java.util.Date] = publicationDate,
+    resolver: Option[String] = resolver,
+    artifactResolver: Option[String] = artifactResolver,
+    evicted: Boolean = evicted,
+    evictedData: Option[String] = evictedData,
+    evictedReason: Option[String] = evictedReason,
+    problem: Option[String] = problem,
+    homepage: Option[String] = homepage,
+    extraAttributes: Map[String, String] = extraAttributes,
+    isDefault: Option[Boolean] = isDefault,
+    branch: Option[String] = branch,
+    configurations: Vector[String] = configurations,
+    licenses: Vector[(String, Option[String])] = licenses,
+    callers: Vector[Caller] = callers
+  ): ModuleReport
 
-  override def toString: String = {
-    s"\t\t$module: " +
-      (if (arts.size <= 1) "" else "\n\t\t\t") + arts.mkString("\n\t\t\t") + "\n"
-  }
+  protected[this] def arts: Seq[String] = artifacts.map(_.toString) ++ missingArtifacts.map(art => "(MISSING) " + art)
+
   def detailReport: String =
     s"\t\t- ${module.revision}\n" +
       (if (arts.size <= 1) "" else arts.mkString("\t\t\t", "\n\t\t\t", "\n")) +
