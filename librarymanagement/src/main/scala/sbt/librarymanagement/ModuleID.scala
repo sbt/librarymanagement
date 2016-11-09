@@ -97,7 +97,7 @@ abstract class ModuleIDParent {
   def excludeAll(rules: InclExclRule*) = copy(exclusions = this.exclusions ++ rules)
 
   /** Excludes the dependency with organization `org` and `name` from being introduced by this dependency during resolution. */
-  def exclude(org: String, name: String) = excludeAll(InclExclRule(org, name, "*", Vector.empty))
+  def exclude(org: String, name: String) = excludeAll(InclExclRule(org, name))
 
   /**
    * Adds extra attributes for this module.  All keys are prefixed with `e:` if they are not already so prefixed.

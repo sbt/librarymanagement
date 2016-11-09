@@ -277,10 +277,10 @@
         "Which one depends on the parameter name which it is passed to, but the filter has the same fields in both cases."
       ],
       "fields": [
-        { "name": "organization",   "type": "String"  },
-        { "name": "name",           "type": "String"  },
-        { "name": "artifact",       "type": "String"  },
-        { "name": "configurations", "type": "String*" }
+        { "name": "organization",   "type": "String",  "default": "\"*\"",        "since": "0.1" },
+        { "name": "name",           "type": "String",  "default": "\"*\"",        "since": "0.1" },
+        { "name": "artifact",       "type": "String",  "default": "\"*\"",        "since": "0.1" },
+        { "name": "configurations", "type": "String*", "default": "Vector.empty", "since": "0.1" }
       ],
       "parentsCompanion": "sbt.librarymanagement.InclExclRuleCompanion"
     },
