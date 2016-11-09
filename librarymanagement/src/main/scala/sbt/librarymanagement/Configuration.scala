@@ -49,8 +49,15 @@ object Configurations {
   private[sbt] def removeDuplicates(configs: Iterable[Configuration]) = Set(scala.collection.mutable.Map(configs.map(config => (config.name, config)).toSeq: _*).values.toList: _*)
 }
 
-class RichConfiguration(val configuration: Configuration) extends AnyVal {
-  import configuration._
+abstract class ConfigurationParent {
+  def name: String
+  def description: String
+  def isPublic: Boolean
+  def extendsConfigs: Vector[Configuration]
+  def transitive: Boolean
+
+  require(name != null && !name.isEmpty)
+  require(description != null)
 
   def describedAs(newDescription: String) = Configuration(name, newDescription, isPublic, extendsConfigs, transitive)
   def extend(configs: Configuration*) = Configuration(name, description, isPublic, configs.toVector ++ extendsConfigs, transitive)

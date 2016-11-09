@@ -330,13 +330,15 @@
       "target": "Scala",
       "type": "record",
       "doc": "Represents an Ivy configuration.",
+      "parents": "sbt.librarymanagement.ConfigurationParent",
       "fields": [
         { "name": "name",           "type": "String"                                                                            },
         { "name": "description",    "type": "String",                               "default": "\"\"",         "since": "1.0.0" },
         { "name": "isPublic",       "type": "boolean",                              "default": "true",         "since": "1.0.0" },
         { "name": "extendsConfigs", "type": "sbt.librarymanagement.Configuration*", "default": "Vector.empty", "since": "1.0.0" },
         { "name": "transitive",     "type": "boolean",                              "default": "true",         "since": "1.0.0" }
-      ]
+      ],
+      "toString": "name"
     },
     {
       "name": "Artifact",
