@@ -429,7 +429,7 @@ private[sbt] trait CachedResolutionResolveEngine extends ResolveEngine {
     {
       // filter out evicted modules from further logic
       def filterReports(report0: OrganizationArtifactReport): Option[OrganizationArtifactReport] =
-        report0.modules flatMap { mr =>
+        report0.modules.toVector flatMap { mr =>
           if (mr.evicted || mr.problem.nonEmpty) None
           else
             // https://github.com/sbt/sbt/issues/1763
@@ -579,7 +579,7 @@ private[sbt] trait CachedResolutionResolveEngine extends ResolveEngine {
                     val notEvicted = (survivor ++ newlyEvicted) filter { m => !m.evicted }
                     log.debug("::: adds " + (notEvicted map { _.module }).mkString(", "))
                     log.debug("::: evicted " + (evicted map { _.module }).mkString(", "))
-                    val x = OrganizationArtifactReport(organization, name, survivor ++ newlyEvicted)
+                    val x = new OrganizationArtifactReport(organization, name, survivor ++ newlyEvicted)
                     val nextModules = transitivelyEvict(rootModuleConf, rest, allModules, evicted, log)
                     x :: resolveConflicts(rest, nextModules)
                 })
@@ -644,7 +644,7 @@ private[sbt] trait CachedResolutionResolveEngine extends ResolveEngine {
             }
             val newlyEvicted = affected map { _.copy(evicted = true, evictedReason = Some("transitive-evict")) }
             if (affected.isEmpty) oar
-            else OrganizationArtifactReport(organization, name, unaffected ++ newlyEvicted)
+            else new OrganizationArtifactReport(organization, name, unaffected ++ newlyEvicted)
           }
           Seq(((organization, name), oars))
       }

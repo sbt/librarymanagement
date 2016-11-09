@@ -6,15 +6,31 @@ package sbt.librarymanagement
 import java.io.File
 import java.net.URL
 
-import Configurations.{ Optional, Pom, Test }
+abstract class ArtifactParent {
+  def name: String
+  def `type`: String
+  def extension: String
+  def classifier: Option[String]
+  def configurations: Vector[Configuration]
+  def url: Option[URL]
+  def extraAttributes: Map[String, String]
 
-final class RichArtifact(val artifact: Artifact) extends AnyVal {
-  import artifact._
+  def copy(
+    name: String = name,
+    `type`: String = `type`,
+    extension: String = extension,
+    classifier: Option[String] = classifier,
+    configurations: Vector[Configuration] = configurations,
+    url: Option[URL] = url,
+    extraAttributes: Map[String, String] = extraAttributes
+  ): Artifact
+
   def extra(attributes: (String, String)*) = copy(extraAttributes = extraAttributes ++ ModuleID.checkE(attributes))
 }
 
-object ArtifactCompanion {
-  def apply(name: String): Artifact = Artifact(name, DefaultType, DefaultExtension, None, Vector.empty, None)
+import Configurations.{ Optional, Pom, Test }
+
+abstract class ArtifactCompanion {
   def apply(name: String, extra: Map[String, String]): Artifact = Artifact(name, DefaultType, DefaultExtension, None, Vector.empty, None).withExtraAttributes(extra)
   def apply(name: String, classifier: String): Artifact = Artifact(name, DefaultType, DefaultExtension, Some(classifier), Vector.empty, None)
   def apply(name: String, `type`: String, extension: String): Artifact = Artifact(name, `type`, extension, None, Vector.empty, None)
@@ -29,7 +45,7 @@ object ArtifactCompanion {
 
   def sources(name: String) = classified(name, SourceClassifier)
   def javadoc(name: String) = classified(name, DocClassifier)
-  def pom(name: String) = Artifact(name, PomType, PomType, None, Vector(Pom), None, Map.empty)
+  def pom(name: String) = Artifact(name, PomType, PomType, None, Vector(Pom), None)
 
   // Possible ivy artifact types such that sbt will treat those artifacts at sources / docs
   val DefaultSourceTypes = Set("src", "source", "sources")
@@ -63,7 +79,7 @@ object ArtifactCompanion {
       val name = file.getName
       val i = name.lastIndexOf('.')
       val base = if (i >= 0) name.substring(0, i) else name
-      Artifact(base, extract(name, DefaultType), extract(name, DefaultExtension), None, Vector.empty, Some(file.toURI.toURL), Map.empty)
+      Artifact(base, extract(name, DefaultType), extract(name, DefaultExtension), None, Vector.empty, Some(file.toURI.toURL))
     }
   def artifactName(scalaVersion: ScalaVersion, module: ModuleID, artifact: Artifact): String =
     {
@@ -89,6 +105,5 @@ object ArtifactCompanion {
    * The artifact is created under the default configuration.
    */
   def classified(name: String, classifier: String): Artifact =
-    Artifact(name, classifierType(classifier), DefaultExtension, Some(classifier), Vector.empty, None, Map.empty)
-
+    Artifact(name, classifierType(classifier), DefaultExtension, Some(classifier), Vector.empty, None)
 }

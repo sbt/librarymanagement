@@ -343,6 +343,7 @@
       "namespace": "sbt.librarymanagement",
       "target": "Scala",
       "type": "record",
+      "parents": "sbt.librarymanagement.ArtifactParent",
       "fields": [
         { "name": "name",            "type": "String"                                                                                           },
         { "name": "type",            "type": "String",                               "default": "Artifact.DefaultType",      "since": "0.1" },
@@ -351,7 +352,8 @@
         { "name": "configurations",  "type": "sbt.librarymanagement.Configuration*", "default": "Vector.empty",                  "since": "0.1" },
         { "name": "url",             "type": "java.net.URL?",                        "default": "None",                          "since": "0.1" },
         { "name": "extraAttributes", "type": "Map[String, String]",                  "default": "Map.empty",                     "since": "0.1" }
-      ]
+      ],
+      "parentsCompanion": "sbt.librarymanagement.ArtifactCompanion"
     },
     {
       "name": "SshAuthentication",
