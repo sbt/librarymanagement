@@ -18,41 +18,21 @@ object DatatypeConfig {
 
   /** Codecs that were manually written. */
   val myCodecs: PartialFunction[String, TpeRef => List[String]] = {
-    case "xsbti.Maybe" =>
-      { tpe => "sbt.internal.librarymanagement.formats.MaybeFormat" :: getFormats(oneArg(tpe)) }
-    case "xsbti.T2" =>
-      { tpe => "sbt.internal.librarymanagement.formats.T2Format" :: twoArgs(tpe).flatMap(getFormats) }
-    case "xsbti.F1" =>
-      { tpe => "sbt.internal.librarymanagement.formats.F1Format" :: twoArgs(tpe).flatMap(getFormats) }
-    case "xsbti.GlobalLock" =>
-      { tpe => "sbt.internal.librarymanagement.formats.GlobalLockFormat" :: Nil }
-    case "xsbti.Logger" =>
-      { tpe => "sbt.internal.librarymanagement.formats.LoggerFormat" :: Nil}
-
-    case "scala.xml.NodeSeq" =>
-      { tpe => "sbt.internal.librarymanagement.formats.NodeSeqFormat" :: Nil }
+    case "java.util.Date" => { _ => "sbt.internal.librarymanagement.formats.DateFormat" :: Nil }
 
     case "Function1" =>
       { tpe => "sbt.internal.librarymanagement.formats.Function1Format" :: twoArgs(tpe).flatMap(getFormats) }
 
-    case "java.lang.Boolean" =>
-      { tpe => "sbt.internal.librarymanagement.formats.MyBooleanFormat" :: Nil }
-    case "java.lang.Integer" =>
-      { tpe => "sbt.internal.librarymanagement.formats.MyIntegerFormat" :: Nil }
-    case "java.lang.Long" =>
-      { tpe => "sbt.internal.librarymanagement.formats.MyLongFormat" :: Nil }
-    case "java.util.Date" =>
-      { tpe => "sbt.internal.librarymanagement.formats.DateFormat" :: Nil }
-    case "java.util.Map" =>
-      { tpe => "sbt.internal.librarymanagement.formats.JavaMapFormat" :: twoArgs(tpe).flatMap(getFormats) }
-    case "java.util.Set" =>
-      { tpe => "sbt.internal.librarymanagement.formats.JavaSetFormat" :: getFormats(oneArg(tpe)) }
-
-    case "sbt.librarymanagement.UpdateOptions" =>
-      { tpe => "sbt.internal.librarymanagement.formats.UpdateOptionsFormat" :: Nil }
+    case "scala.xml.NodeSeq" => { _ => "sbt.internal.librarymanagement.formats.NodeSeqFormat" :: Nil }
 
     case "org.apache.ivy.plugins.resolver.DependencyResolver" =>
-      { tpe => "sbt.internal.librarymanagement.formats.DependencyResolverFormat" :: Nil }
+      { _ => "sbt.internal.librarymanagement.formats.DependencyResolverFormat" :: Nil }
+
+    case "xsbti.GlobalLock" => { _ => "sbt.internal.librarymanagement.formats.GlobalLockFormat" :: Nil }
+    case "xsbti.Logger"     => { _ => "sbt.internal.librarymanagement.formats.LoggerFormat" :: Nil }
+
+    case "sbt.librarymanagement.UpdateOptions" =>
+      { _ => "sbt.internal.librarymanagement.formats.UpdateOptionsFormat" :: Nil }
 
     // TODO: These are handled by BasicJsonProtocol, and sbt-datatype should handle them by default, imo
     case "Option" | "Set"                  => { tpe => getFormats(oneArg(tpe)) }
