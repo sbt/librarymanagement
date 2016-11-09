@@ -40,7 +40,7 @@ class RichModuleReport(val moduleReport: ModuleReport) extends AnyVal {
 
   def to_s = toString
   override def toString: String = {
-    s"\t\t${module.to_s}: " +
+    s"\t\t${module.toString}: " +
       (if (arts.size <= 1) "" else "\n\t\t\t") + arts.mkString("\n\t\t\t") + "\n"
   }
   def detailReport: String =

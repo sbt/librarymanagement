@@ -117,7 +117,7 @@ object EvictionPair {
         if (a.showCallers)
           r.callers match {
             case Vector() => ""
-            case cs       => (cs map { _.caller.to_s }).mkString(" (caller: ", ", ", ")")
+            case cs       => (cs map { _.caller.toString }).mkString(" (caller: ", ", ", ")")
           }
         else ""
       r.module.revision + callers

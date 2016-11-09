@@ -8,7 +8,6 @@ package object librarymanagement extends ResolversSyntax {
   implicit def sbtRichArtifactFilterType(artifactTypeFilter: ArtifactTypeFilter): RichArtifactTypeFilter = new RichArtifactTypeFilter(artifactTypeFilter)
   implicit def sbtRichConfiguration(configuration: Configuration): RichConfiguration = new RichConfiguration(configuration)
   implicit def sbtRichConfigurationReport(configurationReport: ConfigurationReport): RichConfigurationReport = new RichConfigurationReport(configurationReport)
-  implicit def sbtRichModuleID(moduleID: ModuleID): RichModuleID = new RichModuleID(moduleID)
   implicit def sbtRichModuleReport(moduleReport: ModuleReport): RichModuleReport = new RichModuleReport(moduleReport)
 
   implicit def sbtRichArtifactCompanion(x: Artifact.type): ArtifactCompanion.type = ArtifactCompanion

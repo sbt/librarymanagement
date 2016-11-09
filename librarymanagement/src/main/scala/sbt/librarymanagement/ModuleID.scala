@@ -23,15 +23,36 @@ final case class OldModuleID(
   branchName: Option[String] = None
 )
 
-final class RichModuleID(val moduleID: ModuleID) extends AnyVal {
-  import moduleID._
+abstract class ModuleIDParent {
+  def organization: String
+  def name: String
+  def revision: String
+  def configurations: Option[String]
+  def isChanging: Boolean
+  def isTransitive: Boolean
+  def isForce: Boolean
+  def explicitArtifacts: Vector[Artifact]
+  def inclusions: Vector[InclusionRule]
+  def exclusions: Vector[ExclusionRule]
+  def extraAttributes: Map[String, String]
+  def crossVersion: CrossVersion
+  def branchName: Option[String]
 
-  // Semi-workaround for sbt/sbt-datatype#39
-  def to_s: String = toString
-  override def toString: String =
-    organization + ":" + name + ":" + revision +
-      (configurations match { case Some(s) => ":" + s; case None => "" }) +
-      (if (extraAttributes.isEmpty) "" else " " + extraString)
+  def copy(
+    organization: String = organization,
+    name: String = name,
+    revision: String = revision,
+    configurations: Option[String] = configurations,
+    isChanging: Boolean = isChanging,
+    isTransitive: Boolean = isTransitive,
+    isForce: Boolean = isForce,
+    explicitArtifacts: Vector[Artifact] = explicitArtifacts,
+    inclusions: Vector[InclusionRule] = inclusions,
+    exclusions: Vector[ExclusionRule] = exclusions,
+    extraAttributes: Map[String, String] = extraAttributes,
+    crossVersion: CrossVersion = crossVersion,
+    branchName: Option[String] = branchName
+  ): ModuleID
 
   /** String representation of the extra attributes, excluding any information only attributes. */
   def extraString: String = extraDependencyAttributes.map { case (k, v) => k + "=" + v } mkString ("(", ", ", ")")
@@ -130,7 +151,7 @@ final class RichModuleID(val moduleID: ModuleID) extends AnyVal {
    */
   def withJavadoc() = jarIfEmpty.javadoc()
 
-  private def jarIfEmpty = if (explicitArtifacts.isEmpty) jar() else moduleID
+  private def jarIfEmpty = if (explicitArtifacts.isEmpty) jar() else this
 
   /**
    * Declares a dependency on the main artifact.  This is implied by default unless artifacts are explicitly declared, such

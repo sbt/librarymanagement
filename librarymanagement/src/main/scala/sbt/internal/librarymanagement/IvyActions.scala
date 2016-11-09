@@ -317,7 +317,7 @@ object IvyActions {
     report.allMissing flatMap { case (_, mod, art) => art.classifier.map { c => (restrictedCopy(mod, false), c) } } groupBy (_._1) map { case (mod, pairs) => (mod, pairs.map(_._2).toSet) }
 
   private[this] def restrictedCopy(m: ModuleID, confs: Boolean) =
-    ModuleID(m.organization, m.name, m.revision).copy(crossVersion = m.crossVersion, extraAttributes = m.extraAttributes, configurations = if (confs) m.configurations else None)
+    ModuleID(m.organization, m.name, m.revision, crossVersion = m.crossVersion, extraAttributes = m.extraAttributes, configurations = if (confs) m.configurations else None)
       .branch(m.branchName)
 
   private[this] def resolve(logging: UpdateLogging)(ivy: Ivy, module: DefaultModuleDescriptor, defaultConf: String, filter: ArtifactTypeFilter): (ResolveReport, Option[ResolveException]) =
@@ -477,10 +477,10 @@ object UnresolvedWarning {
       a.failedPaths foreach { path =>
         if (path.nonEmpty) {
           val head = path.head
-          buffer += "\t\t" + head._1.to_s + sourcePosStr(head._2)
+          buffer += "\t\t" + head._1.toString + sourcePosStr(head._2)
           path.tail foreach {
             case (m, pos) =>
-              buffer += "\t\t  +- " + m.to_s + sourcePosStr(pos)
+              buffer += "\t\t  +- " + m.toString + sourcePosStr(pos)
           }
         }
       }

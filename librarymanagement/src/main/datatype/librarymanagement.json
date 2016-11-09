@@ -573,6 +573,22 @@
             { "name": "localOnly",            "type": "boolean"                                    },
             { "name": "checksums",            "type": "String*"                                    },
             { "name": "resolutionCacheDir",   "type": "java.io.File?"                              }
+          ],
+          "extra": [
+            "def this(",
+            "  paths:                sbt.internal.librarymanagement.IvyPaths,",
+            "  resolvers:            Vector[sbt.librarymanagement.Resolver],",
+            "  otherResolvers:       Vector[sbt.librarymanagement.Resolver],",
+            "  moduleConfigurations: Vector[sbt.librarymanagement.ModuleConfiguration],",
+            "  localOnly:            Boolean,",
+            "  lock:                 Option[xsbti.GlobalLock],",
+            "  checksums:            Vector[String],",
+            "  resolutionCacheDir:   Option[java.io.File],",
+            "  updateOptions:        sbt.librarymanagement.UpdateOptions,",
+            "  log:                  xsbti.Logger",
+            ") =",
+            "  this(lock, paths.baseDirectory, log, updateOptions, paths, resolvers, otherResolvers,",
+            "    moduleConfigurations, localOnly, checksums, resolutionCacheDir)"
           ]
         },
         {
@@ -611,6 +627,7 @@
       "namespace": "sbt.librarymanagement",
       "target": "Scala",
       "type": "record",
+      "parents": "sbt.librarymanagement.ModuleIDParent",
       "fields": [
         { "name": "organization",      "type": "String"                                                                                             },
         { "name": "name",              "type": "String"                                                                                             },
@@ -625,6 +642,11 @@
         { "name": "extraAttributes",   "type": "Map[String, String]",                 "since": "0.1", "default": "Map.empty"                        },
         { "name": "crossVersion",      "type": "sbt.librarymanagement.CrossVersion",  "since": "0.1", "default": "sbt.librarymanagement.Disabled()" },
         { "name": "branchName",        "type": "String?",                             "since": "0.1", "default": "None"                             }
+      ],
+      "toString": [
+        "organization + \":\" + name + \":\" + revision +",
+        "  (configurations match { case Some(s) => \":\" + s; case None => \"\" }) +",
+        "  (if (extraAttributes.isEmpty) \"\" else \" \" + extraString)"
       ]
     },
     {
