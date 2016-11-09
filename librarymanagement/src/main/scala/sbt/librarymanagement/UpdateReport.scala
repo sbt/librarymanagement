@@ -56,28 +56,7 @@ abstract class ModuleReportParent {
   def licenses: Vector[(String, Option[String])]
   def callers: Vector[Caller]
 
-  def copy(
-    module: sbt.librarymanagement.ModuleID = module,
-    artifacts: Vector[(Artifact, File)] = artifacts,
-    missingArtifacts: Vector[Artifact] = missingArtifacts,
-    status: Option[String] = status,
-    publicationDate: Option[java.util.Date] = publicationDate,
-    resolver: Option[String] = resolver,
-    artifactResolver: Option[String] = artifactResolver,
-    evicted: Boolean = evicted,
-    evictedData: Option[String] = evictedData,
-    evictedReason: Option[String] = evictedReason,
-    problem: Option[String] = problem,
-    homepage: Option[String] = homepage,
-    extraAttributes: Map[String, String] = extraAttributes,
-    isDefault: Option[Boolean] = isDefault,
-    branch: Option[String] = branch,
-    configurations: Vector[String] = configurations,
-    licenses: Vector[(String, Option[String])] = licenses,
-    callers: Vector[Caller] = callers
-  ): ModuleReport
-
-  protected[this] def arts: Seq[String] = artifacts.map(_.toString) ++ missingArtifacts.map(art => "(MISSING) " + art)
+  protected[this] def arts: Vector[String] = artifacts.map(_.toString) ++ missingArtifacts.map(art => "(MISSING) " + art)
 
   def detailReport: String =
     s"\t\t- ${module.revision}\n" +
@@ -118,6 +97,27 @@ abstract class ModuleReportParent {
 
   def retrieve(f: (ModuleID, Artifact, File) => File): ModuleReport =
     copy(artifacts = artifacts.map { case (art, file) => (art, f(module, art, file)) })
+
+  private[sbt] def copy(
+    module: ModuleID = module,
+    artifacts: Vector[(Artifact, File)] = artifacts,
+    missingArtifacts: Vector[Artifact] = missingArtifacts,
+    status: Option[String] = status,
+    publicationDate: Option[ju.Date] = publicationDate,
+    resolver: Option[String] = resolver,
+    artifactResolver: Option[String] = artifactResolver,
+    evicted: Boolean = evicted,
+    evictedData: Option[String] = evictedData,
+    evictedReason: Option[String] = evictedReason,
+    problem: Option[String] = problem,
+    homepage: Option[String] = homepage,
+    extraAttributes: Map[String, String] = extraAttributes,
+    isDefault: Option[Boolean] = isDefault,
+    branch: Option[String] = branch,
+    configurations: Vector[String] = configurations,
+    licenses: Vector[(String, Option[String])] = licenses,
+    callers: Vector[Caller] = callers
+  ): ModuleReport
 }
 
 abstract class UpdateReportParent {

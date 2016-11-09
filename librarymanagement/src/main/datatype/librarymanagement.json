@@ -15,7 +15,8 @@
         { "name": "isChangingDependency",      "type": "boolean"                        },
         { "name": "isTransitiveDependency",    "type": "boolean"                        },
         { "name": "isDirectlyForceDependency", "type": "boolean"                        }
-      ]
+      ],
+      "toString": "s\"$caller\""
     },
     {
       "name": "ModuleReport",
