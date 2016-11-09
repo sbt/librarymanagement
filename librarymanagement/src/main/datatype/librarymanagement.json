@@ -322,7 +322,8 @@
             { "name": "remapVersion", "type": "Function1[String, String]" }
           ]
         }
-      ]
+      ],
+      "parentsCompanion": "sbt.librarymanagement.CrossVersionCompanion"
     },
     {
       "name": "Configuration",
