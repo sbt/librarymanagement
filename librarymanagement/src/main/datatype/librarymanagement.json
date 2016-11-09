@@ -747,6 +747,7 @@
       "doc": [
         "Provides information about resolution of a single configuration."
       ],
+      "parents": "sbt.librarymanagement.ConfigurationReportParent",
       "fields": [
         { "name": "configuration", "type": "String", "doc": [ "the configuration this report is for." ] },
         {

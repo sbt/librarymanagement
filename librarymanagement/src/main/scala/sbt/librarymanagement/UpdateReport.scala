@@ -5,8 +5,10 @@ package sbt.librarymanagement
 
 import java.io.File
 
-class RichConfigurationReport(val configurationReport: ConfigurationReport) extends AnyVal {
-  import configurationReport._
+abstract class ConfigurationReportParent {
+  def configuration: String
+  def modules: Vector[ModuleReport]
+  def details: Vector[OrganizationArtifactReport]
 
   /** a sequence of evicted modules */
   def evicted: Seq[ModuleID] =
