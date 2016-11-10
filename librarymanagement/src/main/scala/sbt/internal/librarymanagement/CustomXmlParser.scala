@@ -14,8 +14,10 @@ import org.apache.ivy.plugins.repository.url.URLResource
 
 /** Subclasses the default Ivy file parser in order to provide access to protected methods.*/
 private[sbt] object CustomXmlParser extends XmlModuleDescriptorParser {
+  private val DEFAULT_CONF_MAPPING = "*->default(compile)"
+
   import XmlModuleDescriptorParser.Parser
-  class CustomParser(settings: IvySettings, defaultConfig: Option[String]) extends Parser(CustomXmlParser, settings) {
+  class CustomParser(settings: IvySettings, defaultConfig: Option[String], defaultConfMapping: Option[String]) extends Parser(CustomXmlParser, settings) {
     def setSource(url: URL) =
       {
         super.setResource(new URLResource(url))
@@ -27,7 +29,9 @@ private[sbt] object CustomXmlParser extends XmlModuleDescriptorParser {
     override def setMd(md: DefaultModuleDescriptor) =
       {
         super.setMd(md)
-        if (defaultConfig.isDefined) setDefaultConfMapping("*->default(compile)")
+        if (defaultConfig.isDefined) {
+          setDefaultConfMapping(defaultConfMapping getOrElse DEFAULT_CONF_MAPPING)
+        }
       }
     override def parseDepsConfs(confs: String, dd: DefaultDependencyDescriptor) = super.parseDepsConfs(confs, dd)
     override def getDefaultConf = defaultConfig.getOrElse(super.getDefaultConf)

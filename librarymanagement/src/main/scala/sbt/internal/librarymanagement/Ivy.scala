@@ -178,7 +178,7 @@ final class IvySbt(val configuration: IvyConfiguration) {
         val defaultConf = defaultConfiguration getOrElse Configurations.config(ModuleDescriptor.DEFAULT_CONFIGURATION)
         log.debug("Using inline dependencies specified in Scala" + (if (ivyXML.isEmpty) "." else " and XML."))
 
-        val parser = IvySbt.parseIvyXML(ivy.getSettings, IvySbt.wrapped(module, ivyXML), moduleID, defaultConf.name, validate)
+        val parser = IvySbt.parseIvyXML(ivy.getSettings, IvySbt.wrapped(module, ivyXML), moduleID, defaultConf.name, defaultConfMapping, validate)
         IvySbt.addMainArtifact(moduleID)
         IvySbt.addOverrides(moduleID, overrides, ivy.getSettings.getMatcher(PatternMatcher.EXACT))
         IvySbt.addExcludes(moduleID, excludes, ivyScala)
@@ -206,7 +206,7 @@ final class IvySbt(val configuration: IvyConfiguration) {
         IvySbt.addConfigurations(dmd, Configurations.defaultInternal)
         val defaultConf = Configurations.DefaultMavenConfiguration.name
         for (is <- pc.ivyScala) if (pc.autoScalaTools) {
-          val confParser = new CustomXmlParser.CustomParser(settings, Some(defaultConf))
+          val confParser = new CustomXmlParser.CustomParser(settings, Some(defaultConf), None)
           confParser.setMd(dmd)
           addScalaToolDependencies(dmd, confParser, is)
         }
@@ -215,7 +215,7 @@ final class IvySbt(val configuration: IvyConfiguration) {
     /** Parses the Ivy file 'ivyFile' from the given `IvyFileConfiguration`.*/
     private def configureIvyFile(ifc: IvyFileConfiguration) =
       {
-        val parser = new CustomXmlParser.CustomParser(settings, None)
+        val parser = new CustomXmlParser.CustomParser(settings, None, None)
         parser.setValidate(ifc.validate)
         parser.setSource(toURL(ifc.file))
         parser.parse()
@@ -495,12 +495,12 @@ private[sbt] object IvySbt {
       info.nonEmpty
     }
   /** Parses the given in-memory Ivy file 'xml', using the existing 'moduleID' and specifying the given 'defaultConfiguration'. */
-  private def parseIvyXML(settings: IvySettings, xml: scala.xml.NodeSeq, moduleID: DefaultModuleDescriptor, defaultConfiguration: String, validate: Boolean): CustomXmlParser.CustomParser =
-    parseIvyXML(settings, xml.toString, moduleID, defaultConfiguration, validate)
+  private def parseIvyXML(settings: IvySettings, xml: scala.xml.NodeSeq, moduleID: DefaultModuleDescriptor, defaultConfiguration: String, defaultConfMapping: Option[String], validate: Boolean): CustomXmlParser.CustomParser =
+    parseIvyXML(settings, xml.toString, moduleID, defaultConfiguration, defaultConfMapping, validate)
   /** Parses the given in-memory Ivy file 'xml', using the existing 'moduleID' and specifying the given 'defaultConfiguration'. */
-  private def parseIvyXML(settings: IvySettings, xml: String, moduleID: DefaultModuleDescriptor, defaultConfiguration: String, validate: Boolean): CustomXmlParser.CustomParser =
+  private def parseIvyXML(settings: IvySettings, xml: String, moduleID: DefaultModuleDescriptor, defaultConfiguration: String, defaultConfMapping: Option[String], validate: Boolean): CustomXmlParser.CustomParser =
     {
-      val parser = new CustomXmlParser.CustomParser(settings, Some(defaultConfiguration))
+      val parser = new CustomXmlParser.CustomParser(settings, Some(defaultConfiguration), defaultConfMapping)
       parser.setMd(moduleID)
       parser.setValidate(validate)
       parser.setInput(xml.getBytes)

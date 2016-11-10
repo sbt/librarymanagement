@@ -127,7 +127,8 @@ final class InlineConfiguration private[sbt] (
   val defaultConfiguration: Option[Configuration],
   val ivyScala: Option[IvyScala],
   val validate: Boolean,
-  val conflictManager: ConflictManager
+  val conflictManager: ConflictManager,
+  val defaultConfMapping: Option[String]
 ) extends ModuleSettings {
   def withConfigurations(configurations: Seq[Configuration]) = copy(configurations = configurations)
   def noScala = copy(ivyScala = None)
@@ -145,14 +146,15 @@ final class InlineConfiguration private[sbt] (
     defaultConfiguration: Option[Configuration] = this.defaultConfiguration,
     ivyScala: Option[IvyScala] = this.ivyScala,
     validate: Boolean = this.validate,
-    conflictManager: ConflictManager = this.conflictManager
+    conflictManager: ConflictManager = this.conflictManager,
+    defaultConfMapping: Option[String] = this.defaultConfMapping
   ): InlineConfiguration =
     InlineConfiguration(module, moduleInfo, dependencies, overrides, excludes, ivyXML,
-      configurations, defaultConfiguration, ivyScala, validate, conflictManager)
+      configurations, defaultConfiguration, ivyScala, validate, conflictManager, defaultConfMapping)
 
   override def toString: String =
     s"InlineConfiguration($module, $moduleInfo, $dependencies, $overrides, $excludes, " +
-      s"$ivyXML, $configurations, $defaultConfiguration, $ivyScala, $validate, $conflictManager)"
+      s"$ivyXML, $configurations, $defaultConfiguration, $ivyScala, $validate, $conflictManager, $defaultConfMapping)"
 
   override def equals(o: Any): Boolean = o match {
     case o: InlineConfiguration =>
@@ -166,7 +168,8 @@ final class InlineConfiguration private[sbt] (
         this.defaultConfiguration == o.defaultConfiguration &&
         this.ivyScala == o.ivyScala &&
         this.validate == o.validate &&
-        this.conflictManager == o.conflictManager
+        this.conflictManager == o.conflictManager &&
+        this.defaultConfMapping == o.defaultConfMapping
     case _ => false
   }
 
@@ -198,10 +201,11 @@ object InlineConfiguration {
     defaultConfiguration: Option[Configuration] = None,
     ivyScala: Option[IvyScala] = None,
     validate: Boolean = false,
-    conflictManager: ConflictManager = ConflictManager.default
+    conflictManager: ConflictManager = ConflictManager.default,
+    defaultConfMapping: Option[String] = None
   ): InlineConfiguration =
     new InlineConfiguration(module, moduleInfo, dependencies, overrides, excludes, ivyXML,
-      configurations, defaultConfiguration, ivyScala, validate, conflictManager)
+      configurations, defaultConfiguration, ivyScala, validate, conflictManager, defaultConfMapping)
 
   def configurations(explicitConfigurations: Iterable[Configuration], defaultConfiguration: Option[Configuration]) =
     if (explicitConfigurations.isEmpty) {
