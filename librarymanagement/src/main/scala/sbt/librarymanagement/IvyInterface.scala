@@ -30,6 +30,10 @@ abstract class ArtifactTypeFilterCompanion {
 }
 
 abstract class ConflictManagerCompanion {
+  // This is to avoid eagerly evaluating these, cause an NPE; and to avoid making them lazy
+  def apply(name: String): ConflictManager
+  def ConflictManager(name: String) = apply(name)
+
   val all = ConflictManager("all")
   val latestTime = ConflictManager("latest-time")
   val latestRevision = ConflictManager("latest-revision")
