@@ -109,7 +109,7 @@ private class FileDownloader extends ResourceDownloader {
   }
 }
 
-private object FixedParser extends SupportParser[JValue] {
+object FixedParser extends SupportParser[JValue] {
   implicit val facade: MutableFacade[JValue] =
     new MutableFacade[JValue] {
       def jnull() = JNull
