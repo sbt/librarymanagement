@@ -10,7 +10,7 @@ class CachedResolutionSpec extends BaseIvySpecification {
     cleanIvyCache()
     val m = module(
       ModuleID("com.example", "foo", "0.1.0", Some("compile")),
-      Seq(commonsIo13), Some("2.10.2"), UpdateOptions().withCachedResolution(true)
+      Vector(commonsIo13), Some("2.10.2"), UpdateOptions().withCachedResolution(true)
     )
     val report = ivyUpdate(m)
     cleanCachedResolutionCache(m)
@@ -26,7 +26,7 @@ class CachedResolutionSpec extends BaseIvySpecification {
     // log.setLevel(Level.Debug)
     val m = module(
       ModuleID("com.example", "foo", "0.2.0", Some("compile")),
-      Seq(mavenCayennePlugin302), Some("2.10.2"), UpdateOptions().withCachedResolution(true)
+      Vector(mavenCayennePlugin302), Some("2.10.2"), UpdateOptions().withCachedResolution(true)
     )
     ivyUpdateEither(m) match {
       case Right(_) => sys.error("this should've failed")
@@ -53,7 +53,7 @@ class CachedResolutionSpec extends BaseIvySpecification {
     cleanIvyCache()
     val m = module(
       ModuleID("com.example", "foo", "0.3.0", Some("compile")),
-      Seq(avro177, dataAvro1940, netty320),
+      Vector(avro177, dataAvro1940, netty320),
       Some("2.10.2"), UpdateOptions().withCachedResolution(true)
     )
     // first resolution creates the minigraph

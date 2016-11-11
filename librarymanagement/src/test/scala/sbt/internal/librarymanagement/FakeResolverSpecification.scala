@@ -66,8 +66,8 @@ class FakeResolverSpecification extends BaseIvySpecification {
   )
 
   private def fakeResolver = new FakeResolver("FakeResolver", new File("tmp"), modules)
-  override def resolvers: Seq[Resolver] = Seq(new RawRepository(fakeResolver))
-  private def getModule(myModule: ModuleID): IvySbt#Module = module(defaultModuleId, Seq(myModule), None)
+  override def resolvers: Vector[Resolver] = Vector(new RawRepository(fakeResolver))
+  private def getModule(myModule: ModuleID): IvySbt#Module = module(defaultModuleId, Vector(myModule), None)
   private def getAllFiles(report: UpdateReport) =
     for {
       conf <- report.configurations

@@ -19,7 +19,7 @@ object ScalaArtifacts {
   val ReflectID = "scala-reflect"
   val ActorsID = "scala-actors"
   val ScalapID = "scalap"
-  val Artifacts = Seq(LibraryID, CompilerID, ReflectID, ActorsID, ScalapID)
+  val Artifacts = Vector(LibraryID, CompilerID, ReflectID, ActorsID, ScalapID)
   val DottyIDPrefix = "dotty"
 
   def dottyID(binaryVersion: String): String = s"${DottyIDPrefix}_${binaryVersion}"
@@ -45,9 +45,7 @@ object SbtArtifacts {
 
 import ScalaArtifacts._
 
-final case class IvyScala(scalaFullVersion: String, scalaBinaryVersion: String, configurations: Iterable[Configuration], checkExplicit: Boolean, filterImplicit: Boolean, overrideScalaVersion: Boolean, scalaOrganization: String = ScalaArtifacts.Organization, scalaArtifacts: Seq[String] = ScalaArtifacts.Artifacts)
-
-private[sbt] object IvyScala {
+private[sbt] abstract class IvyScalaCompanion {
   /** Performs checks/adds filters on Scala dependencies (if enabled in IvyScala). */
   def checkModule(module: DefaultModuleDescriptor, conf: String, log: Logger)(check: IvyScala): Unit = {
     if (check.checkExplicit)

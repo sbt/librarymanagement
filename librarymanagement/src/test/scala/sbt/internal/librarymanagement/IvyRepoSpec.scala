@@ -15,7 +15,7 @@ class IvyRepoSpec extends BaseIvySpecification with DependencyBuilders {
 
     module(
       ourModuleID,
-      Seq(dep), None //, UpdateOptions().withCachedResolution(true)
+      Vector(dep), None //, UpdateOptions().withCachedResolution(true)
     )
   }
 
@@ -50,7 +50,7 @@ class IvyRepoSpec extends BaseIvySpecification with DependencyBuilders {
     val docTypes = Set("javadoc")
     // These will be the default classifiers that SBT should try, in case a dependency is Maven.
     // In this case though, they will be tried and should fail gracefully - only the
-    val attemptedClassifiers = Seq("sources", "javadoc")
+    val attemptedClassifiers = Vector("sources", "javadoc")
 
     // The dep that we want to get the "classifiers" (i.e. sources / docs) for.
     // We know it has only one source artifact in the "compile" configuration.
@@ -59,9 +59,9 @@ class IvyRepoSpec extends BaseIvySpecification with DependencyBuilders {
     val clMod = {
       import language.implicitConversions
       implicit val key = (m: ModuleID) => (m.organization, m.name, m.revision)
-      val externalModules = Seq(dep)
+      val externalModules = Vector(dep)
       // Note: need to extract ourModuleID so we can plug it in here, can't fish it back out of the IvySbt#Module (`m`)
-      GetClassifiersModule(ourModuleID, externalModules, Seq(Configurations.Compile), attemptedClassifiers)
+      GetClassifiersModule(ourModuleID, externalModules, Vector(Configurations.Compile), attemptedClassifiers)
     }
 
     val gcm = GetClassifiersConfiguration(clMod, Map.empty, c.copy(artifactFilter = c.artifactFilter.invert), ivyScala, srcTypes, docTypes)
@@ -80,7 +80,7 @@ class IvyRepoSpec extends BaseIvySpecification with DependencyBuilders {
     }
   }
 
-  override lazy val resolvers: Seq[Resolver] = Seq(testIvy)
+  override lazy val resolvers: Vector[Resolver] = Vector(testIvy)
 
   lazy val testIvy = {
     val repoUrl = getClass.getResource("/test-ivy-repo")

@@ -40,7 +40,7 @@ final class RichUpdateReport(report: UpdateReport) {
         missingArtifacts = modReport.missingArtifacts filter { art => f(configuration, modReport.module, art) }
       )
     }
-  def substitute(f: (String, ModuleID, Seq[(Artifact, File)]) => Seq[(Artifact, File)]): UpdateReport =
+  def substitute(f: (String, ModuleID, Vector[(Artifact, File)]) => Vector[(Artifact, File)]): UpdateReport =
     moduleReportMap { (configuration, modReport) =>
       val newArtifacts = f(configuration, modReport.module, modReport.artifacts)
       modReport.copy(
