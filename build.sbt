@@ -17,8 +17,6 @@ def commonSettings: Seq[Setting[_]] = Seq(
   crossScalaVersions := Seq(scala211),
   resolvers += Resolver.sonatypeRepo("public"),
   scalacOptions += "-Ywarn-unused",
-  // Disabled for now, as it produces a lot of noise for generated JsonFormats.
-  // scalacOptions += "-Ywarn-unused-import",
   previousArtifact := None, // Some(organization.value %% moduleName.value % "1.0.0"),
   publishArtifact in Compile := true,
   publishArtifact in Test := false
