@@ -30,8 +30,9 @@ abstract class ArtifactTypeFilterCompanion {
 }
 
 abstract class ConflictManagerCompanion {
-  // This is to avoid eagerly evaluating these, cause an NPE; and to avoid making them lazy
-  def apply(name: String): ConflictManager
+  // To avoid NPE (or making the val's below lazy)
+  // For case classes refchecks rewrites apply calls to constructor calls, we have to do it manually
+  def apply(name: String, organization: String = "*", module: String = "*"): ConflictManager
   def ConflictManager(name: String) = apply(name)
 
   val all = ConflictManager("all")
