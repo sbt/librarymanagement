@@ -23,8 +23,8 @@ object Dependencies {
     path
   }
 
-  lazy val sbtIoPath   = Some("../sbt-io")   // getSbtModulePath("sbtio.path",   "sbt/io")
-  lazy val sbtUtilPath = Some("../sbt-util") // getSbtModulePath("sbtutil.path", "sbt/util")
+  lazy val sbtIoPath   = getSbtModulePath("sbtio.path",   "sbt/io")
+  lazy val sbtUtilPath = getSbtModulePath("sbtutil.path", "sbt/util")
 
   def addSbtModule(p: Project, path: Option[String], projectName: String, m: ModuleID, c: Option[Configuration] = None) =
     path match {
