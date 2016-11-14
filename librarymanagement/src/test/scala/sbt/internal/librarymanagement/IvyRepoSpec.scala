@@ -6,7 +6,7 @@ import sbt.librarymanagement._
 
 class IvyRepoSpec extends BaseIvySpecification with DependencyBuilders {
 
-  val ourModuleID = ModuleID("com.example", "foo", "0.1.0", Some("compile"))
+  val ourModuleID = ModuleID("com.example", "foo", "0.1.0").withConfigurations(Some("compile"))
 
   def makeModuleForDepWithSources = {
     // By default a module seems to only have [compile, test, runtime], yet deps automatically map to
@@ -64,7 +64,7 @@ class IvyRepoSpec extends BaseIvySpecification with DependencyBuilders {
       GetClassifiersModule(ourModuleID, externalModules, Vector(Configurations.Compile), attemptedClassifiers)
     }
 
-    val gcm = GetClassifiersConfiguration(clMod, Map.empty, c.copy(artifactFilter = c.artifactFilter.invert), ivyScala, srcTypes, docTypes)
+    val gcm = GetClassifiersConfiguration(clMod, Map.empty, c.withArtifactFilter(c.artifactFilter.invert), ivyScala, srcTypes, docTypes)
 
     val report2 = IvyActions.updateClassifiers(m.owner, gcm, UnresolvedWarningConfiguration(), LogicalClock.unknown, None, Vector(), log)
 

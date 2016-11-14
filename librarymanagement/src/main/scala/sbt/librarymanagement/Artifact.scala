@@ -15,7 +15,7 @@ abstract class ArtifactParent {
   def url: Option[URL]
   def extraAttributes: Map[String, String]
 
-  def copy(
+  protected[this] def copy(
     name: String = name,
     `type`: String = `type`,
     extension: String = extension,

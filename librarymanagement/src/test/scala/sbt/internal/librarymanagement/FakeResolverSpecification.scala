@@ -9,10 +9,10 @@ import sbt.librarymanagement.{ ModuleID, RawRepository, Resolver, UpdateReport }
 class FakeResolverSpecification extends BaseIvySpecification {
   import FakeResolver._
 
-  val myModule = ModuleID("org.example", "my-module", "0.0.1-SNAPSHOT", Some("compile"))
-  val example = ModuleID("com.example", "example", "1.0.0", Some("compile"))
-  val anotherExample = ModuleID("com.example", "another-example", "1.0.0", Some("compile"))
-  val nonExisting = ModuleID("com.example", "does-not-exist", "1.2.3", Some("compile"))
+  val myModule = ModuleID("org.example", "my-module", "0.0.1-SNAPSHOT").withConfigurations(Some("compile"))
+  val example = ModuleID("com.example", "example", "1.0.0").withConfigurations(Some("compile"))
+  val anotherExample = ModuleID("com.example", "another-example", "1.0.0").withConfigurations(Some("compile"))
+  val nonExisting = ModuleID("com.example", "does-not-exist", "1.2.3").withConfigurations(Some("compile"))
 
   "The FakeResolver" should "find modules with only one artifact" in {
     val m = getModule(myModule)

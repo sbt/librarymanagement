@@ -22,7 +22,7 @@ abstract class ModuleIDParent {
   def crossVersion: CrossVersion
   def branchName: Option[String]
 
-  def copy(
+  protected[this] def copy(
     organization: String = organization,
     name: String = name,
     revision: String = revision,
@@ -97,7 +97,7 @@ abstract class ModuleIDParent {
   def excludeAll(rules: InclExclRule*) = copy(exclusions = this.exclusions ++ rules)
 
   /** Excludes the dependency with organization `org` and `name` from being introduced by this dependency during resolution. */
-  def exclude(org: String, name: String) = excludeAll(InclExclRule(org, name))
+  def exclude(org: String, name: String) = excludeAll(InclExclRule().withOrganization(org).withName(name))
 
   /**
    * Adds extra attributes for this module.  All keys are prefixed with `e:` if they are not already so prefixed.

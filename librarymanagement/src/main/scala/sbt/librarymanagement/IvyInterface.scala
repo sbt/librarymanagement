@@ -14,7 +14,7 @@ abstract class ArtifactTypeFilterParent {
   def types: Set[String]
   def inverted: Boolean
 
-  def copy(types: Set[String] = types, inverted: Boolean = inverted): ArtifactTypeFilter
+  protected[this] def copy(types: Set[String] = types, inverted: Boolean = inverted): ArtifactTypeFilter
 
   def invert = copy(inverted = !inverted)
   def apply(a: descriptor.Artifact): Boolean = (types contains a.getType) ^ inverted

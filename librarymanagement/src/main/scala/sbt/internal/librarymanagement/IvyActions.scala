@@ -207,8 +207,8 @@ object IvyActions {
     {
       import config.{ configuration => c, ivyScala, module => mod }
       import mod.{ id, modules => deps }
-      val base = restrictedCopy(id, true).copy(name = id.name + "$" + label)
-      val module = new ivySbt.Module(InlineConfiguration(base, ModuleInfo(base.name), deps).copy(ivyScala = ivyScala))
+      val base = restrictedCopy(id, true).withName(id.name + "$" + label)
+      val module = new ivySbt.Module(InlineConfiguration(false, ivyScala, base, ModuleInfo(base.name), deps))
       val report = updateEither(module, c, uwconfig, logicalClock, depDir, log) match {
         case Right(r) => r
         case Left(w) =>
@@ -242,10 +242,10 @@ object IvyActions {
       val baseModules = modules map { m => restrictedCopy(m, true) }
       // Adding list of explicit artifacts here.
       val deps = baseModules.distinct flatMap classifiedArtifacts(classifiers, exclude, artifacts)
-      val base = restrictedCopy(id, true).copy(name = id.name + classifiers.mkString("$", "_", ""))
-      val module = new ivySbt.Module(InlineConfiguration(base, ModuleInfo(base.name), deps).copy(ivyScala = ivyScala, configurations = confs))
+      val base = restrictedCopy(id, true).withName(id.name + classifiers.mkString("$", "_", ""))
+      val module = new ivySbt.Module(InlineConfiguration(false, ivyScala, base, ModuleInfo(base.name), deps).withConfigurations(confs))
       // c.copy ensures c.types is preserved too
-      val upConf = c.copy(missingOk = true)
+      val upConf = c.withMissingOk(true)
       updateEither(module, upConf, uwconfig, logicalClock, depDir, log) match {
         case Right(r) =>
           // The artifacts that came from Ivy don't have their classifier set, let's set it according to
@@ -257,7 +257,7 @@ object IvyActions {
             artFileSeq map {
               case (art, f) =>
                 // Deduce the classifier from the type if no classifier is present already
-                art.copy(classifier = art.classifier orElse typeClassifierMap.get(art.`type`)) -> f
+                art.withClassifier(art.classifier orElse typeClassifierMap.get(art.`type`)) -> f
             }
           }
         case Left(w) =>
@@ -303,7 +303,7 @@ object IvyActions {
    * `usage.getDependencyIncludesSet` returns null if there are no (explicit) include rules.
    */
   private def intransitiveModuleWithExplicitArts(module: ModuleID, arts: Vector[Artifact]): ModuleID =
-    module.copy(isTransitive = false, explicitArtifacts = arts, inclusions = Vector(InclExclRule.everything))
+    module.withIsTransitive(false).withExplicitArtifacts(arts).withInclusions(Vector(InclExclRule.everything))
 
   def addExcluded(report: UpdateReport, classifiers: Vector[String], exclude: Map[ModuleID, Set[String]]): UpdateReport =
     report.addMissing { id => classifiedArtifacts(id.name, classifiers filter getExcluded(id, exclude)) }
@@ -316,7 +316,7 @@ object IvyActions {
     report.allMissing flatMap { case (_, mod, art) => art.classifier.map { c => (restrictedCopy(mod, false), c) } } groupBy (_._1) map { case (mod, pairs) => (mod, pairs.map(_._2).toSet) }
 
   private[this] def restrictedCopy(m: ModuleID, confs: Boolean) =
-    ModuleID(m.organization, m.name, m.revision, crossVersion = m.crossVersion, extraAttributes = m.extraAttributes, configurations = if (confs) m.configurations else None)
+    ModuleID(m.organization, m.name, m.revision).withCrossVersion(m.crossVersion).withExtraAttributes(m.extraAttributes).withConfigurations(if (confs) m.configurations else None)
       .branch(m.branchName)
 
   private[this] def resolve(logging: UpdateLogging)(ivy: Ivy, module: DefaultModuleDescriptor, defaultConf: String, filter: ArtifactTypeFilter): (ResolveReport, Option[ResolveException]) =

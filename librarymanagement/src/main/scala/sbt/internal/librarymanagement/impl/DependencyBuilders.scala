@@ -53,7 +53,7 @@ final class ModuleIDConfigurable private[sbt] (moduleID: ModuleID) {
     {
       nonEmpty(configurations, "Configurations")
       val c = configurations
-      moduleID.copy(configurations = Some(c))
+      moduleID.withConfigurations(configurations = Some(c))
     }
 }
 final class RepositoryName private[sbt] (name: String) {

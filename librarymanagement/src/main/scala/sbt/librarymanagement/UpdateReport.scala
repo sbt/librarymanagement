@@ -28,7 +28,7 @@ abstract class ConfigurationReportParent {
     val module = mr.module
     if (module.configurations.isEmpty) {
       val conf = mr.configurations map (c => s"$configuration->$c") mkString ";"
-      module.copy(configurations = Some(conf))
+      module.withConfigurations(Some(conf))
     } else module
   }
 
@@ -98,7 +98,7 @@ abstract class ModuleReportParent {
   def retrieve(f: (ModuleID, Artifact, File) => File): ModuleReport =
     copy(artifacts = artifacts.map { case (art, file) => (art, f(module, art, file)) })
 
-  private[sbt] def copy(
+  protected[this] def copy(
     module: ModuleID = module,
     artifacts: Vector[(Artifact, File)] = artifacts,
     missingArtifacts: Vector[Artifact] = missingArtifacts,
@@ -133,12 +133,12 @@ abstract class UpdateReportParent {
       configurations.flatMap(_.allModules).groupBy(key).toVector map {
         case (k, v) =>
           v reduceLeft { (agg, x) =>
-            agg.copy(
-              configurations = (agg.configurations, x.configurations) match {
-              case (None, _)            => x.configurations
-              case (Some(ac), None)     => Some(ac)
-              case (Some(ac), Some(xc)) => Some(s"$ac;$xc")
-            }
+            agg.withConfigurations(
+              (agg.configurations, x.configurations) match {
+                case (None, _)            => x.configurations
+                case (Some(ac), None)     => Some(ac)
+                case (Some(ac), Some(xc)) => Some(s"$ac;$xc")
+              }
             )
           }
       }

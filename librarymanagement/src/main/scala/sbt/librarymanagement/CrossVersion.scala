@@ -75,12 +75,12 @@ abstract class CrossVersionCompanion {
   private[sbt] def substituteCross(exclude: SbtExclusionRule, is: Option[IvyScala]): SbtExclusionRule = {
     val fopt: Option[String => String] =
       is flatMap { i => CrossVersion(exclude.crossVersion, i.scalaFullVersion, i.scalaBinaryVersion) }
-    exclude.copy(name = applyCross(exclude.name, fopt))
+    exclude.withName(applyCross(exclude.name, fopt))
   }
 
   /** Cross-versions `a` according to cross-version function `cross`. */
   def substituteCross(a: Artifact, cross: Option[String => String]): Artifact =
-    a.copy(name = applyCross(a.name, cross))
+    a.withName(applyCross(a.name, cross))
 
   private[sbt] def substituteCrossA(as: Vector[Artifact], cross: Option[String => String]): Vector[Artifact] =
     as.map(art => substituteCross(art, cross))
@@ -94,7 +94,7 @@ abstract class CrossVersionCompanion {
     {
       val cross = apply(m.crossVersion, scalaFullVersion, scalaBinaryVersion)
       if (cross.isDefined)
-        m.copy(name = applyCross(m.name, cross), explicitArtifacts = substituteCrossA(m.explicitArtifacts, cross))
+        m.withName(applyCross(m.name, cross)).withExplicitArtifacts(substituteCrossA(m.explicitArtifacts, cross))
       else
         m
     }

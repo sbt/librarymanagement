@@ -28,8 +28,8 @@ object ScalaArtifacts {
 
   private[sbt] def toolDependencies(org: String, version: String, isDotty: Boolean = false): Seq[ModuleID] =
     if (isDotty)
-      Seq(ModuleID(org, DottyIDPrefix, version, Some(Configurations.ScalaTool.name + "->compile"),
-        crossVersion = CrossVersion.binary))
+      Seq(ModuleID(org, DottyIDPrefix, version).withConfigurations(Some(Configurations.ScalaTool.name + "->compile"))
+        .withCrossVersion(CrossVersion.binary))
     else
       Seq(
         scalaToolDependency(org, ScalaArtifacts.CompilerID, version),
@@ -37,7 +37,7 @@ object ScalaArtifacts {
       )
 
   private[this] def scalaToolDependency(org: String, id: String, version: String): ModuleID =
-    ModuleID(org, id, version, Some(Configurations.ScalaTool.name + "->default,optional(default)"))
+    ModuleID(org, id, version).withConfigurations(Some(Configurations.ScalaTool.name + "->default,optional(default)"))
 }
 object SbtArtifacts {
   val Organization = "org.scala-sbt"

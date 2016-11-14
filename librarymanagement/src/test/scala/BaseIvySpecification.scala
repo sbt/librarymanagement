@@ -22,7 +22,7 @@ trait BaseIvySpecification extends UnitSpec {
   def currentTarget: File = currentBase / "target" / "ivyhome"
   def currentManaged: File = currentBase / "target" / "lib_managed"
   def currentDependency: File = currentBase / "target" / "dependency"
-  def defaultModuleId: ModuleID = ModuleID("com.example", "foo", "0.1.0", Some("compile"))
+  def defaultModuleId: ModuleID = ModuleID("com.example", "foo", "0.1.0").withConfigurations(Some("compile"))
 
   implicit val isoString: IsoString[JValue] = IsoString.iso(CompactPrinter.apply, FixedParser.parseUnsafe)
   val fileToStore = (f: File) => new FileBasedStore(f, Converter)
@@ -43,13 +43,12 @@ trait BaseIvySpecification extends UnitSpec {
     }
 
     val moduleSetting: ModuleSettings = InlineConfiguration(
+      false,
+      ivyScala,
       module = moduleId,
       moduleInfo = ModuleInfo("foo"),
-      dependencies = deps,
-      configurations = configurations,
-      validate = false,
-      ivyScala = ivyScala
-    )
+      dependencies = deps
+    ).withConfigurations(configurations)
     val ivySbt = new IvySbt(mkIvyConfiguration(uo), fileToStore)
     new ivySbt.Module(moduleSetting)
   }
@@ -69,7 +68,7 @@ trait BaseIvySpecification extends UnitSpec {
   }
 
   def makeUpdateConfiguration: UpdateConfiguration = {
-    val retrieveConfig = new RetrieveConfiguration(currentManaged, Resolver.defaultRetrievePattern, false)
+    val retrieveConfig = new RetrieveConfiguration(currentManaged, Resolver.defaultRetrievePattern).withSync(false)
     new UpdateConfiguration(Some(retrieveConfig), false, UpdateLogging.Full, ArtifactTypeFilter.forbid(Set("src", "doc")))
   }
 

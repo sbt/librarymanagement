@@ -30,7 +30,10 @@ abstract class PatternsCompanion {
   implicit def defaultPatterns: Patterns = Resolver.defaultPatterns
 
   def apply(artifactPatterns: String*): Patterns = Patterns(true, artifactPatterns: _*)
-  def apply(isMavenCompatible: Boolean, artifactPatterns: String*): Patterns = Patterns(artifactPatterns.toVector, artifactPatterns.toVector, isMavenCompatible)
+  def apply(isMavenCompatible: Boolean, artifactPatterns: String*): Patterns = {
+    val patterns = artifactPatterns.toVector
+    Patterns().withIvyPatterns(patterns).withArtifactPatterns(patterns).withIsMavenCompatible(isMavenCompatible)
+  }
 }
 
 /** A repository that conforms to sbt launcher's interface */
@@ -226,7 +229,7 @@ abstract class ResolverCompanion {
       if (normBase.endsWith("/") || pattern.startsWith("/")) normBase + pattern else normBase + "/" + pattern
     }
   def defaultFileConfiguration = FileConfiguration(true, None)
-  def mavenStylePatterns = Patterns(Vector.empty, Vector(mavenStyleBasePattern), true)
+  def mavenStylePatterns = Patterns().withArtifactPatterns(Vector(mavenStyleBasePattern))
   def ivyStylePatterns = defaultIvyPatterns //Patterns(Nil, Nil, false)
 
   def defaultPatterns = mavenStylePatterns
@@ -262,11 +265,11 @@ abstract class ResolverCompanion {
   def defaultUserFileRepository(id: String) =
     {
       val pList = Vector(s"$${ivy.home}/$id/$localBasePattern")
-      FileRepository(id, defaultFileConfiguration, Patterns(pList, pList, false))
+      FileRepository(id, defaultFileConfiguration, Patterns().withIvyPatterns(pList).withArtifactPatterns(pList).withIsMavenCompatible(false))
     }
   def defaultIvyPatterns =
     {
       val pList = Vector(localBasePattern)
-      Patterns(pList, pList, false)
+      Patterns().withIvyPatterns(pList).withArtifactPatterns(pList).withIsMavenCompatible(false)
     }
 }

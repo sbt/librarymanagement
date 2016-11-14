@@ -428,7 +428,7 @@ private[sbt] object IvySbt {
     {
       val sub = CrossVersion(scalaFullVersion, scalaBinaryVersion)
       m match {
-        case ic: InlineConfiguration => ic.copy(module = sub(ic.module), dependencies = ic.dependencies map sub, overrides = ic.overrides map sub)
+        case ic: InlineConfiguration => ic.withModule(sub(ic.module)).withDependencies(ic.dependencies map sub).withOverrides(ic.overrides map sub)
         case _                       => m
       }
     }
@@ -517,7 +517,7 @@ private[sbt] object IvySbt {
       val dds = moduleID.getDependencies
       val deps = dds flatMap { dd =>
         val module = toModuleID(dd.getDependencyRevisionId)
-        dd.getModuleConfigurations map (c => module.copy(configurations = Some(c)))
+        dd.getModuleConfigurations map (c => module.withConfigurations(Some(c)))
       }
       inconsistentDuplicateWarning(deps)
     }
@@ -655,7 +655,7 @@ private[sbt] object IvySbt {
       val overridden = overrides.map(id => (key(id), id.revision)).toMap
       dependencies map { dep =>
         overridden get key(dep) match {
-          case Some(rev) => dep.copy(revision = rev)
+          case Some(rev) => dep.withRevision(rev)
           case None      => dep
         }
       }
