@@ -1,7 +1,7 @@
 /* sbt -- Simple Build Tool
  * Copyright 2009 Mark Harrah
  */
-package sbt.internal.util
+package sbt.util
 
 import scala.util.Try
 

@@ -1,7 +1,9 @@
 /* sbt -- Simple Build Tool
  * Copyright 2009 Mark Harrah
  */
-package sbt.internal.util
+package sbt.util
+
+import java.io.File
 
 /** The result of a cache query */
 sealed trait CacheResult[K]
@@ -31,6 +33,15 @@ object Cache {
    * Materializes a cache.
    */
   def cache[I, O](implicit c: Cache[I, O]): Cache[I, O] = c
+
+  /**
+   * Returns a function that represents a cache that inserts on miss.
+   *
+   * @param cacheFile The store that backs this cache.
+   * @param default   A function that computes a default value to insert on
+   */
+  def cached[I, O](cacheFile: File)(default: I => O)(implicit cache: Cache[I, O]): I => O =
+    cached(CacheStore(cacheFile))(default)
 
   /**
    * Returns a function that represents a cache that inserts on miss.

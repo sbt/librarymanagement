@@ -1,4 +1,4 @@
-package sbt.internal.util
+package sbt.util
 
 import sbt.io.IO
 import sbt.io.syntax._
@@ -9,6 +9,7 @@ import sjsonnew.IsoString
 import sjsonnew.support.scalajson.unsafe.{ CompactPrinter, Converter, Parser }
 
 import scala.json.ast.unsafe.JValue
+import sbt.internal.util.UnitSpec
 
 class CacheSpec extends UnitSpec {
 
