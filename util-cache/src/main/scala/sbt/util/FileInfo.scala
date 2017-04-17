@@ -1,7 +1,7 @@
 /* sbt -- Simple Build Tool
  * Copyright 2009 Mark Harrah
  */
-package sbt.internal.util
+package sbt.util
 
 import java.io.File
 import scala.util.control.NonFatal
@@ -40,6 +40,11 @@ object FilesInfo {
 
   implicit def format[F <: FileInfo: JsonFormat]: JsonFormat[FilesInfo[F]] =
     project(_.files, (fs: Set[F]) => FilesInfo(fs))
+
+  def full: FileInfo.Style = FileInfo.full
+  def hash: FileInfo.Style = FileInfo.hash
+  def lastModified: FileInfo.Style = FileInfo.lastModified
+  def exists: FileInfo.Style = FileInfo.exists
 }
 
 object FileInfo {

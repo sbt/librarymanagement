@@ -1,9 +1,11 @@
-package sbt.internal.util
+package sbt
+package internal
+package util
 
 import sjsonnew._
 import Types.:+:
 
-trait HListFormat {
+trait HListFormats {
   implicit val lnilFormat1: JsonFormat[HNil] = forHNil(HNil)
   implicit val lnilFormat2: JsonFormat[HNil.type] = forHNil(HNil)
 

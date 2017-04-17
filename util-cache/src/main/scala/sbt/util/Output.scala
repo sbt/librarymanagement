@@ -1,4 +1,4 @@
-package sbt.internal.util
+package sbt.util
 
 import java.io.{ Closeable, OutputStream }
 import sjsonnew.{ IsoString, JsonWriter, SupportConverter }
