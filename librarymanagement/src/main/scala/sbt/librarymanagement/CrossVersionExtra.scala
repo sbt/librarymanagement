@@ -24,6 +24,9 @@ abstract class CrossVersionFunctions {
   /** Cross-versions a module with the binary version (typically the binary Scala version).  */
   def binary: CrossVersion = Binary()
 
+  /** Disable crossversioning for the module. */
+  def disabled: CrossVersion = Disabled()
+
   /**
    * Cross-versions a module with the result of prepending `prefix` and appending `suffix` to the binary version
    * (typically the binary Scala version).  See also [[sbt.librarymanagement.Binary]].
