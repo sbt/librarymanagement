@@ -28,7 +28,6 @@ abstract class CrossVersionFunctions {
   val disabled: CrossVersion = sbt.librarymanagement.Disabled()
 
   /** Same as .disabled, for compatibility with 0.13 */
-  @deprecated("Use `.disabled` instead", "1.0.0")
   val Disabled: CrossVersion = sbt.librarymanagement.Disabled()
 
   /**
