@@ -13,7 +13,7 @@ abstract class CrossVersionFunctions {
   val TransitionSbtVersion = CrossVersionUtil.TransitionSbtVersion
 
   /** Cross-versions a module with the full version (typically the full Scala version). */
-  def full: CrossVersion = Full()
+  val full: CrossVersion = Full()
 
   /**
    * Cross-versions a module with the result of prepending `prefix` and appending `suffix` to the full version.
@@ -22,14 +22,14 @@ abstract class CrossVersionFunctions {
   def fullWith(prefix: String, suffix: String): CrossVersion = Full(prefix, suffix)
 
   /** Cross-versions a module with the binary version (typically the binary Scala version).  */
-  def binary: CrossVersion = Binary()
+  val binary: CrossVersion = Binary()
 
   /** Disable crossversioning for the module. */
-  def disabled: CrossVersion = Disabled()
+  val disabled: CrossVersion = sbt.librarymanagement.Disabled()
 
   /** Same as .disabled, for compatibility with 0.13 */
   @deprecated("Use `.disabled` instead", "1.0.0")
-  def Disabled: CrossVersion = Disabled()
+  val Disabled: CrossVersion = sbt.librarymanagement.Disabled()
 
   /**
    * Cross-versions a module with the result of prepending `prefix` and appending `suffix` to the binary version
@@ -40,7 +40,7 @@ abstract class CrossVersionFunctions {
   /**
    * Cross-versions a module with the full Scala version excluding any `-bin` suffix.
    */
-  def patch: CrossVersion = Patch()
+  val patch: CrossVersion = Patch()
 
   private[sbt] def patchFun(fullVersion: String): String = {
     val BinCompatV = """(\d+)\.(\d+)\.(\d+)(-\w+)??-bin(-.*)?""".r
