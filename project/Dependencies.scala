@@ -2,11 +2,11 @@ import sbt._
 import Keys._
 
 object Dependencies {
-  val scala211 = "2.11.8"
-  val scala212 = "2.12.1"
+  val scala211 = "2.11.11"
+  val scala212 = "2.12.2"
 
   private val ioVersion = "1.0.0-M11"
-  private val utilVersion = "1.0.0-M23"
+  private val utilVersion = "1.0.0-M24"
 
   private val sbtIO = "org.scala-sbt" %% "io" % ioVersion
 
