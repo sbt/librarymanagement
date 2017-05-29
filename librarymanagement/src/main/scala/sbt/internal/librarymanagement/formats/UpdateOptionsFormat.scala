@@ -35,7 +35,8 @@ trait UpdateOptionsFormat { self: BasicJsonProtocol with ModuleIDFormats with Re
           xs._3,
           xs._4,
           xs._5,
-          PartialFunction.empty,
+          // Default to the default resolver so that caching works
+          ConvertResolver.defaultConvert,
           xs._6
       )
     )
