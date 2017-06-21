@@ -37,8 +37,9 @@ lazy val lmRoot = (project in file("."))
       Seq(
         homepage := Some(url("https://github.com/sbt/librarymanagement")),
         description := "Library management module for sbt",
-        scmInfo := Some(ScmInfo(url("https://github.com/sbt/librarymanagement"),
-                                "git@github.com:sbt/librarymanagement.git")),
+        scmInfo := Some(ScmInfo(
+          url("https://github.com/sbt/librarymanagement"), "git@github.com:sbt/librarymanagement.git"
+        )),
         bintrayPackage := "librarymanagement",
         scalafmtOnCompile := true,
         // scalafmtVersion 1.0.0-RC3 has regression
@@ -58,21 +59,16 @@ lazy val lm = (project in file("librarymanagement"))
   .settings(
     commonSettings,
     name := "librarymanagement",
-    libraryDependencies ++= Seq(ivy,
-                                jsch,
-                                scalaReflect.value,
-                                launcherInterface,
-                                gigahorseOkhttp,
-                                okhttpUrlconnection,
-                                sjsonnewScalaJson % Optional),
+    libraryDependencies ++= Seq(
+      ivy, jsch, scalaReflect.value, launcherInterface, gigahorseOkhttp, okhttpUrlconnection,
+      sjsonnewScalaJson % Optional
+    ),
     libraryDependencies ++= scalaXml.value,
-    resourceGenerators in Compile += Def
-      .task(
-        Util.generateVersionFile(version.value,
-                                 resourceManaged.value,
-                                 streams.value,
-                                 (compile in Compile).value))
-      .taskValue,
+    resourceGenerators in Compile += Def.task(
+      Util.generateVersionFile(
+        version.value, resourceManaged.value, streams.value, (compile in Compile).value
+      )
+    ).taskValue,
     // mimaBinaryIssueFilters ++= Seq(),
     contrabandFormatsForType in generateContrabands in Compile := DatatypeConfig.getFormats,
     // WORKAROUND sbt/sbt#2205 include managed sources in packageSrc
@@ -83,12 +79,14 @@ lazy val lm = (project in file("librarymanagement"))
       (((srcs --- sdirs --- base) pair (relativeTo(sdirs) | relativeTo(base) | flat)) toSeq)
     }
   )
-  .configure(addSbtIO,
-             addSbtUtilLogging,
-             addSbtUtilTesting,
-             addSbtUtilCollection,
-             addSbtUtilCompletion,
-             addSbtUtilCache)
+  .configure(
+    addSbtIO,
+    addSbtUtilLogging,
+    addSbtUtilTesting,
+    addSbtUtilCollection,
+    addSbtUtilCompletion,
+    addSbtUtilCache
+  )
   .enablePlugins(ContrabandPlugin, JsonCodecPlugin)
 
 def customCommands: Seq[Setting[_]] = Seq(
