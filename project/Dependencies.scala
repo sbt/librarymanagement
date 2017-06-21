@@ -12,7 +12,6 @@ object Dependencies {
 
   private val utilCollection = "org.scala-sbt" %% "util-collection" % utilVersion
   private val utilLogging = "org.scala-sbt" %% "util-logging" % utilVersion
-  private val utilTesting = "org.scala-sbt" %% "util-testing" % utilVersion
   private val utilCompletion = "org.scala-sbt" %% "util-completion" % utilVersion
   private val utilCache = "org.scala-sbt" %% "util-cache" % utilVersion
 
@@ -27,16 +26,10 @@ object Dependencies {
   lazy val sbtIoPath = getSbtModulePath("sbtio.path", "sbt/io")
   lazy val sbtUtilPath = getSbtModulePath("sbtutil.path", "sbt/util")
 
-  def addSbtModule(p: Project,
-                   path: Option[String],
-                   projectName: String,
-                   m: ModuleID,
-                   c: Option[Configuration] = None) =
+  def addSbtModule(p: Project, path: Option[String], projectName: String, m: ModuleID) =
     path match {
-      case Some(f) =>
-        p dependsOn c.fold[ClasspathDep[ProjectReference]](ProjectRef(file(f), projectName))(
-          ProjectRef(file(f), projectName) % _)
-      case None => p settings (libraryDependencies += c.fold(m)(m % _))
+      case Some(f) => p dependsOn ProjectRef(file(f), projectName)
+      case None    => p settings (libraryDependencies += m)
     }
 
   def addSbtIO(p: Project): Project = addSbtModule(p, sbtIoPath, "io", sbtIO)
@@ -44,8 +37,6 @@ object Dependencies {
     addSbtModule(p, sbtUtilPath, "utilCollection", utilCollection)
   def addSbtUtilLogging(p: Project): Project =
     addSbtModule(p, sbtUtilPath, "utilLogging", utilLogging)
-  def addSbtUtilTesting(p: Project): Project =
-    addSbtModule(p, sbtUtilPath, "utilTesting", utilTesting, Some(Test))
   def addSbtUtilCompletion(p: Project): Project =
     addSbtModule(p, sbtUtilPath, "utilComplete", utilCompletion)
   def addSbtUtilCache(p: Project): Project = addSbtModule(p, sbtUtilPath, "utilCache", utilCache)
