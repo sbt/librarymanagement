@@ -80,7 +80,7 @@ lazy val lm = (project in file("librarymanagement"))
       (((srcs --- sdirs --- base) pair (relativeTo(sdirs) | relativeTo(base) | flat)) toSeq)
     }
   )
-  .configure(addSbtIO, addSbtUtilLogging, addSbtUtilCache)
+  .configure(addSbtIO, addSbtUtilPosition, addSbtUtilLogging, addSbtUtilCache)
   .enablePlugins(ContrabandPlugin, JsonCodecPlugin)
 
 def customCommands: Seq[Setting[_]] = Seq(
