@@ -27,7 +27,8 @@ trait BasicCacheImplicits { self: BasicJsonProtocol =>
           case _                    => false
         }
     }
-  implicit def urlEquiv(implicit uriEq: Equiv[URI]): Equiv[URL] = wrapEquiv[URL, URI](_.toURI)(uriEq)
+  implicit def urlEquiv(implicit uriEq: Equiv[URI]): Equiv[URL] =
+    wrapEquiv[URL, URI](_.toURI)(uriEq)
   implicit def uriEquiv: Equiv[URI] = defaultEquiv
   implicit def stringSetEquiv: Equiv[Set[String]] = defaultEquiv
   implicit def stringMapEquiv: Equiv[Map[String, String]] = defaultEquiv

@@ -13,6 +13,7 @@ import CacheImplicits._
  * A cache that stores a single value.
  */
 trait SingletonCache[T] {
+
   /** Reads the cache from the backing `from`. */
   def read(from: Input): T
 

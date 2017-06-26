@@ -29,8 +29,11 @@ object ConsoleLogger {
 
   def apply(out: PrintStream): ConsoleLogger = apply(ConsoleOut.printStreamOut(out))
   def apply(out: PrintWriter): ConsoleLogger = apply(ConsoleOut.printWriterOut(out))
-  def apply(out: ConsoleOut = ConsoleOut.systemOut, ansiCodesSupported: Boolean = ConsoleAppender.formatEnabled,
-    useColor: Boolean = ConsoleAppender.formatEnabled, suppressedMessage: SuppressedTraceContext => Option[String] = ConsoleAppender.noSuppressedMessage): ConsoleLogger =
+  def apply(out: ConsoleOut = ConsoleOut.systemOut,
+            ansiCodesSupported: Boolean = ConsoleAppender.formatEnabled,
+            useColor: Boolean = ConsoleAppender.formatEnabled,
+            suppressedMessage: SuppressedTraceContext => Option[String] =
+              ConsoleAppender.noSuppressedMessage): ConsoleLogger =
     new ConsoleLogger(out, ansiCodesSupported, useColor, suppressedMessage)
 }
 
@@ -38,24 +41,28 @@ object ConsoleLogger {
  * A logger that logs to the console.  On supported systems, the level labels are
  * colored.
  */
-class ConsoleLogger private[ConsoleLogger] (val out: ConsoleOut, override val ansiCodesSupported: Boolean, val useColor: Boolean, val suppressedMessage: SuppressedTraceContext => Option[String]) extends BasicLogger {
-  private[sbt] val appender = ConsoleAppender(generateName, out, ansiCodesSupported, useColor, suppressedMessage)
+class ConsoleLogger private[ConsoleLogger] (
+    val out: ConsoleOut,
+    override val ansiCodesSupported: Boolean,
+    val useColor: Boolean,
+    val suppressedMessage: SuppressedTraceContext => Option[String])
+    extends BasicLogger {
+  private[sbt] val appender =
+    ConsoleAppender(generateName, out, ansiCodesSupported, useColor, suppressedMessage)
 
   override def control(event: ControlEvent.Value, message: => String): Unit =
     appender.control(event, message)
-  override def log(level: Level.Value, message: => String): Unit =
-    {
-      if (atLevel(level)) {
-        appender.appendLog(level, message)
-      }
+  override def log(level: Level.Value, message: => String): Unit = {
+    if (atLevel(level)) {
+      appender.appendLog(level, message)
     }
+  }
 
-  override def success(message: => String): Unit =
-    {
-      if (successEnabled) {
-        appender.success(message)
-      }
+  override def success(message: => String): Unit = {
+    if (successEnabled) {
+      appender.success(message)
     }
+  }
   override def trace(t: => Throwable): Unit =
     appender.trace(t, getTrace)
 
@@ -63,6 +70,7 @@ class ConsoleLogger private[ConsoleLogger] (val out: ConsoleOut, override val an
 }
 
 object ConsoleAppender {
+
   /** Escape character, used to introduce an escape sequence. */
   final val ESC = '\u001B'
 
@@ -148,12 +156,11 @@ object ConsoleAppender {
     }
   }
 
-  val formatEnabled: Boolean =
-    {
-      import java.lang.Boolean.{ getBoolean, parseBoolean }
-      val value = System.getProperty("sbt.log.format")
-      if (value eq null) (ansiSupported && !getBoolean("sbt.log.noformat")) else parseBoolean(value)
-    }
+  val formatEnabled: Boolean = {
+    import java.lang.Boolean.{ getBoolean, parseBoolean }
+    val value = System.getProperty("sbt.log.format")
+    if (value eq null) (ansiSupported && !getBoolean("sbt.log.noformat")) else parseBoolean(value)
+  }
   private[this] def jline1to2CompatMsg = "Found class jline.Terminal, but interface was expected"
 
   private[this] def ansiSupported =
@@ -169,7 +176,8 @@ object ConsoleAppender {
       // this results in a linkage error as detected below.  The detection is likely jvm specific, but the priority
       // is avoiding mistakenly identifying something as a launcher incompatibility when it is not
       case e: IncompatibleClassChangeError if e.getMessage == jline1to2CompatMsg =>
-        throw new IncompatibleClassChangeError("JLine incompatibility detected.  Check that the sbt launcher is version 0.13.x or later.")
+        throw new IncompatibleClassChangeError(
+          "JLine incompatibility detected.  Check that the sbt launcher is version 0.13.x or later.")
     }
 
   val noSuppressedMessage = (_: SuppressedTraceContext) => None
@@ -184,19 +192,23 @@ object ConsoleAppender {
   def apply(out: ConsoleOut): ConsoleAppender = apply(generateName, out)
   def apply(name: String, out: ConsoleOut): ConsoleAppender = apply(name, out, formatEnabled)
 
-  def apply(name: String, out: ConsoleOut, suppressedMessage: SuppressedTraceContext => Option[String]): ConsoleAppender =
+  def apply(name: String,
+            out: ConsoleOut,
+            suppressedMessage: SuppressedTraceContext => Option[String]): ConsoleAppender =
     apply(name, out, formatEnabled, formatEnabled, suppressedMessage)
 
   def apply(name: String, out: ConsoleOut, useColor: Boolean): ConsoleAppender =
     apply(name, out, formatEnabled, useColor, noSuppressedMessage)
 
-  def apply(name: String, out: ConsoleOut, ansiCodesSupported: Boolean,
-    useColor: Boolean, suppressedMessage: SuppressedTraceContext => Option[String]): ConsoleAppender =
-    {
-      val appender = new ConsoleAppender(name, out, ansiCodesSupported, useColor, suppressedMessage)
-      appender.start
-      appender
-    }
+  def apply(name: String,
+            out: ConsoleOut,
+            ansiCodesSupported: Boolean,
+            useColor: Boolean,
+            suppressedMessage: SuppressedTraceContext => Option[String]): ConsoleAppender = {
+    val appender = new ConsoleAppender(name, out, ansiCodesSupported, useColor, suppressedMessage)
+    appender.start
+    appender
+  }
 
   def generateName: String = "out-" + generateId.incrementAndGet
 
@@ -237,27 +249,27 @@ object ConsoleAppender {
  * This logger is not thread-safe.
  */
 class ConsoleAppender private[ConsoleAppender] (
-  val name: String,
-  val out: ConsoleOut,
-  val ansiCodesSupported: Boolean,
-  val useColor: Boolean,
-  val suppressedMessage: SuppressedTraceContext => Option[String]
+    val name: String,
+    val out: ConsoleOut,
+    val ansiCodesSupported: Boolean,
+    val useColor: Boolean,
+    val suppressedMessage: SuppressedTraceContext => Option[String]
 ) extends AbstractAppender(name, null, PatternLayout.createDefaultLayout(), true) {
   import scala.Console.{ BLUE, GREEN, RED, RESET, YELLOW }
 
-  def append(event: XLogEvent): Unit =
-    {
-      val level = ConsoleAppender.toLevel(event.getLevel)
-      val message = event.getMessage
-      // val str = messageToString(message)
-      appendMessage(level, message)
-    }
+  def append(event: XLogEvent): Unit = {
+    val level = ConsoleAppender.toLevel(event.getLevel)
+    val message = event.getMessage
+    // val str = messageToString(message)
+    appendMessage(level, message)
+  }
 
   def appendMessage(level: Level.Value, msg: Message): Unit =
     msg match {
-      case o: ObjectMessage         => objectToLines(o.getParameter) foreach { appendLog(level, _) }
-      case o: ReusableObjectMessage => objectToLines(o.getParameter) foreach { appendLog(level, _) }
-      case _                        => appendLog(level, msg.getFormattedMessage)
+      case o: ObjectMessage => objectToLines(o.getParameter) foreach { appendLog(level, _) }
+      case o: ReusableObjectMessage =>
+        objectToLines(o.getParameter) foreach { appendLog(level, _) }
+      case _ => appendLog(level, msg.getFormattedMessage)
     }
   def objectToLines(o: AnyRef): Vector[String] =
     o match {
@@ -265,14 +277,13 @@ class ConsoleAppender private[ConsoleAppender] (
       case x: ObjectEvent[_] => objectEventToLines(x)
       case _                 => Vector(o.toString)
     }
-  def objectEventToLines(oe: ObjectEvent[_]): Vector[String] =
-    {
-      val contentType = oe.contentType
-      LogExchange.stringCodec[AnyRef](contentType) match {
-        case Some(codec) => codec.showLines(oe.message.asInstanceOf[AnyRef]).toVector
-        case _           => Vector(oe.message.toString)
-      }
+  def objectEventToLines(oe: ObjectEvent[_]): Vector[String] = {
+    val contentType = oe.contentType
+    LogExchange.stringCodec[AnyRef](contentType) match {
+      case Some(codec) => codec.showLines(oe.message.asInstanceOf[AnyRef]).toVector
+      case _           => Vector(oe.message.toString)
     }
+  }
   def messageColor(level: Level.Value) = RESET
   def labelColor(level: Level.Value) =
     level match {
@@ -294,7 +305,8 @@ class ConsoleAppender private[ConsoleAppender] (
       if (traceLevel >= 0)
         out.print(StackTrace.trimmed(t, traceLevel))
       if (traceLevel <= 2)
-        for (msg <- suppressedMessage(new SuppressedTraceContext(traceLevel, ansiCodesSupported && useColor)))
+        for (msg <- suppressedMessage(
+               new SuppressedTraceContext(traceLevel, ansiCodesSupported && useColor)))
           printLabeledLine(labelColor(Level.Error), "trace", messageColor(Level.Error), msg)
     }
 
@@ -310,24 +322,29 @@ class ConsoleAppender private[ConsoleAppender] (
     if (ansiCodesSupported && useColor)
       out.lockObject.synchronized { out.print(color) }
   }
-  private def appendLog(labelColor: String, label: String, messageColor: String, message: String): Unit =
+  private def appendLog(labelColor: String,
+                        label: String,
+                        messageColor: String,
+                        message: String): Unit =
     out.lockObject.synchronized {
       for (line <- message.split("""\n"""))
         printLabeledLine(labelColor, label, messageColor, line)
     }
-  private def printLabeledLine(labelColor: String, label: String, messageColor: String, line: String): Unit =
-    {
-      reset()
-      out.print("[")
-      setColor(labelColor)
-      out.print(label)
-      reset()
-      out.print("] ")
-      setColor(messageColor)
-      out.print(line)
-      reset()
-      out.println()
-    }
+  private def printLabeledLine(labelColor: String,
+                               label: String,
+                               messageColor: String,
+                               line: String): Unit = {
+    reset()
+    out.print("[")
+    setColor(labelColor)
+    out.print(label)
+    reset()
+    out.print("] ")
+    setColor(messageColor)
+    out.print(line)
+    reset()
+    out.println()
+  }
 }
 
 final class SuppressedTraceContext(val traceLevel: Int, val useColor: Boolean)

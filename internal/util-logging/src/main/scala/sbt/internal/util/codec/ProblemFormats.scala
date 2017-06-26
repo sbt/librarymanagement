@@ -1,14 +1,14 @@
 /**
  * This code is generated using [[http://www.scala-sbt.org/contraband/ sbt-contraband]].
  */
-
 package sbt.internal.util.codec
 
 import xsbti.{ Problem, Severity, Position }
 import sbt.util.InterfaceUtil.problem
 import _root_.sjsonnew.{ deserializationError, Builder, JsonFormat, Unbuilder }
 
-trait ProblemFormats { self: SeverityFormats with PositionFormats with sjsonnew.BasicJsonProtocol =>
+trait ProblemFormats {
+  self: SeverityFormats with PositionFormats with sjsonnew.BasicJsonProtocol =>
   implicit lazy val ProblemFormat: JsonFormat[Problem] = new JsonFormat[Problem] {
     override def read[J](jsOpt: Option[J], unbuilder: Unbuilder[J]): Problem = {
       jsOpt match {

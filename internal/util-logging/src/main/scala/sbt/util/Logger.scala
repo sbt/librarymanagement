@@ -60,7 +60,8 @@ object Logger {
     def log(level: Level.Value, message: => String): Unit = ()
   }
 
-  implicit def absLog2PLog(log: AbstractLogger): ProcessLogger = new BufferedLogger(log) with ProcessLogger
+  implicit def absLog2PLog(log: AbstractLogger): ProcessLogger =
+    new BufferedLogger(log) with ProcessLogger
   implicit def log2PLog(log: Logger): ProcessLogger = absLog2PLog(new FullLogger(log))
   implicit def xlog2Log(lg: xLogger): Logger = lg match {
     case l: Logger => l
@@ -75,25 +76,35 @@ object Logger {
     override def log(level: Level.Value, msg: F0[String]): Unit = lg.log(level, msg)
     def trace(t: => Throwable): Unit = trace(f0(t))
     def success(s: => String): Unit = info(f0(s))
-    def log(level: Level.Value, msg: => String): Unit =
-      {
-        val fmsg = f0(msg)
-        level match {
-          case Level.Debug => lg.debug(fmsg)
-          case Level.Info  => lg.info(fmsg)
-          case Level.Warn  => lg.warn(fmsg)
-          case Level.Error => lg.error(fmsg)
-        }
+    def log(level: Level.Value, msg: => String): Unit = {
+      val fmsg = f0(msg)
+      level match {
+        case Level.Debug => lg.debug(fmsg)
+        case Level.Info  => lg.info(fmsg)
+        case Level.Warn  => lg.warn(fmsg)
+        case Level.Error => lg.error(fmsg)
       }
+    }
   }
   def f0[A](a: => A): F0[A] = InterfaceUtil.f0[A](a)
   def m2o[A](m: Maybe[A]): Option[A] = InterfaceUtil.m2o(m)
   def o2m[A](o: Option[A]): Maybe[A] = InterfaceUtil.o2m(o)
   def jo2o[A](o: Optional[A]): Option[A] = InterfaceUtil.jo2o(o)
   def o2jo[A](o: Option[A]): Optional[A] = InterfaceUtil.o2jo(o)
-  def position(line0: Option[Integer], content: String, offset0: Option[Integer], pointer0: Option[Integer],
-    pointerSpace0: Option[String], sourcePath0: Option[String], sourceFile0: Option[File]): Position =
-    InterfaceUtil.position(line0, content, offset0, pointer0, pointerSpace0, sourcePath0, sourceFile0)
+  def position(line0: Option[Integer],
+               content: String,
+               offset0: Option[Integer],
+               pointer0: Option[Integer],
+               pointerSpace0: Option[String],
+               sourcePath0: Option[String],
+               sourceFile0: Option[File]): Position =
+    InterfaceUtil.position(line0,
+                           content,
+                           offset0,
+                           pointer0,
+                           pointerSpace0,
+                           sourcePath0,
+                           sourceFile0)
   def problem(cat: String, pos: Position, msg: String, sev: Severity): Problem =
     InterfaceUtil.problem(cat, pos, msg, sev)
 }
