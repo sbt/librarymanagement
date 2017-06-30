@@ -1,6 +1,12 @@
 package sbt.librarymanagement
 
 import sbt.internal.librarymanagement.cross.CrossVersionUtil
+import sbt.librarymanagement.{
+  Full => LFull,
+  Binary => LBinary,
+  Disabled => LDisabled,
+  Patch => LPatch
+}
 
 final case class ScalaVersion(full: String, binary: String)
 
@@ -13,16 +19,29 @@ abstract class CrossVersionFunctions {
   val TransitionSbtVersion = CrossVersionUtil.TransitionSbtVersion
 
   /** Cross-versions a module with the full version (typically the full Scala version). */
-  def full: CrossVersion = Full()
+  val full: CrossVersion = LFull()
 
   /**
    * Cross-versions a module with the result of prepending `prefix` and appending `suffix` to the full version.
    * (typically the full Scala version).  See also [[sbt.librarymanagement.Full]]
    */
-  def fullWith(prefix: String, suffix: String): CrossVersion = Full(prefix, suffix)
+  def fullWith(prefix: String, suffix: String): CrossVersion = LFull(prefix, suffix)
 
   /** Cross-versions a module with the binary version (typically the binary Scala version).  */
-  def binary: CrossVersion = Binary()
+  val binary: CrossVersion = LBinary()
+
+  /** Disable crossversioning for the module. */
+  val disabled: CrossVersion = LDisabled()
+
+  /** Compatibility with 0.13 */
+  val Disabled: CrossVersion = disabled
+  val Binary: CrossVersion = binary
+  val Full: CrossVersion = full
+  val Patch: CrossVersion = patch
+  type Disabled = LDisabled
+  type Binary = LBinary
+  type Full = LFull
+  type Patch = LPatch
 
   /** Cross-versions a module with a constant string (typically the binary Scala version).  */
   def constant(value: String): CrossVersion = Constant(value)
@@ -31,12 +50,12 @@ abstract class CrossVersionFunctions {
    * Cross-versions a module with the result of prepending `prefix` and appending `suffix` to the binary version
    * (typically the binary Scala version).  See also [[sbt.librarymanagement.Binary]].
    */
-  def binaryWith(prefix: String, suffix: String): CrossVersion = Binary(prefix, suffix)
+  def binaryWith(prefix: String, suffix: String): CrossVersion = LBinary(prefix, suffix)
 
   /**
    * Cross-versions a module with the full Scala version excluding any `-bin` suffix.
    */
-  def patch: CrossVersion = Patch()
+  val patch: CrossVersion = LPatch()
 
   private[sbt] def patchFun(fullVersion: String): String = {
     val BinCompatV = """(\d+)\.(\d+)\.(\d+)(-\w+)??-bin(-.*)?""".r
