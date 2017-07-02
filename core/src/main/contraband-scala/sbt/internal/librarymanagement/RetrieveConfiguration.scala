@@ -5,12 +5,12 @@
 // DO NOT EDIT MANUALLY
 package sbt.internal.librarymanagement
 final class RetrieveConfiguration private (
-  val retrieveDirectory: java.io.File,
-  val outputPattern: String,
-  val sync: Boolean,
+  val retrieveDirectory: Option[java.io.File],
+  val outputPattern: Option[String],
+  val sync: Option[Boolean],
   val configurationsToRetrieve: Option[Set[sbt.librarymanagement.Configuration]]) extends Serializable {
   
-  private def this(retrieveDirectory: java.io.File, outputPattern: String) = this(retrieveDirectory, outputPattern, false, None)
+  private def this() = this(None, None, None, None)
   
   override def equals(o: Any): Boolean = o match {
     case x: RetrieveConfiguration => (this.retrieveDirectory == x.retrieveDirectory) && (this.outputPattern == x.outputPattern) && (this.sync == x.sync) && (this.configurationsToRetrieve == x.configurationsToRetrieve)
@@ -22,24 +22,37 @@ final class RetrieveConfiguration private (
   override def toString: String = {
     "RetrieveConfiguration(" + retrieveDirectory + ", " + outputPattern + ", " + sync + ", " + configurationsToRetrieve + ")"
   }
-  protected[this] def copy(retrieveDirectory: java.io.File = retrieveDirectory, outputPattern: String = outputPattern, sync: Boolean = sync, configurationsToRetrieve: Option[Set[sbt.librarymanagement.Configuration]] = configurationsToRetrieve): RetrieveConfiguration = {
+  protected[this] def copy(retrieveDirectory: Option[java.io.File] = retrieveDirectory, outputPattern: Option[String] = outputPattern, sync: Option[Boolean] = sync, configurationsToRetrieve: Option[Set[sbt.librarymanagement.Configuration]] = configurationsToRetrieve): RetrieveConfiguration = {
     new RetrieveConfiguration(retrieveDirectory, outputPattern, sync, configurationsToRetrieve)
   }
-  def withRetrieveDirectory(retrieveDirectory: java.io.File): RetrieveConfiguration = {
+  def withRetrieveDirectory(retrieveDirectory: Option[java.io.File]): RetrieveConfiguration = {
     copy(retrieveDirectory = retrieveDirectory)
   }
-  def withOutputPattern(outputPattern: String): RetrieveConfiguration = {
+  def withRetrieveDirectory(retrieveDirectory: java.io.File): RetrieveConfiguration = {
+    copy(retrieveDirectory = Option(retrieveDirectory))
+  }
+  def withOutputPattern(outputPattern: Option[String]): RetrieveConfiguration = {
     copy(outputPattern = outputPattern)
   }
-  def withSync(sync: Boolean): RetrieveConfiguration = {
+  def withOutputPattern(outputPattern: String): RetrieveConfiguration = {
+    copy(outputPattern = Option(outputPattern))
+  }
+  def withSync(sync: Option[Boolean]): RetrieveConfiguration = {
     copy(sync = sync)
+  }
+  def withSync(sync: Boolean): RetrieveConfiguration = {
+    copy(sync = Option(sync))
   }
   def withConfigurationsToRetrieve(configurationsToRetrieve: Option[Set[sbt.librarymanagement.Configuration]]): RetrieveConfiguration = {
     copy(configurationsToRetrieve = configurationsToRetrieve)
   }
+  def withConfigurationsToRetrieve(configurationsToRetrieve: Set[sbt.librarymanagement.Configuration]): RetrieveConfiguration = {
+    copy(configurationsToRetrieve = Option(configurationsToRetrieve))
+  }
 }
 object RetrieveConfiguration {
   
-  def apply(retrieveDirectory: java.io.File, outputPattern: String): RetrieveConfiguration = new RetrieveConfiguration(retrieveDirectory, outputPattern, false, None)
-  def apply(retrieveDirectory: java.io.File, outputPattern: String, sync: Boolean, configurationsToRetrieve: Option[Set[sbt.librarymanagement.Configuration]]): RetrieveConfiguration = new RetrieveConfiguration(retrieveDirectory, outputPattern, sync, configurationsToRetrieve)
+  def apply(): RetrieveConfiguration = new RetrieveConfiguration(None, None, None, None)
+  def apply(retrieveDirectory: Option[java.io.File], outputPattern: Option[String], sync: Option[Boolean], configurationsToRetrieve: Option[Set[sbt.librarymanagement.Configuration]]): RetrieveConfiguration = new RetrieveConfiguration(retrieveDirectory, outputPattern, sync, configurationsToRetrieve)
+  def apply(retrieveDirectory: java.io.File, outputPattern: String, sync: Boolean, configurationsToRetrieve: Set[sbt.librarymanagement.Configuration]): RetrieveConfiguration = new RetrieveConfiguration(Option(retrieveDirectory), Option(outputPattern), Option(sync), Option(configurationsToRetrieve))
 }

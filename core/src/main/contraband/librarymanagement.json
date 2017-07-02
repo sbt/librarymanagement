@@ -3,6 +3,32 @@
   "fullCodec": "LibraryManagementCodec",
   "types": [
     {
+      "name": "UpdateConfiguration",
+      "namespace": "sbt.librarymanagement",
+      "target": "Scala",
+      "type": "record",
+      "fields": [
+        { "name": "retrieve",       "type": "sbt.internal.librarymanagement.RetrieveConfiguration?" , "default": "None", "since": "0.0.1" },
+        { "name": "missingOk",      "type": "boolean?"                                              , "default": "None", "since": "0.0.1" },
+        { "name": "logging",        "type": "sbt.librarymanagement.UpdateLogging?"                  , "default": "None", "since": "0.0.1" },
+        { "name": "artifactFilter", "type": "sbt.librarymanagement.ArtifactTypeFilter?"             , "default": "None", "since": "0.0.1" },
+        { "name": "offline",        "type": "boolean?"                                              , "default": "None", "since": "0.0.1" },
+        { "name": "frozen",         "type": "boolean?"                                              , "default": "None", "since": "0.0.1" }
+      ]
+    },
+    {
+      "name": "RetrieveConfiguration",
+      "namespace": "sbt.internal.librarymanagement",
+      "target": "Scala",
+      "type": "record",
+      "fields": [
+        { "name": "retrieveDirectory",        "type": "java.io.File?",                             "default": "None", "since": "0.0.1" },
+        { "name": "outputPattern",            "type": "String?",                                   "default": "None", "since": "0.0.1" },
+        { "name": "sync",                     "type": "boolean?",                                  "default": "None", "since": "0.0.1" },
+        { "name": "configurationsToRetrieve", "type": "Set[sbt.librarymanagement.Configuration]?", "default": "None", "since": "0.0.1" }
+      ]
+    },
+    {
       "name": "Artifact",
       "namespace": "sbt.librarymanagement",
       "target": "Scala",
@@ -648,20 +674,6 @@
       ]
     },
     {
-      "name": "UpdateConfiguration",
-      "namespace": "sbt.librarymanagement",
-      "target": "Scala",
-      "type": "record",
-      "fields": [
-        { "name": "retrieve",       "type": "sbt.internal.librarymanagement.RetrieveConfiguration?" },
-        { "name": "missingOk",      "type": "boolean"                                               },
-        { "name": "logging",        "type": "sbt.librarymanagement.UpdateLogging"                   },
-        { "name": "artifactFilter", "type": "sbt.librarymanagement.ArtifactTypeFilter"              },
-        { "name": "offline",        "type": "boolean"                                               },
-        { "name": "frozen",         "type": "boolean"                                               }
-      ]
-    },
-    {
       "name": "UpdateLogging",
       "namespace": "sbt.librarymanagement",
       "target": "Scala",
@@ -728,18 +740,6 @@
       "fields": [
         { "name": "configuration", "type": "String"                                            },
         { "name": "details",       "type": "sbt.librarymanagement.OrganizationArtifactReport*" }
-      ]
-    },
-    {
-      "name": "RetrieveConfiguration",
-      "namespace": "sbt.internal.librarymanagement",
-      "target": "Scala",
-      "type": "record",
-      "fields": [
-        { "name": "retrieveDirectory",        "type": "java.io.File"                                                                           },
-        { "name": "outputPattern",            "type": "String"                                                                                 },
-        { "name": "sync",                     "type": "boolean",                                          "default": "false", "since": "0.0.1" },
-        { "name": "configurationsToRetrieve", "type": "Option[Set[sbt.librarymanagement.Configuration]]", "default": "None",  "since": "0.0.1" }
       ]
     },
     {

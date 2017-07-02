@@ -6,7 +6,9 @@ import sbt.internal.librarymanagement._
 import sbt.util.Logger
 import sbt.io.Hash
 
-class DefaultLibraryManagement(ivyConfiguration: IvyConfiguration, log: Logger)
+class DefaultLibraryManagement(ivyConfiguration: IvyConfiguration,
+                               updateOptons: UpdateOptions,
+                               log: Logger)
     extends LibraryManagement {
   private[sbt] val ivySbt: IvySbt = new IvySbt(ivyConfiguration)
   private val sbtOrgTemp = JsonUtil.sbtOrgTemp
@@ -19,21 +21,20 @@ class DefaultLibraryManagement(ivyConfiguration: IvyConfiguration, log: Logger)
    * Note: Sbt's implementation of Ivy requires us to do this, because only the dependencies
    *       of the specified module will be downloaded.
    */
-  def getModule(moduleId: ModuleID): Module = getModule(moduleId, None)
+  def buildModule(moduleId: ModuleID): Module = buildModule(moduleId, None)
 
-  def getModule(moduleId: ModuleID, scalaModuleInfo: Option[ScalaModuleInfo]): ivySbt.Module = {
+  def buildModule(moduleId: ModuleID, scalaModuleInfo: Option[ScalaModuleInfo]): Module = {
     val sha1 = Hash.toHex(Hash(moduleId.name))
     val dummyID = ModuleID(sbtOrgTemp, modulePrefixTemp + sha1, moduleId.revision)
       .withConfigurations(moduleId.configurations)
-    getModule(dummyID, Vector(moduleId), UpdateOptions(), scalaModuleInfo)
+    buildModule(dummyID, Vector(moduleId), scalaModuleInfo)
   }
 
-  def getModule(
+  def buildModule(
       moduleId: ModuleID,
       deps: Vector[ModuleID],
-      uo: UpdateOptions = UpdateOptions(),
       scalaModuleInfo: Option[ScalaModuleInfo]
-  ): ivySbt.Module = {
+  ): Module = {
     val moduleSetting = InlineConfiguration(
       validate = false,
       scalaModuleInfo = scalaModuleInfo,
@@ -41,7 +42,7 @@ class DefaultLibraryManagement(ivyConfiguration: IvyConfiguration, log: Logger)
       moduleInfo = ModuleInfo(moduleId.name),
       dependencies = deps
     ).withConfigurations(Vector(Configurations.Component))
-    new ivySbt.Module(moduleSetting)
+    new Module(moduleSetting)
   }
 
   private def dependenciesNames(module: ivySbt.Module): String =
@@ -57,22 +58,14 @@ class DefaultLibraryManagement(ivyConfiguration: IvyConfiguration, log: Logger)
         s"unknown"
     }
 
-  def update(module: ivySbt.Module, retrieveDirectory: File)(
-      predicate: File => Boolean
-  ): Option[Seq[File]] = {
-    val specialArtifactTypes = Artifact.DefaultSourceTypes union Artifact.DefaultDocTypes
-    val artifactFilter = ArtifactTypeFilter.forbid(specialArtifactTypes)
-    val retrieveConfiguration =
-      RetrieveConfiguration(retrieveDirectory, Resolver.defaultRetrievePattern).withSync(false)
-    val updateConfiguration = UpdateConfiguration(
-      Some(retrieveConfiguration),
-      true,
-      UpdateLogging.DownloadOnly,
-      artifactFilter,
-      false,
-      false
-    )
-
+  def update(module: Module,
+             retrieveDirectory: File,
+             predicate: File => Boolean): Option[Vector[File]] = {
+    val retrieveConfiguration = RetrieveConfiguration()
+      .withRetrieveDirectory(retrieveDirectory)
+    val updateConfiguration = UpdateConfiguration()
+      .withRetrieve(retrieveConfiguration)
+      .withMissingOk(true)
     log.debug(s"Attempting to fetch ${dependenciesNames(module)}. This operation may fail.")
     IvyActions.updateEither(
       module,
@@ -85,7 +78,6 @@ class DefaultLibraryManagement(ivyConfiguration: IvyConfiguration, log: Logger)
       case Left(unresolvedWarning) =>
         log.debug(s"Couldn't retrieve module ${dependenciesNames(module)}.")
         None
-
       case Right(updateReport) =>
         val allFiles =
           for {

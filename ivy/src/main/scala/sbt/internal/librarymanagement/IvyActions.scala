@@ -26,6 +26,7 @@ import sbt.io.{ IO, PathFinder }
 import sbt.util.{ Logger, ShowLines }
 import sbt.internal.util.{ SourcePosition, LinePosition, RangePosition, LineRange }
 import sbt.librarymanagement._, syntax._
+import InternalDefaults._
 
 final class DeliverConfiguration(
     val deliverIvyPattern: String,
@@ -309,8 +310,9 @@ object IvyActions {
   ): UpdateReport = {
     import config.{ configuration => c, module => mod, _ }
     import mod.{ configurations => confs, _ }
+    val artifactFilter = getArtifactTypeFilter(c.artifactFilter)
     assert(classifiers.nonEmpty, "classifiers cannot be empty")
-    assert(c.artifactFilter.types.nonEmpty, "UpdateConfiguration must filter on some types")
+    assert(artifactFilter.types.nonEmpty, "UpdateConfiguration must filter on some types")
     val baseModules = modules map { m =>
       restrictedCopy(m, true)
     }
@@ -473,14 +475,18 @@ object IvyActions {
     val ivyInstance = inputs.ivy
     val moduleDescriptor = inputs.module
     val updateConfiguration = inputs.updateConfiguration
-    val logging = updateConfiguration.logging
+    val logging = getUpdateLogging(updateConfiguration.logging)
     val resolveOptions = new ResolveOptions
     val resolveId = ResolveOptions.getDefaultResolveId(moduleDescriptor)
+    val artifactFilter = getArtifactTypeFilter(updateConfiguration.artifactFilter)
+    val offline = getOffline(updateConfiguration.offline)
+    val frozen = getFrozen(updateConfiguration.frozen)
+    val missingOk = getMissingOk(updateConfiguration.missingOk)
     resolveOptions.setResolveId(resolveId)
-    resolveOptions.setArtifactFilter(updateConfiguration.artifactFilter)
-    resolveOptions.setUseCacheOnly(updateConfiguration.offline)
+    resolveOptions.setArtifactFilter(artifactFilter)
+    resolveOptions.setUseCacheOnly(offline)
     resolveOptions.setLog(ivyLogLevel(logging))
-    if (updateConfiguration.frozen) {
+    if (frozen) {
       resolveOptions.setTransitive(false)
       resolveOptions.setCheckIfChanged(false)
     }
@@ -491,7 +497,7 @@ object IvyActions {
     )
 
     val resolveReport = ivyInstance.resolve(moduleDescriptor, resolveOptions)
-    if (resolveReport.hasError && !inputs.updateConfiguration.missingOk) {
+    if (resolveReport.hasError && !missingOk) {
       // If strict error, collect report information and generated UnresolvedWarning
       val messages = resolveReport.getAllProblemMessages.toArray.map(_.toString).distinct
       val failedPaths = resolveReport.getUnresolvedDependencies.map { node =>
@@ -530,19 +536,23 @@ object IvyActions {
     val log = inputs.log
     val descriptor = inputs.module
     val updateConfiguration = inputs.updateConfiguration
+    val logging = getUpdateLogging(updateConfiguration.logging)
     val resolver = inputs.ivy.getResolveEngine.asInstanceOf[CachedResolutionResolveEngine]
     val resolveOptions = new ResolveOptions
     val resolveId = ResolveOptions.getDefaultResolveId(descriptor)
+    val artifactFilter = getArtifactTypeFilter(updateConfiguration.artifactFilter)
+    val offline = getOffline(updateConfiguration.offline)
+    val frozen = getFrozen(updateConfiguration.frozen)
+    val missingOk = getMissingOk(updateConfiguration.missingOk)
     resolveOptions.setResolveId(resolveId)
-    resolveOptions.setArtifactFilter(updateConfiguration.artifactFilter)
-    resolveOptions.setUseCacheOnly(updateConfiguration.offline)
-    resolveOptions.setLog(ivyLogLevel(updateConfiguration.logging))
-    if (updateConfiguration.frozen) {
+    resolveOptions.setArtifactFilter(artifactFilter)
+    resolveOptions.setUseCacheOnly(offline)
+    resolveOptions.setLog(ivyLogLevel(logging))
+    if (frozen) {
       resolveOptions.setTransitive(false)
       resolveOptions.setCheckIfChanged(false)
     }
-    val acceptError = updateConfiguration.missingOk
-    resolver.customResolve(descriptor, acceptError, logicalClock, resolveOptions, cache, log)
+    resolver.customResolve(descriptor, missingOk, logicalClock, resolveOptions, cache, log)
   }
 
   private def retrieve(
@@ -553,8 +563,8 @@ object IvyActions {
   ): UpdateReport = {
     val copyChecksums = ivy.getVariable(ConvertResolver.ManagedChecksums).toBoolean
     val toRetrieve = config.configurationsToRetrieve
-    val base = config.retrieveDirectory
-    val pattern = config.outputPattern
+    val base = getRetrieveDirectory(config.retrieveDirectory)
+    val pattern = getRetrievePattern(config.outputPattern)
     val configurationNames = toRetrieve match {
       case None          => None
       case Some(configs) => Some(configs.map(_.name))
@@ -571,7 +581,8 @@ object IvyActions {
     }
     IO.copy(toCopy)
     val resolvedFiles = toCopy.map(_._2)
-    if (config.sync) {
+    val sync = getSync(config.sync)
+    if (sync) {
       val filesToDelete = existingFiles.filterNot(resolvedFiles.contains)
       filesToDelete foreach { f =>
         log.info(s"Deleting old dependency: ${f.getAbsolutePath}")

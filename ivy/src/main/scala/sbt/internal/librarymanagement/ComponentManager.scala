@@ -31,7 +31,7 @@ class ComponentManager(
     def fromGlobal =
       lockGlobalCache {
         try { update(id); getOrElse(createAndCache) } catch {
-          case e: NotInCache => createAndCache
+          case _: NotInCache => createAndCache
         }
       }
     def getOrElse(orElse: => Iterable[File]): Iterable[File] = {

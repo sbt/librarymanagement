@@ -70,8 +70,11 @@ abstract class ArtifactFunctions {
   def pom(name: String) = Artifact(name, PomType, PomType, None, Vector(Pom), None)
 
   // Possible ivy artifact types such that sbt will treat those artifacts at sources / docs
-  val DefaultSourceTypes = Set("src", "source", "sources")
-  val DefaultDocTypes = Set("doc", "docs", "javadoc", "javadocs")
+  val DefaultSourceTypes: Set[String] = Set("src", "source", "sources")
+  val DefaultDocTypes: Set[String] = Set("doc", "docs", "javadoc", "javadocs")
+  val specialArtifactTypes: Set[String] = DefaultSourceTypes union DefaultDocTypes
+  val defaultArtifactTypeFilter: ArtifactTypeFilter =
+    ArtifactTypeFilter.forbid(specialArtifactTypes)
 
   val DocClassifier = "javadoc"
   val SourceClassifier = "sources"

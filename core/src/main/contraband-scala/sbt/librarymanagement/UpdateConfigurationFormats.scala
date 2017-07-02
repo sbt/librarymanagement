@@ -12,11 +12,11 @@ implicit lazy val UpdateConfigurationFormat: JsonFormat[sbt.librarymanagement.Up
       case Some(js) =>
       unbuilder.beginObject(js)
       val retrieve = unbuilder.readField[Option[sbt.internal.librarymanagement.RetrieveConfiguration]]("retrieve")
-      val missingOk = unbuilder.readField[Boolean]("missingOk")
-      val logging = unbuilder.readField[sbt.librarymanagement.UpdateLogging]("logging")
-      val artifactFilter = unbuilder.readField[sbt.librarymanagement.ArtifactTypeFilter]("artifactFilter")
-      val offline = unbuilder.readField[Boolean]("offline")
-      val frozen = unbuilder.readField[Boolean]("frozen")
+      val missingOk = unbuilder.readField[Option[Boolean]]("missingOk")
+      val logging = unbuilder.readField[Option[sbt.librarymanagement.UpdateLogging]]("logging")
+      val artifactFilter = unbuilder.readField[Option[sbt.librarymanagement.ArtifactTypeFilter]]("artifactFilter")
+      val offline = unbuilder.readField[Option[Boolean]]("offline")
+      val frozen = unbuilder.readField[Option[Boolean]]("frozen")
       unbuilder.endObject()
       sbt.librarymanagement.UpdateConfiguration(retrieve, missingOk, logging, artifactFilter, offline, frozen)
       case None =>
