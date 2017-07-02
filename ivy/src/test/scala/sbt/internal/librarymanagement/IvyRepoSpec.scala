@@ -46,7 +46,7 @@ class IvyRepoSpec extends BaseIvySpecification with DependencyBuilders {
     // the "default" configuration used in updateEither.
     val c = makeUpdateConfiguration(false)
 
-    val ivyScala = m.moduleSettings.ivyScala
+    val scalaModuleInfo = m.moduleSettings.scalaModuleInfo
     val srcTypes = Set("src")
     val docTypes = Set("javadoc")
     // These will be the default classifiers that SBT should try, in case a dependency is Maven.
@@ -69,7 +69,7 @@ class IvyRepoSpec extends BaseIvySpecification with DependencyBuilders {
     val gcm = GetClassifiersConfiguration(clMod,
                                           Map.empty,
                                           c.withArtifactFilter(c.artifactFilter.invert),
-                                          ivyScala,
+                                          scalaModuleInfo,
                                           srcTypes,
                                           docTypes)
 

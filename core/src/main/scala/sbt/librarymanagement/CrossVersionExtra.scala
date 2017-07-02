@@ -79,11 +79,11 @@ abstract class CrossVersionFunctions {
     }
 
   /** Constructs the cross-version function defined by `module` and `is`, if one is configured. */
-  def apply(module: ModuleID, is: IvyScala): Option[String => String] =
+  def apply(module: ModuleID, is: ScalaModuleInfo): Option[String => String] =
     CrossVersion(module.crossVersion, is.scalaFullVersion, is.scalaBinaryVersion)
 
   /** Constructs the cross-version function defined by `module` and `is`, if one is configured. */
-  def apply(module: ModuleID, is: Option[IvyScala]): Option[String => String] =
+  def apply(module: ModuleID, is: Option[ScalaModuleInfo]): Option[String => String] =
     is.flatMap(i => apply(module, i))
 
   /** Cross-version each `Artifact` in `artifacts` according to cross-version function `cross`. */
@@ -108,7 +108,7 @@ abstract class CrossVersionFunctions {
   /** Cross-versions `exclude` according to its `crossVersion`. */
   private[sbt] def substituteCross(
       exclude: ExclusionRule,
-      is: Option[IvyScala]
+      is: Option[ScalaModuleInfo]
   ): ExclusionRule = {
     val fopt: Option[String => String] =
       is flatMap { i =>

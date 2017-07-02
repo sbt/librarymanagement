@@ -24,8 +24,8 @@ trait BaseIvySpecification extends UnitSpec {
              scalaFullVersion: Option[String],
              uo: UpdateOptions = UpdateOptions(),
              overrideScalaVersion: Boolean = true): IvySbt#Module = {
-    val ivyScala = scalaFullVersion map { fv =>
-      IvyScala(
+    val scalaModuleInfo = scalaFullVersion map { fv =>
+      ScalaModuleInfo(
         scalaFullVersion = fv,
         scalaBinaryVersion = CrossVersionUtil.binaryScalaVersion(fv),
         configurations = Vector.empty,
@@ -37,7 +37,7 @@ trait BaseIvySpecification extends UnitSpec {
 
     val moduleSetting: ModuleSettings = InlineConfiguration(
       false,
-      ivyScala,
+      scalaModuleInfo,
       module = moduleId,
       moduleInfo = ModuleInfo("foo"),
       dependencies = deps

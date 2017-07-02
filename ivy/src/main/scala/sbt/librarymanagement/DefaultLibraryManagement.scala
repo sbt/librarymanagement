@@ -21,22 +21,22 @@ class DefaultLibraryManagement(ivyConfiguration: IvyConfiguration, log: Logger)
    */
   def getModule(moduleId: ModuleID): Module = getModule(moduleId, None)
 
-  def getModule(moduleId: ModuleID, ivyScala: Option[IvyScala]): ivySbt.Module = {
+  def getModule(moduleId: ModuleID, scalaModuleInfo: Option[ScalaModuleInfo]): ivySbt.Module = {
     val sha1 = Hash.toHex(Hash(moduleId.name))
     val dummyID = ModuleID(sbtOrgTemp, modulePrefixTemp + sha1, moduleId.revision)
       .withConfigurations(moduleId.configurations)
-    getModule(dummyID, Vector(moduleId), UpdateOptions(), ivyScala)
+    getModule(dummyID, Vector(moduleId), UpdateOptions(), scalaModuleInfo)
   }
 
   def getModule(
       moduleId: ModuleID,
       deps: Vector[ModuleID],
       uo: UpdateOptions = UpdateOptions(),
-      ivyScala: Option[IvyScala]
+      scalaModuleInfo: Option[ScalaModuleInfo]
   ): ivySbt.Module = {
     val moduleSetting = InlineConfiguration(
       validate = false,
-      ivyScala = ivyScala,
+      scalaModuleInfo = scalaModuleInfo,
       module = moduleId,
       moduleInfo = ModuleInfo(moduleId.name),
       dependencies = deps

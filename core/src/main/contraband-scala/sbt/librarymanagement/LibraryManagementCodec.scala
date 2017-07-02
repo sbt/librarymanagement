@@ -24,7 +24,7 @@ trait LibraryManagementCodec extends sjsonnew.BasicJsonProtocol
   with sbt.librarymanagement.ConflictManagerFormats
   with sbt.librarymanagement.DeveloperFormats
   with sbt.librarymanagement.FileConfigurationFormats
-  with sbt.librarymanagement.IvyScalaFormats
+  with sbt.librarymanagement.ScalaModuleInfoFormats
   with sbt.librarymanagement.ChainedResolverFormats
   with sbt.librarymanagement.MavenRepoFormats
   with sbt.librarymanagement.MavenCacheFormats

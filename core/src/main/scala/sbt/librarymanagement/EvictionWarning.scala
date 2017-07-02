@@ -13,7 +13,7 @@ final class EvictionWarningOptions private[sbt] (
     val warnTransitiveEvictions: Boolean,
     val infoAllEvictions: Boolean,
     val showCallers: Boolean,
-    val guessCompatible: Function1[(ModuleID, Option[ModuleID], Option[IvyScala]), Boolean]
+    val guessCompatible: Function1[(ModuleID, Option[ModuleID], Option[ScalaModuleInfo]), Boolean]
 ) {
   private[sbt] def configStrings = configurations map { _.name }
 
@@ -30,7 +30,7 @@ final class EvictionWarningOptions private[sbt] (
   def withShowCallers(showCallers: Boolean): EvictionWarningOptions =
     copy(showCallers = showCallers)
   def withGuessCompatible(
-      guessCompatible: Function1[(ModuleID, Option[ModuleID], Option[IvyScala]), Boolean]
+      guessCompatible: Function1[(ModuleID, Option[ModuleID], Option[ScalaModuleInfo]), Boolean]
   ): EvictionWarningOptions =
     copy(guessCompatible = guessCompatible)
 
@@ -41,7 +41,7 @@ final class EvictionWarningOptions private[sbt] (
       warnTransitiveEvictions: Boolean = warnTransitiveEvictions,
       infoAllEvictions: Boolean = infoAllEvictions,
       showCallers: Boolean = showCallers,
-      guessCompatible: Function1[(ModuleID, Option[ModuleID], Option[IvyScala]), Boolean] =
+      guessCompatible: Function1[(ModuleID, Option[ModuleID], Option[ScalaModuleInfo]), Boolean] =
         guessCompatible
   ): EvictionWarningOptions =
     new EvictionWarningOptions(
@@ -85,13 +85,14 @@ object EvictionWarningOptions {
       defaultGuess
     )
 
-  lazy val defaultGuess: Function1[(ModuleID, Option[ModuleID], Option[IvyScala]), Boolean] =
+  lazy val defaultGuess
+    : Function1[(ModuleID, Option[ModuleID], Option[ScalaModuleInfo]), Boolean] =
     guessSecondSegment orElse guessSemVer orElse guessFalse
   lazy val guessSecondSegment
-    : PartialFunction[(ModuleID, Option[ModuleID], Option[IvyScala]), Boolean] = {
-    case (m1, Some(m2), Some(ivyScala))
-        if m2.name.endsWith("_" + ivyScala.scalaFullVersion) || m2.name.endsWith(
-          "_" + ivyScala.scalaBinaryVersion
+    : PartialFunction[(ModuleID, Option[ModuleID], Option[ScalaModuleInfo]), Boolean] = {
+    case (m1, Some(m2), Some(scalaModuleInfo))
+        if m2.name.endsWith("_" + scalaModuleInfo.scalaFullVersion) || m2.name.endsWith(
+          "_" + scalaModuleInfo.scalaBinaryVersion
         ) =>
       (m1.revision, m2.revision) match {
         case (VersionNumber(ns1, ts1, es1), VersionNumber(ns2, ts2, es2)) =>
@@ -101,7 +102,7 @@ object EvictionWarningOptions {
       }
   }
   lazy val guessSemVer
-    : PartialFunction[(ModuleID, Option[ModuleID], Option[IvyScala]), Boolean] = {
+    : PartialFunction[(ModuleID, Option[ModuleID], Option[ScalaModuleInfo]), Boolean] = {
     case (m1, Some(m2), _) =>
       (m1.revision, m2.revision) match {
         case (VersionNumber(ns1, ts1, es1), VersionNumber(ns2, ts2, es2)) =>
@@ -110,7 +111,8 @@ object EvictionWarningOptions {
         case _ => false
       }
   }
-  lazy val guessFalse: PartialFunction[(ModuleID, Option[ModuleID], Option[IvyScala]), Boolean] = {
+  lazy val guessFalse
+    : PartialFunction[(ModuleID, Option[ModuleID], Option[ScalaModuleInfo]), Boolean] = {
     case (_, _, _) => false
   }
 }
@@ -212,7 +214,7 @@ object EvictionWarning {
       organization: String,
       name: String
   ): Boolean =
-    module.ivyScala match {
+    module.scalaModuleInfo match {
       case Some(s) =>
         organization == s.scalaOrganization &&
           (name == LibraryID) || (name == CompilerID)
@@ -248,12 +250,12 @@ object EvictionWarning {
     def guessCompatible(p: EvictionPair): Boolean =
       p.evicteds forall { r =>
         options.guessCompatible(
-          (r.module, p.winner map { _.module }, module.ivyScala)
+          (r.module, p.winner map { _.module }, module.scalaModuleInfo)
         )
       }
     pairs foreach {
       case p if isScalaArtifact(module, p.organization, p.name) =>
-        (module.ivyScala, p.winner) match {
+        (module.scalaModuleInfo, p.winner) match {
           case (Some(s), Some(winner))
               if (s.scalaFullVersion != winner.module.revision) && options.warnScalaVersionEviction =>
             scalaEvictions += p

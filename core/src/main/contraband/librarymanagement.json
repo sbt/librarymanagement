@@ -238,7 +238,7 @@
       "parentsCompanion": "sbt.librarymanagement.InclExclRuleFunctions"
     },
     {
-      "name": "IvyScala",
+      "name": "ScalaModuleInfo",
       "namespace": "sbt.librarymanagement",
       "target": "Scala",
       "type": "record",
@@ -365,7 +365,7 @@
       "type": "interface",
       "fields": [
         { "name": "validate", "type": "boolean"                         },
-        { "name": "ivyScala", "type": "sbt.librarymanagement.IvyScala?" }
+        { "name": "scalaModuleInfo", "type": "sbt.librarymanagement.ScalaModuleInfo?" }
       ],
       "types": [
         {

@@ -6,20 +6,20 @@
 package sbt.librarymanagement
 abstract class ModuleSettings(
   val validate: Boolean,
-  val ivyScala: Option[sbt.librarymanagement.IvyScala]) extends Serializable {
+  val scalaModuleInfo: Option[sbt.librarymanagement.ScalaModuleInfo]) extends Serializable {
   
   
   
   
   override def equals(o: Any): Boolean = o match {
-    case x: ModuleSettings => (this.validate == x.validate) && (this.ivyScala == x.ivyScala)
+    case x: ModuleSettings => (this.validate == x.validate) && (this.scalaModuleInfo == x.scalaModuleInfo)
     case _ => false
   }
   override def hashCode: Int = {
-    37 * (37 * (37 * (17 + "ModuleSettings".##) + validate.##) + ivyScala.##)
+    37 * (37 * (37 * (17 + "ModuleSettings".##) + validate.##) + scalaModuleInfo.##)
   }
   override def toString: String = {
-    "ModuleSettings(" + validate + ", " + ivyScala + ")"
+    "ModuleSettings(" + validate + ", " + scalaModuleInfo + ")"
   }
 }
 object ModuleSettings {

@@ -8,5 +8,5 @@ trait LibraryManagement {
 
 trait ModuleDescriptor {
   def directDependenciesForWarning: Vector[ModuleID]
-  def ivyScala: Option[IvyScala]
+  def scalaModuleInfo: Option[ScalaModuleInfo]
 }

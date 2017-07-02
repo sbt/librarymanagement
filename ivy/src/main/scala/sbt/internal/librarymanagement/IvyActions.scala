@@ -67,7 +67,7 @@ final case class GetClassifiersConfiguration(
     module: GetClassifiersModule,
     exclude: Map[ModuleID, Set[String]],
     configuration: UpdateConfiguration,
-    ivyScala: Option[IvyScala],
+    scalaModuleInfo: Option[ScalaModuleInfo],
     sourceArtifactTypes: Set[String],
     docArtifactTypes: Set[String]
 )
@@ -189,7 +189,7 @@ object IvyActions {
   }
   private def crossVersionMap(moduleSettings: ModuleSettings): Option[String => String] =
     moduleSettings match {
-      case i: InlineConfiguration => CrossVersion(i.module, i.ivyScala)
+      case i: InlineConfiguration => CrossVersion(i.module, i.scalaModuleInfo)
       case _                      => None
     }
   def mapArtifacts(
@@ -274,11 +274,12 @@ object IvyActions {
       depDir: Option[File],
       log: Logger
   ): UpdateReport = {
-    import config.{ configuration => c, ivyScala, module => mod }
+    import config.{ configuration => c, scalaModuleInfo, module => mod }
     import mod.{ id, modules => deps }
     val base = restrictedCopy(id, true).withName(id.name + "$" + label)
     val module =
-      new ivySbt.Module(InlineConfiguration(false, ivyScala, base, ModuleInfo(base.name), deps))
+      new ivySbt.Module(
+        InlineConfiguration(false, scalaModuleInfo, base, ModuleInfo(base.name), deps))
     val report = updateEither(module, c, uwconfig, logicalClock, depDir, log) match {
       case Right(r) => r
       case Left(w) =>
@@ -317,7 +318,7 @@ object IvyActions {
     val deps = baseModules.distinct flatMap classifiedArtifacts(classifiers, exclude, artifacts)
     val base = restrictedCopy(id, true).withName(id.name + classifiers.mkString("$", "_", ""))
     val module = new ivySbt.Module(
-      InlineConfiguration(false, ivyScala, base, ModuleInfo(base.name), deps)
+      InlineConfiguration(false, scalaModuleInfo, base, ModuleInfo(base.name), deps)
         .withConfigurations(confs)
     )
     // c.copy ensures c.types is preserved too

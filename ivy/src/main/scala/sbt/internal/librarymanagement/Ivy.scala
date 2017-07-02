@@ -202,7 +202,7 @@ final class IvySbt(val configuration: IvyConfiguration) { self =>
         case _                      => Vector()
       }
 
-    def ivyScala: Option[IvyScala] = moduleSettings.ivyScala
+    def scalaModuleInfo: Option[ScalaModuleInfo] = moduleSettings.scalaModuleInfo
 
     val moduleSettings: ModuleSettings = IvySbt.substituteCross(rawModuleSettings)
     def owner = IvySbt.this
@@ -234,7 +234,7 @@ final class IvySbt(val configuration: IvyConfiguration) { self =>
           case ifc: IvyFileConfiguration =>
             Configurations.default ++ Configurations.defaultInternal
         }
-      moduleSettings.ivyScala match {
+      moduleSettings.scalaModuleInfo match {
         case Some(is) =>
           val svc = configs.toVector filter Configurations.underScalaVersion map { _.name }
           IvyScalaUtil.checkModule(baseModule, baseConfiguration, svc, configuration.log)(is)
@@ -264,7 +264,7 @@ final class IvySbt(val configuration: IvyConfiguration) { self =>
       )
       IvySbt.addMainArtifact(moduleID)
       IvySbt.addOverrides(moduleID, overrides, ivy.getSettings.getMatcher(PatternMatcher.EXACT))
-      IvySbt.addExcludes(moduleID, excludes, ic.ivyScala)
+      IvySbt.addExcludes(moduleID, excludes, ic.scalaModuleInfo)
       val transformedDeps = IvySbt.overrideDirect(dependencies, overrides)
       IvySbt.addDependencies(moduleID, transformedDeps, parser)
       (moduleID, parser.getDefaultConf)
@@ -294,7 +294,7 @@ final class IvySbt(val configuration: IvyConfiguration) { self =>
       val dmd = IvySbt.toDefaultModuleDescriptor(md)
       IvySbt.addConfigurations(dmd, Configurations.defaultInternal)
       val defaultConf = Configurations.DefaultMavenConfiguration.name
-      for (is <- pc.ivyScala) if (pc.autoScalaTools) {
+      for (is <- pc.scalaModuleInfo) if (pc.autoScalaTools) {
         val confParser = new CustomXmlParser.CustomParser(settings, Some(defaultConf))
         confParser.setMd(dmd)
         addScalaToolDependencies(dmd, confParser, is)
@@ -309,7 +309,7 @@ final class IvySbt(val configuration: IvyConfiguration) { self =>
       parser.setSource(toURL(ifc.file))
       parser.parse()
       val dmd = IvySbt.toDefaultModuleDescriptor(parser.getModuleDescriptor())
-      for (is <- ifc.ivyScala)
+      for (is <- ifc.scalaModuleInfo)
         if (ifc.autoScalaTools)
           addScalaToolDependencies(dmd, parser, is)
       (dmd, parser.getDefaultConf)
@@ -317,7 +317,7 @@ final class IvySbt(val configuration: IvyConfiguration) { self =>
     private def addScalaToolDependencies(
         dmd: DefaultModuleDescriptor,
         parser: CustomXmlParser.CustomParser,
-        is: IvyScala
+        is: ScalaModuleInfo
     ): Unit = {
       IvySbt.addConfigurations(dmd, Configurations.ScalaTool :: Nil)
       IvySbt.addDependencies(
@@ -582,7 +582,7 @@ private[sbt] object IvySbt {
   }
 
   private def substituteCross(m: ModuleSettings): ModuleSettings = {
-    m.ivyScala match {
+    m.scalaModuleInfo match {
       case None     => m
       case Some(is) => substituteCross(m, is.scalaFullVersion, is.scalaBinaryVersion)
     }
@@ -598,7 +598,7 @@ private[sbt] object IvySbt {
         val applyCross = CrossVersion(scalaFullVersion, scalaBinaryVersion)
         def propagateCrossVersion(moduleID: ModuleID): ModuleID = {
           val crossExclusions: Vector[ExclusionRule] =
-            moduleID.exclusions.map(CrossVersion.substituteCross(_, ic.ivyScala))
+            moduleID.exclusions.map(CrossVersion.substituteCross(_, ic.scalaModuleInfo))
           applyCross(moduleID)
             .withExclusions(crossExclusions)
         }
@@ -875,13 +875,13 @@ private[sbt] object IvySbt {
   def addExcludes(
       moduleID: DefaultModuleDescriptor,
       excludes: Seq[ExclusionRule],
-      ivyScala: Option[IvyScala]
-  ): Unit = excludes.foreach(exclude => addExclude(moduleID, ivyScala)(exclude))
+      scalaModuleInfo: Option[ScalaModuleInfo]
+  ): Unit = excludes.foreach(exclude => addExclude(moduleID, scalaModuleInfo)(exclude))
 
-  def addExclude(moduleID: DefaultModuleDescriptor, ivyScala: Option[IvyScala])(
+  def addExclude(moduleID: DefaultModuleDescriptor, scalaModuleInfo: Option[ScalaModuleInfo])(
       exclude0: ExclusionRule): Unit = {
     // this adds _2.11 postfix
-    val exclude = CrossVersion.substituteCross(exclude0, ivyScala)
+    val exclude = CrossVersion.substituteCross(exclude0, scalaModuleInfo)
     val confs =
       if (exclude.configurations.isEmpty) moduleID.getConfigurationsNames.toList
       else exclude.configurations

@@ -12,17 +12,17 @@ import org.apache.ivy.plugins.matcher.ExactPatternMatcher
 import org.apache.ivy.plugins.namespace.NamespaceTransformer
 import sbt.util.Logger
 import sbt.librarymanagement.ScalaArtifacts._
-import sbt.librarymanagement.{ IvyScala, CrossVersion, Configuration }
+import sbt.librarymanagement.{ ScalaModuleInfo, CrossVersion, Configuration }
 
 object IvyScalaUtil {
 
-  /** Performs checks/adds filters on Scala dependencies (if enabled in IvyScala). */
+  /** Performs checks/adds filters on Scala dependencies (if enabled in ScalaModuleInfo). */
   def checkModule(
       module: DefaultModuleDescriptor,
       conf: String,
       scalaVersionConfigs: Vector[String],
       log: Logger
-  )(check: IvyScala): Unit = {
+  )(check: ScalaModuleInfo): Unit = {
     if (check.checkExplicit)
       checkDependencies(
         module,
