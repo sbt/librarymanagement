@@ -12,7 +12,6 @@ class OfflineModeSpec extends BaseIvySpecification with DependencyBuilders {
   private final def warningConf = UnresolvedWarningConfiguration()
   private final def normalOptions = UpdateOptions()
   private final def cachedOptions = UpdateOptions().withCachedResolution(true)
-  private final def noClock = LogicalClock.unknown
 
   def avro177 = ModuleID("org.apache.avro", "avro", "1.7.7")
   def dataAvro1940 = ModuleID("com.linkedin.pegasus", "data-avro", "1.9.40")
@@ -34,7 +33,7 @@ class OfflineModeSpec extends BaseIvySpecification with DependencyBuilders {
       cleanCachedResolutionCache(toResolve)
 
     val onlineResolution =
-      IvyActions.updateEither(toResolve, onlineConf, warningConf, noClock, targetDir, log)
+      IvyActions.updateEither(toResolve, onlineConf, warningConf, targetDir, log)
     assert(onlineResolution.isRight)
     assert(onlineResolution.right.exists(report => report.stats.resolveTime > 0))
 
@@ -43,7 +42,7 @@ class OfflineModeSpec extends BaseIvySpecification with DependencyBuilders {
     val estimatedCachedTime = originalResolveTime * 0.3
 
     val offlineResolution =
-      IvyActions.updateEither(toResolve, offlineConf, warningConf, noClock, targetDir, log)
+      IvyActions.updateEither(toResolve, offlineConf, warningConf, targetDir, log)
     assert(offlineResolution.isRight, s"Offline resolution has failed with $offlineResolution.")
 
     val resolveTime = offlineResolution.right.get.stats.resolveTime
@@ -65,7 +64,7 @@ class OfflineModeSpec extends BaseIvySpecification with DependencyBuilders {
     val toResolve = module(defaultModuleId, dependencies, None, updateOptions)
     if (updateOptions.cachedResolution) cleanCachedResolutionCache(toResolve)
     val failedOfflineResolution =
-      IvyActions.updateEither(toResolve, offlineConf, warningConf, noClock, targetDir, log)
+      IvyActions.updateEither(toResolve, offlineConf, warningConf, targetDir, log)
     assert(failedOfflineResolution.isLeft)
   }
 

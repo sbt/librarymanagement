@@ -18,8 +18,34 @@
           "default": "None", 
           "since": "0.0.1"
         },
-        { "name": "missingOk",      "type": "boolean?"                                 , "default": "None", "since": "0.0.1" },
-        { "name": "logging",        "type": "sbt.librarymanagement.UpdateLogging?"     , "default": "None", "since": "0.0.1" },
+        {
+          "name": "missingOk",
+          "doc": [
+            "If set to true, it ignores when artifacts are missing.",
+            "This setting could be uses when retrieving source/javadocs jars opportunistically."
+          ],
+          "type": "boolean?",
+          "default": "None",
+          "since": "0.0.1"
+        },
+        {
+          "name": "logging",
+          "doc": [
+            "Logging setting used specifially for library management."
+          ],
+          "type": "sbt.librarymanagement.UpdateLogging?",
+          "default": "None",
+          "since": "0.0.1" 
+        },
+        {
+          "name": "logicalClock",
+          "doc": [
+            "The clock that may be used for caching"
+          ],
+          "type": "sbt.librarymanagement.LogicalClock?",
+          "default": "None",
+          "since": "0.0.1" 
+        },
         { "name": "artifactFilter", "type": "sbt.librarymanagement.ArtifactTypeFilter?", "default": "None", "since": "0.0.1" },
         { "name": "offline",        "type": "boolean?"                                 , "default": "None", "since": "0.0.1" },
         { "name": "frozen",         "type": "boolean?"                                 , "default": "None", "since": "0.0.1" }

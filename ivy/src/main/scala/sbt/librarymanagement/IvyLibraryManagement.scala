@@ -35,7 +35,6 @@ class IvyLibraryManagement(ivyConfiguration: IvyConfiguration, updateOptons: Upd
    * @param module The module to be resolved.
    * @param configuration The update configuration.
    * @param uwconfig The configuration to handle unresolved warnings.
-   * @param logicalClock The clock necessary to cache ivy.
    * @param metadataDirectory The base directory used for caching resolution.
    * @param log The logger.
    * @return The result, either an unresolved warning or an update report. Note that this
@@ -44,15 +43,9 @@ class IvyLibraryManagement(ivyConfiguration: IvyConfiguration, updateOptons: Upd
   def updateEither(module: ModuleDescriptor,
                    configuration: UpdateConfiguration,
                    uwconfig: UnresolvedWarningConfiguration,
-                   logicalClock: LogicalClock,
                    metadataDirectory: Option[File],
                    log: Logger): Either[UnresolvedWarning, UpdateReport] =
-    IvyActions.updateEither(toModule(module),
-                            configuration,
-                            uwconfig,
-                            logicalClock,
-                            metadataDirectory,
-                            log)
+    IvyActions.updateEither(toModule(module), configuration, uwconfig, metadataDirectory, log)
 
   def publish(module: ModuleDescriptor, configuration: PublishConfiguration, log: Logger): Unit =
     IvyActions.publish(toModule(module), configuration, log)

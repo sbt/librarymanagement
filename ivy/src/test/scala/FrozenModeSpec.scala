@@ -7,7 +7,6 @@ class FrozenModeSpec extends BaseIvySpecification with DependencyBuilders {
   private final val targetDir = Some(currentDependency)
   private final val onlineConf = makeUpdateConfiguration(false)
   private final val frozenConf = makeUpdateConfiguration(false).withFrozen(true)
-  private final val noClock = LogicalClock.unknown
   private final val warningConf = UnresolvedWarningConfiguration()
   private final val normalOptions = UpdateOptions()
 
@@ -29,7 +28,7 @@ class FrozenModeSpec extends BaseIvySpecification with DependencyBuilders {
   it should "fail when artifacts are missing in the cache" in {
     cleanIvyCache()
     def update(module: IvySbt#Module, conf: UpdateConfiguration) =
-      IvyActions.updateEither(module, conf, warningConf, noClock, targetDir, log)
+      IvyActions.updateEither(module, conf, warningConf, targetDir, log)
 
     val toResolve = module(defaultModuleId, stoml, None, normalOptions)
     val onlineResolution = update(toResolve, onlineConf)

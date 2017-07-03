@@ -22,7 +22,6 @@ abstract class LibraryManagement {
    * @param module The module to be resolved.
    * @param configuration The update configuration.
    * @param uwconfig The configuration to handle unresolved warnings.
-   * @param logicalClock The clock necessary to cache ivy.
    * @param metadataDirectory The base directory used for caching resolution.
    * @param log The logger.
    * @return The result, either an unresolved warning or an update report. Note that this
@@ -31,7 +30,6 @@ abstract class LibraryManagement {
   def updateEither(module: ModuleDescriptor,
                    configuration: UpdateConfiguration,
                    uwconfig: UnresolvedWarningConfiguration,
-                   logicalClock: LogicalClock,
                    metadataDirectory: Option[File],
                    log: Logger): Either[UnresolvedWarning, UpdateReport]
 
@@ -88,7 +86,6 @@ abstract class AbstractLibraryManagement extends LibraryManagement {
       module,
       updateConfiguration,
       UnresolvedWarningConfiguration(),
-      LogicalClock.unknown,
       None,
       log
     ) match {

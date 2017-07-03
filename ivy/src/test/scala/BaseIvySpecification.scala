@@ -84,7 +84,6 @@ trait BaseIvySpecification extends UnitSpec {
     IvyActions.updateEither(module,
                             config,
                             UnresolvedWarningConfiguration(),
-                            LogicalClock.unknown,
                             Some(currentDependency),
                             log)
   }

@@ -17,7 +17,6 @@ class ManagedChecksumsSpec extends BaseIvySpecification with DependencyBuilders 
   private final def targetDir = Some(currentDependency)
   private final def onlineConf = makeUpdateConfiguration(false)
   private final def warningConf = UnresolvedWarningConfiguration()
-  private final def noClock = LogicalClock.unknown
   private final val Checksum = "sha1"
 
   def avro177 = ModuleID("org.apache.avro", "avro", "1.7.7")
@@ -62,7 +61,7 @@ class ManagedChecksumsSpec extends BaseIvySpecification with DependencyBuilders 
     cleanAll()
     val updateOptions = UpdateOptions()
     val toResolve = module(defaultModuleId, dependencies, None, updateOptions)
-    val res = IvyActions.updateEither(toResolve, onlineConf, warningConf, noClock, targetDir, log)
+    val res = IvyActions.updateEither(toResolve, onlineConf, warningConf, targetDir, log)
     assert(res.isRight, s"Resolution with managed checksums failed! $res")
     val updateReport = res.right.get
     val allModuleReports = updateReport.configurations.flatMap(_.modules)

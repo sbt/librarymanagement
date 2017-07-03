@@ -44,4 +44,7 @@ object InternalDefaults {
 
   def getChecksums(opt: Option[Vector[String]]): Vector[String] =
     opt.getOrElse(Vector("sha1", "md1"))
+
+  def getLogicalClock(opt: Option[LogicalClock]): LogicalClock =
+    opt.getOrElse(LogicalClock.unknown)
 }

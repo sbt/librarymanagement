@@ -190,7 +190,6 @@ object IvyActions {
    * @param module The module to be resolved.
    * @param configuration The update configuration.
    * @param uwconfig The configuration to handle unresolved warnings.
-   * @param logicalClock The clock necessary to cache ivy.
    * @param depDir The base directory used for caching resolution.
    * @param log The logger.
    * @return The result, either an unresolved warning or an update report. Note that this
@@ -200,7 +199,6 @@ object IvyActions {
       module: IvySbt#Module,
       configuration: UpdateConfiguration,
       uwconfig: UnresolvedWarningConfiguration,
-      logicalClock: LogicalClock,
       depDir: Option[File],
       log: Logger
   ): Either[UnresolvedWarning, UpdateReport] = {
@@ -209,6 +207,8 @@ object IvyActions {
         // Warn about duplicated and inconsistent dependencies
         val iw = IvySbt.inconsistentDuplicateWarning(moduleDescriptor)
         iw.foreach(log.warn(_))
+
+        val logicalClock = getLogicalClock(configuration.logicalClock)
 
         // Create inputs, resolve and retrieve the module descriptor
         val inputs = ResolutionInputs(ivy, moduleDescriptor, configuration, log)
@@ -252,7 +252,6 @@ object IvyActions {
       label: String,
       config: GetClassifiersConfiguration,
       uwconfig: UnresolvedWarningConfiguration,
-      logicalClock: LogicalClock,
       depDir: Option[File],
       log: Logger
   ): UpdateReport = {
@@ -262,13 +261,13 @@ object IvyActions {
     val module =
       new ivySbt.Module(
         InlineConfiguration(false, scalaModuleInfo, base, ModuleInfo(base.name), deps))
-    val report = updateEither(module, c, uwconfig, logicalClock, depDir, log) match {
+    val report = updateEither(module, c, uwconfig, depDir, log) match {
       case Right(r) => r
       case Left(w) =>
         throw w.resolveException
     }
     val newConfig = config.copy(module = mod.copy(modules = report.allModules))
-    updateClassifiers(ivySbt, newConfig, uwconfig, logicalClock, depDir, Vector(), log)
+    updateClassifiers(ivySbt, newConfig, uwconfig, depDir, Vector(), log)
   }
 
   /**
@@ -284,7 +283,6 @@ object IvyActions {
       ivySbt: IvySbt,
       config: GetClassifiersConfiguration,
       uwconfig: UnresolvedWarningConfiguration,
-      logicalClock: LogicalClock,
       depDir: Option[File],
       artifacts: Vector[(String, ModuleID, Artifact, File)],
       log: Logger
@@ -306,7 +304,7 @@ object IvyActions {
     )
     // c.copy ensures c.types is preserved too
     val upConf = c.withMissingOk(true)
-    updateEither(module, upConf, uwconfig, logicalClock, depDir, log) match {
+    updateEither(module, upConf, uwconfig, depDir, log) match {
       case Right(r) =>
         // The artifacts that came from Ivy don't have their classifier set, let's set it according to
         // FIXME: this is only done because IDE plugins depend on `classifier` to determine type. They

@@ -78,7 +78,6 @@ class IvyRepoSpec extends BaseIvySpecification with DependencyBuilders {
     val report2 = IvyActions.updateClassifiers(m.owner,
                                                gcm,
                                                UnresolvedWarningConfiguration(),
-                                               LogicalClock.unknown,
                                                None,
                                                Vector(),
                                                log)
