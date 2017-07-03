@@ -31,7 +31,7 @@ def commonSettings: Seq[Setting[_]] = Seq(
 )
 
 lazy val lmRoot = (project in file("."))
-  .aggregate(lm)
+  .aggregate(lmCore, lmIvy)
   .settings(
     inThisBuild(
       Seq(
@@ -59,12 +59,12 @@ lazy val lmRoot = (project in file("."))
     customCommands
   )
 
-lazy val lm = (project in file("librarymanagement"))
+lazy val lmCore = (project in file("core"))
+  .enablePlugins(ContrabandPlugin, JsonCodecPlugin)
   .settings(
     commonSettings,
-    name := "librarymanagement",
-    libraryDependencies ++= Seq(ivy,
-                                jsch,
+    name := "librarymanagement-core",
+    libraryDependencies ++= Seq(jsch,
                                 scalaReflect.value,
                                 launcherInterface,
                                 gigahorseOkhttp,
@@ -93,11 +93,23 @@ lazy val lm = (project in file("librarymanagement"))
   )
   .configure(addSbtIO,
              addSbtUtilLogging,
-             addSbtUtilTesting,
              addSbtUtilCollection,
              addSbtUtilCompletion,
              addSbtUtilCache)
+
+lazy val lmIvy = (project in file("ivy"))
   .enablePlugins(ContrabandPlugin, JsonCodecPlugin)
+  .dependsOn(lmCore)
+  .settings(
+    commonSettings,
+    name := "librarymanagement-ivy",
+    libraryDependencies ++= Seq(ivy),
+    managedSourceDirectories in Compile +=
+      baseDirectory.value / "src" / "main" / "contraband-scala",
+    sourceManaged in (Compile, generateContrabands) := baseDirectory.value / "src" / "main" / "contraband-scala",
+    contrabandFormatsForType in generateContrabands in Compile := DatatypeConfig.getFormats,
+  )
+  .configure(addSbtUtilTesting)
 
 def customCommands: Seq[Setting[_]] = Seq(
   commands += Command.command("release") { state =>

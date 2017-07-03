@@ -1,0 +1,70 @@
+{
+  "codecNamespace": "sbt.librarymanagement",
+  "types": [
+    {
+      "name": "IvyConfiguration",
+      "namespace": "sbt.internal.librarymanagement",
+      "target": "Scala",
+      "type": "interface",
+      "fields": [
+        { "name": "lock",          "type": "xsbti.GlobalLock?"                   },
+        { "name": "baseDirectory", "type": "java.io.File"                        },
+        { "name": "log",           "type": "xsbti.Logger"                        },
+        { "name": "updateOptions", "type": "sbt.librarymanagement.UpdateOptions" }
+      ],
+      "types": [
+        {
+          "name": "InlineIvyConfiguration",
+          "namespace": "sbt.internal.librarymanagement",
+          "target": "Scala",
+          "type": "record",
+          "fields": [
+            { "name": "paths",                "type": "sbt.internal.librarymanagement.IvyPaths"    },
+            { "name": "resolvers",            "type": "sbt.librarymanagement.Resolver*"            },
+            { "name": "otherResolvers",       "type": "sbt.librarymanagement.Resolver*"            },
+            { "name": "moduleConfigurations", "type": "sbt.librarymanagement.ModuleConfiguration*" },
+            { "name": "checksums",            "type": "String*"                                    },
+            { "name": "managedChecksums",     "type": "Boolean"                                    },
+            { "name": "resolutionCacheDir",   "type": "java.io.File?"                              }
+          ],
+          "extra": [
+            "def this(",
+            "  paths:                sbt.internal.librarymanagement.IvyPaths,",
+            "  resolvers:            Vector[sbt.librarymanagement.Resolver],",
+            "  otherResolvers:       Vector[sbt.librarymanagement.Resolver],",
+            "  moduleConfigurations: Vector[sbt.librarymanagement.ModuleConfiguration],",
+            "  lock:                 Option[xsbti.GlobalLock],",
+            "  checksums:            Vector[String],",
+            "  managedChecksums:     Boolean,",
+            "  resolutionCacheDir:   Option[java.io.File],",
+            "  updateOptions:        sbt.librarymanagement.UpdateOptions,",
+            "  log:                  xsbti.Logger",
+            ") =",
+            "  this(lock, paths.baseDirectory, log, updateOptions, paths, resolvers, otherResolvers,",
+            "    moduleConfigurations, checksums, managedChecksums, resolutionCacheDir)"
+          ]
+        },
+        {
+          "name": "ExternalIvyConfiguration",
+          "namespace": "sbt.internal.librarymanagement",
+          "target": "Scala",
+          "type": "record",
+          "fields": [
+            { "name": "uri",            "type": "java.net.URI"                    },
+            { "name": "extraResolvers", "type": "sbt.librarymanagement.Resolver*" }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "IvyPaths",
+      "namespace": "sbt.internal.librarymanagement",
+      "target": "Scala",
+      "type": "record",
+      "fields": [
+        { "name": "baseDirectory", "type": "java.io.File"  },
+        { "name": "ivyHome",       "type": "java.io.File?" }
+      ]
+    }
+  ]
+}
