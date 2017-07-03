@@ -48,8 +48,8 @@ class IvyRepoSpec extends BaseIvySpecification with DependencyBuilders {
     val c = makeUpdateConfiguration(false, None)
 
     val scalaModuleInfo = m.moduleSettings.scalaModuleInfo
-    val srcTypes = Set("src")
-    val docTypes = Set("javadoc")
+    val srcTypes = Vector("src")
+    val docTypes = Vector("javadoc")
     // These will be the default classifiers that SBT should try, in case a dependency is Maven.
     // In this case though, they will be tried and should fail gracefully - only the
     val attemptedClassifiers = Vector("sources", "javadoc")
@@ -62,6 +62,7 @@ class IvyRepoSpec extends BaseIvySpecification with DependencyBuilders {
       val externalModules = Vector(dep)
       // Note: need to extract ourModuleID so we can plug it in here, can't fish it back out of the IvySbt#Module (`m`)
       GetClassifiersModule(ourModuleID,
+                           scalaModuleInfo,
                            externalModules,
                            Vector(Configurations.Compile),
                            attemptedClassifiers)
@@ -69,14 +70,16 @@ class IvyRepoSpec extends BaseIvySpecification with DependencyBuilders {
 
     val artifactFilter = getArtifactTypeFilter(c.artifactFilter)
     val gcm = GetClassifiersConfiguration(clMod,
-                                          Map.empty,
+                                          Vector.empty,
                                           c.withArtifactFilter(artifactFilter.invert),
-                                          scalaModuleInfo,
                                           srcTypes,
                                           docTypes)
 
     val report2 =
-      IvyActions.updateClassifiers(m.owner, gcm, UnresolvedWarningConfiguration(), Vector(), log)
+      lmEngine()
+        .updateClassifiersEither(gcm, UnresolvedWarningConfiguration(), Vector(), log)
+        .right
+        .get
 
     import Inside._
     inside(report2.configuration("compile").map(_.modules)) {

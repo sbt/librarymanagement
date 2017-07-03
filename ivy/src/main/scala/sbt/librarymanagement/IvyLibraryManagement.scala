@@ -1,12 +1,11 @@
 package sbt
 package librarymanagement
 
-import java.io.File
 import sbt.internal.librarymanagement._
 import sbt.util.Logger
 
 class IvyLibraryManagement(ivyConfiguration: IvyConfiguration, updateOptons: UpdateOptions)
-    extends AbstractLibraryManagement {
+    extends LibraryManagement {
   private[sbt] val ivySbt: IvySbt = new IvySbt(ivyConfiguration)
 
   type Module = ivySbt.Module
@@ -17,7 +16,8 @@ class IvyLibraryManagement(ivyConfiguration: IvyConfiguration, updateOptons: Upd
   def buildModule(
       moduleId: ModuleID,
       deps: Vector[ModuleID],
-      scalaModuleInfo: Option[ScalaModuleInfo]
+      scalaModuleInfo: Option[ScalaModuleInfo],
+      extraConfigurations: Vector[Configuration]
   ): Module = {
     val moduleSetting = InlineConfiguration(
       validate = false,
@@ -25,7 +25,7 @@ class IvyLibraryManagement(ivyConfiguration: IvyConfiguration, updateOptons: Upd
       module = moduleId,
       moduleInfo = ModuleInfo(moduleId.name),
       dependencies = deps
-    ).withConfigurations(Vector(Configurations.Component))
+    ).withConfigurations(extraConfigurations)
     new Module(moduleSetting)
   }
 

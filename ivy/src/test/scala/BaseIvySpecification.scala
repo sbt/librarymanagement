@@ -17,6 +17,8 @@ trait BaseIvySpecification extends UnitSpec {
     ModuleID("com.example", "foo", "0.1.0").withConfigurations(Some("compile"))
 
   lazy val log = ConsoleLogger()
+  def lmEngine(uo: UpdateOptions = UpdateOptions()): LibraryManagement =
+    new IvyLibraryManagement(mkIvyConfiguration(uo), uo)
 
   def configurations = Vector(Compile, Test, Runtime)
   def module(moduleId: ModuleID,

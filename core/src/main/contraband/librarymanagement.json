@@ -73,6 +73,32 @@
       ]
     },
     {
+      "name": "GetClassifiersConfiguration",
+      "namespace": "sbt.librarymanagement",
+      "target": "Scala",
+      "type": "record",
+      "fields": [
+        { "name": "module",              "type": "sbt.librarymanagement.GetClassifiersModule" },
+        { "name": "excludes",            "type": "scala.Tuple2[sbt.librarymanagement.ModuleID, scala.Vector[String]]*" },
+        { "name": "updateConfiguration", "type": "sbt.librarymanagement.UpdateConfiguration" },
+        { "name": "sourceArtifactTypes", "type": "String*" },
+        { "name": "docArtifactTypes",    "type": "String*" }
+      ]
+    },
+    {
+      "name": "GetClassifiersModule",
+      "namespace": "sbt.librarymanagement",
+      "target": "Scala",
+      "type": "record",
+      "fields": [
+        { "name": "id",              "type": "sbt.librarymanagement.ModuleID" },
+        { "name": "scalaModuleInfo", "type": "sbt.librarymanagement.ScalaModuleInfo?" },
+        { "name": "dependencies",    "type": "sbt.librarymanagement.ModuleID*" },
+        { "name": "configurations",  "type": "sbt.librarymanagement.Configuration*" },
+        { "name": "classifiers",     "type": "String*" }
+      ]
+    },
+    {
       "name": "PublishConfiguration",
       "namespace": "sbt.librarymanagement",
       "target": "Scala",

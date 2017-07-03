@@ -13,7 +13,6 @@ trait LibraryManagementCodec extends sjsonnew.BasicJsonProtocol
   with sbt.librarymanagement.ConfigurationFormats
   with sbt.librarymanagement.ChecksumFormats
   with sbt.librarymanagement.ArtifactFormats
-  with sbt.librarymanagement.PublishConfigurationFormats
   with sbt.librarymanagement.DisabledFormats
   with sbt.librarymanagement.BinaryFormats
   with sbt.librarymanagement.ConstantFormats
@@ -22,6 +21,10 @@ trait LibraryManagementCodec extends sjsonnew.BasicJsonProtocol
   with sbt.librarymanagement.CrossVersionFormats
   with sbt.librarymanagement.InclExclRuleFormats
   with sbt.librarymanagement.ModuleIDFormats
+  with sbt.librarymanagement.ScalaModuleInfoFormats
+  with sbt.librarymanagement.GetClassifiersModuleFormats
+  with sbt.librarymanagement.GetClassifiersConfigurationFormats
+  with sbt.librarymanagement.PublishConfigurationFormats
   with sbt.librarymanagement.CallerFormats
   with sbt.librarymanagement.ModuleReportFormats
   with sbt.librarymanagement.OrganizationArtifactReportFormats
@@ -29,7 +32,6 @@ trait LibraryManagementCodec extends sjsonnew.BasicJsonProtocol
   with sbt.librarymanagement.ConflictManagerFormats
   with sbt.librarymanagement.DeveloperFormats
   with sbt.librarymanagement.FileConfigurationFormats
-  with sbt.librarymanagement.ScalaModuleInfoFormats
   with sbt.librarymanagement.ChainedResolverFormats
   with sbt.librarymanagement.MavenRepoFormats
   with sbt.librarymanagement.MavenCacheFormats
