@@ -3,6 +3,7 @@ package librarymanagement
 
 import sbt.internal.librarymanagement._
 import sbt.util.Logger
+import java.io.File
 
 class IvyLibraryManagement(ivyConfiguration: IvyConfiguration, updateOptons: UpdateOptions)
     extends LibraryManagement {
@@ -32,6 +33,30 @@ class IvyLibraryManagement(ivyConfiguration: IvyConfiguration, updateOptons: Upd
                    uwconfig: UnresolvedWarningConfiguration,
                    log: Logger): Either[UnresolvedWarning, UpdateReport] =
     IvyActions.updateEither(toModule(module), configuration, uwconfig, log)
+
+  /**
+   * Makes the .ivy file for the given module.
+   *
+   * @param module The module to be resolved.
+   * @param configuration The makeIvyFile configuration.
+   * @param log The logger.
+   */
+  def makeIvyFile(module: ModuleDescriptor,
+                  configuration: DeliverConfiguration,
+                  log: Logger): File =
+    IvyActions.deliver(toModule(module), configuration, log)
+
+  /**
+   * Makes the .pom file for the given module.
+   *
+   * @param module The module to be resolved.
+   * @param configuration The makeIvyFile configuration.
+   * @param log The logger.
+   */
+  def makePomFile(module: ModuleDescriptor,
+                  configuration: MakePomConfiguration,
+                  log: Logger): File =
+    IvyActions.makePomFile(toModule(module), configuration, log)
 
   def publish(module: ModuleDescriptor, configuration: PublishConfiguration, log: Logger): Unit =
     IvyActions.publish(toModule(module), configuration, log)

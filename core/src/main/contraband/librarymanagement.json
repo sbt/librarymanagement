@@ -73,6 +73,18 @@
       ]
     },
     {
+      "name": "DeliverConfiguration",
+      "namespace": "sbt.librarymanagement",
+      "target": "Scala",
+      "type": "record",
+      "fields": [
+        { "name": "deliverIvyPattern", "type": "String?",                              "default": "None", "since": "0.0.1" },
+        { "name": "status",            "type": "String?",                              "default": "None", "since": "0.0.1" },
+        { "name": "configurations",    "type": "scala.Vector[String]?",                "default": "None", "since": "0.0.1" },
+        { "name": "logging",           "type": "sbt.librarymanagement.UpdateLogging?", "default": "None", "since": "0.0.1" }
+      ]
+    },
+    {
       "name": "GetClassifiersConfiguration",
       "namespace": "sbt.librarymanagement",
       "target": "Scala",

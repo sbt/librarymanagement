@@ -47,4 +47,7 @@ object InternalDefaults {
 
   def getLogicalClock(opt: Option[LogicalClock]): LogicalClock =
     opt.getOrElse(LogicalClock.unknown)
+
+  def getDeliverStatus(opt: Option[String]): String =
+    opt.getOrElse("release")
 }

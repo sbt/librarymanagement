@@ -4,7 +4,6 @@
 package sbt.internal.librarymanagement
 
 import java.io.File
-import scala.xml.{ Node => XNode, NodeSeq }
 import ivyint.CachedResolutionResolveEngine
 
 import org.apache.ivy.Ivy
@@ -25,24 +24,6 @@ import sbt.util.Logger
 import sbt.librarymanagement._, syntax._
 import InternalDefaults._
 import UpdateClassifiersUtil._
-
-final class DeliverConfiguration(
-    val deliverIvyPattern: String,
-    val status: String,
-    val configurations: Option[Vector[Configuration]],
-    val logging: UpdateLogging
-)
-
-final class MakePomConfiguration(
-    val file: File,
-    val moduleInfo: ModuleInfo,
-    val configurations: Option[Vector[Configuration]] = None,
-    val extra: NodeSeq = NodeSeq.Empty,
-    val process: XNode => XNode = n => n,
-    val filterRepositories: MavenRepository => Boolean = _ => true,
-    val allRepositories: Boolean,
-    val includeTypes: Set[String] = Set(Artifact.DefaultType, Artifact.PomType)
-)
 
 object IvyActions {
 
@@ -75,7 +56,7 @@ object IvyActions {
     }
 
   /** Creates a Maven pom from the given Ivy configuration*/
-  def makePom(module: IvySbt#Module, configuration: MakePomConfiguration, log: Logger): Unit = {
+  def makePomFile(module: IvySbt#Module, configuration: MakePomConfiguration, log: Logger): File = {
     import configuration.{
       allRepositories,
       moduleInfo,
@@ -100,20 +81,33 @@ object IvyActions {
         file
       )
       log.info("Wrote " + file.getAbsolutePath)
+      file
     }
   }
 
   def deliver(module: IvySbt#Module, configuration: DeliverConfiguration, log: Logger): File = {
-    import configuration._
+    val deliverIvyPattern = configuration.deliverIvyPattern
+      .getOrElse(sys.error("deliverIvyPattern must be specified."))
+    val status = getDeliverStatus(configuration.status)
     module.withModule(log) {
       case (ivy, md, _) =>
         val revID = md.getModuleRevisionId
         val options = DeliverOptions.newInstance(ivy.getSettings).setStatus(status)
-        options.setConfs(IvySbt.getConfigurations(md, configurations))
+        options.setConfs(getConfigurations(md, configuration.configurations))
         ivy.deliver(revID, revID.getRevision, deliverIvyPattern, options)
         deliveredFile(ivy, deliverIvyPattern, md)
     }
   }
+
+  def getConfigurations(
+      module: ModuleDescriptor,
+      configurations: Option[Vector[String]]
+  ): Array[String] =
+    configurations match {
+      case Some(confs) => confs.toArray
+      case None        => module.getPublicConfigurationsNames
+    }
+
   def deliveredFile(ivy: Ivy, pattern: String, md: ModuleDescriptor): File =
     ivy.getSettings.resolveFile(
       IvyPatternHelper.substitute(pattern, md.getResolvedModuleRevisionId)

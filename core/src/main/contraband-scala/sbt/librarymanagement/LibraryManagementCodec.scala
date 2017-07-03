@@ -10,6 +10,7 @@ trait LibraryManagementCodec extends sjsonnew.BasicJsonProtocol
   with sbt.internal.librarymanagement.formats.LogicalClockFormats
   with sbt.librarymanagement.ArtifactTypeFilterFormats
   with sbt.librarymanagement.UpdateConfigurationFormats
+  with sbt.librarymanagement.DeliverConfigurationFormats
   with sbt.librarymanagement.ConfigurationFormats
   with sbt.librarymanagement.ChecksumFormats
   with sbt.librarymanagement.ArtifactFormats

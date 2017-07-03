@@ -38,6 +38,24 @@ abstract class LibraryManagementInterface {
    * @param log The logger.
    */
   def publish(module: ModuleDescriptor, configuration: PublishConfiguration, log: Logger): Unit
+
+  /**
+   * Makes the .ivy file for the given module.
+   *
+   * @param module The module to be resolved.
+   * @param configuration The makeIvyFile configuration.
+   * @param log The logger.
+   */
+  def makeIvyFile(module: ModuleDescriptor, configuration: DeliverConfiguration, log: Logger): File
+
+  /**
+   * Makes the .pom file for the given module.
+   *
+   * @param module The module to be resolved.
+   * @param configuration The makeIvyFile configuration.
+   * @param log The logger.
+   */
+  def makePomFile(module: ModuleDescriptor, configuration: MakePomConfiguration, log: Logger): File
 }
 
 object LibraryManagementInterface
