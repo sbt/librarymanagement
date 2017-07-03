@@ -30,6 +30,9 @@ object InternalDefaults {
   def getSync(opt: Option[Boolean]): Boolean =
     opt.getOrElse(false)
 
+  def getPublishOverwrite(opt: Option[Boolean]): Boolean =
+    opt.getOrElse(false)
+
   def defaultRetrieveDirectory: File =
     (new File(".")).getAbsoluteFile / "lib_managed"
 
@@ -38,4 +41,7 @@ object InternalDefaults {
 
   def getRetrievePattern(opt: Option[String]): String =
     opt.getOrElse(Resolver.defaultRetrievePattern)
+
+  def getChecksums(opt: Option[Vector[String]]): Vector[String] =
+    opt.getOrElse(Vector("sha1", "md1"))
 }

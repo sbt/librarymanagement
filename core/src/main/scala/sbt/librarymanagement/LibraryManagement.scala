@@ -17,7 +17,7 @@ abstract class LibraryManagement {
                   scalaModuleInfo: Option[ScalaModuleInfo]): ModuleDescriptor
 
   /**
-   * Resolves given module's dependencies performing a retrieval.
+   * Resolves the given module's dependencies performing a retrieval.
    *
    * @param module The module to be resolved.
    * @param configuration The update configuration.
@@ -34,6 +34,15 @@ abstract class LibraryManagement {
                    logicalClock: LogicalClock,
                    metadataDirectory: Option[File],
                    log: Logger): Either[UnresolvedWarning, UpdateReport]
+
+  /**
+   * Publishes the given module.
+   *
+   * @param module The module to be resolved.
+   * @param configuration The publish configuration.
+   * @param log The logger.
+   */
+  def publish(module: ModuleDescriptor, configuration: PublishConfiguration, log: Logger): Unit
 }
 
 /**
@@ -43,7 +52,7 @@ abstract class AbstractLibraryManagement extends LibraryManagement {
   import sbt.internal.librarymanagement.InternalDefaults._
 
   /**
-   * Resolves given dependency, and retrieves the artifacts to a directory.
+   * Resolves the given dependency, and retrieves the artifacts to a directory.
    *
    * @param dependencyId The dependency to be resolved.
    * @param scalaModuleInfo The module info about Scala.
@@ -58,7 +67,7 @@ abstract class AbstractLibraryManagement extends LibraryManagement {
     retrieveEither(dummyModule(dependencyId, scalaModuleInfo), retrieveDirectory, log)
 
   /**
-   * Resolves given module's dependencies, and retrieves the artifacts to a directory.
+   * Resolves the given module's dependencies, and retrieves the artifacts to a directory.
    *
    * @param module The module to be resolved.
    * @param retrieveDirectory The directory to retrieve the files.

@@ -103,14 +103,11 @@ trait BaseIvySpecification extends UnitSpec {
 
   def mkPublishConfiguration(resolver: Resolver,
                              artifacts: Map[Artifact, File]): PublishConfiguration = {
-    new PublishConfiguration(
-      ivyFile = None,
-      resolverName = resolver.name,
-      artifacts = artifacts,
-      checksums = Vector.empty,
-      logging = UpdateLogging.Full,
-      overwrite = true
-    )
+    PublishConfiguration()
+      .withResolverName(resolver.name)
+      .withArtifacts(artifacts.toVector)
+      .withChecksums(Vector.empty)
+      .withOverwrite(true)
   }
 
   def ivyPublish(module: IvySbt#Module, config: PublishConfiguration) = {

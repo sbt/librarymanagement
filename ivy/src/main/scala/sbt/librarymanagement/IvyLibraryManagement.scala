@@ -4,15 +4,10 @@ package librarymanagement
 import java.io.File
 import sbt.internal.librarymanagement._
 import sbt.util.Logger
-import sbt.io.Hash
 
-class DefaultLibraryManagement(ivyConfiguration: IvyConfiguration,
-                               updateOptons: UpdateOptions,
-                               log: Logger)
+class IvyLibraryManagement(ivyConfiguration: IvyConfiguration, updateOptons: UpdateOptions)
     extends AbstractLibraryManagement {
   private[sbt] val ivySbt: IvySbt = new IvySbt(ivyConfiguration)
-  private val sbtOrgTemp = JsonUtil.sbtOrgTemp
-  private val modulePrefixTemp = "temp-module-"
 
   type Module = ivySbt.Module
 
@@ -35,7 +30,7 @@ class DefaultLibraryManagement(ivyConfiguration: IvyConfiguration,
   }
 
   /**
-   * Updates one module's dependencies performing a dependency resolution and retrieval.
+   * Updates given module's dependencies performing a dependency resolution and retrieval.
    *
    * @param module The module to be resolved.
    * @param configuration The update configuration.
@@ -58,6 +53,9 @@ class DefaultLibraryManagement(ivyConfiguration: IvyConfiguration,
                             logicalClock,
                             metadataDirectory,
                             log)
+
+  def publish(module: ModuleDescriptor, configuration: PublishConfiguration, log: Logger): Unit =
+    IvyActions.publish(toModule(module), configuration, log)
 
   private[sbt] def toModule(module: ModuleDescriptor): Module =
     module match {

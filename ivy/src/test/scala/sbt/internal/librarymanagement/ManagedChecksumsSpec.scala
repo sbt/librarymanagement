@@ -3,14 +3,12 @@ package sbt.librarymanagement
 import java.io.File
 
 import org.apache.ivy.util.Message
-import org.scalatest.Assertion
 import sbt.internal.librarymanagement.{
   BaseIvySpecification,
   InlineIvyConfiguration,
   IvyActions,
   IvyConfiguration,
-  IvyPaths,
-  IvySbt
+  IvyPaths
 }
 import sbt.internal.librarymanagement.impl.DependencyBuilders
 import sbt.io.IO

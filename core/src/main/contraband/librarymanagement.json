@@ -38,6 +38,20 @@
       ]
     },
     {
+      "name": "PublishConfiguration",
+      "namespace": "sbt.librarymanagement",
+      "target": "Scala",
+      "type": "record",
+      "fields": [
+        { "name": "metadataFile",  "type": "java.io.File?",                        "default": "None", "since": "0.0.1" },
+        { "name": "resolverName",  "type": "String?",                              "default": "None", "since": "0.0.1" },
+        { "name": "artifacts",     "type": "scala.Tuple2[sbt.librarymanagement.Artifact, java.io.File]*", "default": "Vector()", "since": "0.0.1" },
+        { "name": "checksums",     "type": "scala.Vector[String]?",                "default": "None", "since": "0.0.1" },
+        { "name": "logging",       "type": "sbt.librarymanagement.UpdateLogging?", "default": "None", "since": "0.0.1" },
+        { "name": "overwrite",     "type": "boolean?",                             "default": "None", "since": "0.0.1" }
+      ]
+    },
+    {
       "name": "Artifact",
       "namespace": "sbt.librarymanagement",
       "target": "Scala",

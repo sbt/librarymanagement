@@ -31,23 +31,6 @@ final class DeliverConfiguration(
     val configurations: Option[Vector[Configuration]],
     val logging: UpdateLogging
 )
-final class PublishConfiguration(
-    val ivyFile: Option[File],
-    val resolverName: String,
-    val artifacts: Map[Artifact, File],
-    val checksums: Vector[String],
-    val logging: UpdateLogging,
-    val overwrite: Boolean
-) {
-  def this(
-      ivyFile: Option[File],
-      resolverName: String,
-      artifacts: Map[Artifact, File],
-      checksums: Vector[String],
-      logging: UpdateLogging
-  ) =
-    this(ivyFile, resolverName, artifacts, checksums, logging, false)
-}
 
 final case class MakePomConfiguration(
     file: File,
@@ -152,7 +135,14 @@ object IvyActions {
     )
 
   def publish(module: IvySbt#Module, configuration: PublishConfiguration, log: Logger): Unit = {
-    import configuration._
+    val resolverName = configuration.resolverName match {
+      case Some(x) => x
+      case _       => sys.error("Resolver name is not specified")
+    }
+    val ivyFile = configuration.metadataFile
+    val artifacts = Map(configuration.artifacts: _*)
+    val checksums = getChecksums(configuration.checksums)
+    val overwrite = getPublishOverwrite(configuration.overwrite)
     module.withModule(log) {
       case (ivy, md, _) =>
         val resolver = ivy.getSettings.getResolver(resolverName)
