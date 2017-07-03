@@ -9,12 +9,11 @@ import sbt.util.Logger
 abstract class LibraryManagementInterface {
 
   /**
-   * Build a ModuleDescriptor that describes a subproject with dependencies.
+   * Builds a ModuleDescriptor that describes a subproject with dependencies.
+   *
+   * @param moduleSetting It contains the information about the module including the dependencies.
    */
-  def buildModule(moduleId: ModuleID,
-                  directDependencies: Vector[ModuleID],
-                  scalaModuleInfo: Option[ScalaModuleInfo],
-                  extraConfigurations: Vector[Configuration]): ModuleDescriptor
+  def buildModule(moduleSetting: InlineConfiguration): ModuleDescriptor
 
   /**
    * Resolves the given module's dependencies performing a retrieval.

@@ -17,6 +17,23 @@ abstract class LibraryManagement extends LibraryManagementInterface {
    */
   def buildModule(moduleId: ModuleID,
                   directDependencies: Vector[ModuleID],
+                  scalaModuleInfo: Option[ScalaModuleInfo],
+                  extraConfigurations: Vector[Configuration]): ModuleDescriptor = {
+    val moduleSetting = InlineConfiguration(
+      validate = false,
+      scalaModuleInfo = scalaModuleInfo,
+      module = moduleId,
+      moduleInfo = ModuleInfo(moduleId.name),
+      dependencies = directDependencies
+    ).withConfigurations(extraConfigurations)
+    buildModule(moduleSetting)
+  }
+
+  /**
+   * Build a ModuleDescriptor that describes a subproject with dependencies.
+   */
+  def buildModule(moduleId: ModuleID,
+                  directDependencies: Vector[ModuleID],
                   scalaModuleInfo: Option[ScalaModuleInfo]): ModuleDescriptor =
     buildModule(moduleId, directDependencies, scalaModuleInfo, Vector(Configurations.Component))
 

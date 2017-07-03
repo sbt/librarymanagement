@@ -3,7 +3,7 @@
  */
 
 // DO NOT EDIT MANUALLY
-package sbt.internal.librarymanagement
+package sbt.librarymanagement
 final class InlineConfiguration private (
   validate: Boolean,
   scalaModuleInfo: Option[sbt.librarymanagement.ScalaModuleInfo],
@@ -65,6 +65,9 @@ final class InlineConfiguration private (
   def withDefaultConfiguration(defaultConfiguration: Option[sbt.librarymanagement.Configuration]): InlineConfiguration = {
     copy(defaultConfiguration = defaultConfiguration)
   }
+  def withDefaultConfiguration(defaultConfiguration: sbt.librarymanagement.Configuration): InlineConfiguration = {
+    copy(defaultConfiguration = Option(defaultConfiguration))
+  }
   def withConflictManager(conflictManager: sbt.librarymanagement.ConflictManager): InlineConfiguration = {
     copy(conflictManager = conflictManager)
   }
@@ -74,5 +77,5 @@ object InlineConfiguration extends sbt.internal.librarymanagement.InlineConfigur
   def apply(validate: Boolean, scalaModuleInfo: Option[sbt.librarymanagement.ScalaModuleInfo], module: sbt.librarymanagement.ModuleID, moduleInfo: sbt.librarymanagement.ModuleInfo, dependencies: Vector[sbt.librarymanagement.ModuleID]): InlineConfiguration = new InlineConfiguration(validate, scalaModuleInfo, module, moduleInfo, dependencies, Set.empty, Vector.empty, scala.xml.NodeSeq.Empty, Vector.empty, None, sbt.librarymanagement.ConflictManager.default)
   def apply(validate: Boolean, scalaModuleInfo: sbt.librarymanagement.ScalaModuleInfo, module: sbt.librarymanagement.ModuleID, moduleInfo: sbt.librarymanagement.ModuleInfo, dependencies: Vector[sbt.librarymanagement.ModuleID]): InlineConfiguration = new InlineConfiguration(validate, Option(scalaModuleInfo), module, moduleInfo, dependencies, Set.empty, Vector.empty, scala.xml.NodeSeq.Empty, Vector.empty, None, sbt.librarymanagement.ConflictManager.default)
   def apply(validate: Boolean, scalaModuleInfo: Option[sbt.librarymanagement.ScalaModuleInfo], module: sbt.librarymanagement.ModuleID, moduleInfo: sbt.librarymanagement.ModuleInfo, dependencies: Vector[sbt.librarymanagement.ModuleID], overrides: Set[sbt.librarymanagement.ModuleID], excludes: Vector[sbt.librarymanagement.InclExclRule], ivyXML: scala.xml.NodeSeq, configurations: Vector[sbt.librarymanagement.Configuration], defaultConfiguration: Option[sbt.librarymanagement.Configuration], conflictManager: sbt.librarymanagement.ConflictManager): InlineConfiguration = new InlineConfiguration(validate, scalaModuleInfo, module, moduleInfo, dependencies, overrides, excludes, ivyXML, configurations, defaultConfiguration, conflictManager)
-  def apply(validate: Boolean, scalaModuleInfo: sbt.librarymanagement.ScalaModuleInfo, module: sbt.librarymanagement.ModuleID, moduleInfo: sbt.librarymanagement.ModuleInfo, dependencies: Vector[sbt.librarymanagement.ModuleID], overrides: Set[sbt.librarymanagement.ModuleID], excludes: Vector[sbt.librarymanagement.InclExclRule], ivyXML: scala.xml.NodeSeq, configurations: Vector[sbt.librarymanagement.Configuration], defaultConfiguration: Option[sbt.librarymanagement.Configuration], conflictManager: sbt.librarymanagement.ConflictManager): InlineConfiguration = new InlineConfiguration(validate, Option(scalaModuleInfo), module, moduleInfo, dependencies, overrides, excludes, ivyXML, configurations, defaultConfiguration, conflictManager)
+  def apply(validate: Boolean, scalaModuleInfo: sbt.librarymanagement.ScalaModuleInfo, module: sbt.librarymanagement.ModuleID, moduleInfo: sbt.librarymanagement.ModuleInfo, dependencies: Vector[sbt.librarymanagement.ModuleID], overrides: Set[sbt.librarymanagement.ModuleID], excludes: Vector[sbt.librarymanagement.InclExclRule], ivyXML: scala.xml.NodeSeq, configurations: Vector[sbt.librarymanagement.Configuration], defaultConfiguration: sbt.librarymanagement.Configuration, conflictManager: sbt.librarymanagement.ConflictManager): InlineConfiguration = new InlineConfiguration(validate, Option(scalaModuleInfo), module, moduleInfo, dependencies, overrides, excludes, ivyXML, configurations, Option(defaultConfiguration), conflictManager)
 }

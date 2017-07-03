@@ -500,19 +500,19 @@
         },
         {
           "name": "InlineConfiguration",
-          "namespace": "sbt.internal.librarymanagement",
+          "namespace": "sbt.librarymanagement",
           "target": "Scala",
           "type": "record",
           "fields": [
             { "name": "module",               "type": "sbt.librarymanagement.ModuleID"                                                                                                 },
             { "name": "moduleInfo",           "type": "sbt.librarymanagement.ModuleInfo"                                                                                               },
             { "name": "dependencies",         "type": "sbt.librarymanagement.ModuleID*"                                                                                                },
-            { "name": "overrides",            "type": "Set[sbt.librarymanagement.ModuleID]",              "default": "Set.empty",                                     "since": "0.0.1" },
-            { "name": "excludes",             "type": "sbt.librarymanagement.InclExclRule*", "default": "Vector.empty",                                  "since": "0.0.1" },
-            { "name": "ivyXML",               "type": "scala.xml.NodeSeq",                                "default": "scala.xml.NodeSeq.Empty",                       "since": "0.0.1" },
-            { "name": "configurations",       "type": "sbt.librarymanagement.Configuration*",             "default": "Vector.empty",                                  "since": "0.0.1" },
-            { "name": "defaultConfiguration", "type": "Option[sbt.librarymanagement.Configuration]",      "default": "None",                                          "since": "0.0.1" },
-            { "name": "conflictManager",      "type": "sbt.librarymanagement.ConflictManager",            "default": "sbt.librarymanagement.ConflictManager.default", "since": "0.0.1" }
+            { "name": "overrides",            "type": "Set[sbt.librarymanagement.ModuleID]",   "default": "Set.empty",                                     "since": "0.0.1" },
+            { "name": "excludes",             "type": "sbt.librarymanagement.InclExclRule*",   "default": "Vector.empty",                                  "since": "0.0.1" },
+            { "name": "ivyXML",               "type": "scala.xml.NodeSeq",                     "default": "scala.xml.NodeSeq.Empty",                       "since": "0.0.1" },
+            { "name": "configurations",       "type": "sbt.librarymanagement.Configuration*",  "default": "Vector.empty",                                  "since": "0.0.1" },
+            { "name": "defaultConfiguration", "type": "sbt.librarymanagement.Configuration?",  "default": "None",                                          "since": "0.0.1" },
+            { "name": "conflictManager",      "type": "sbt.librarymanagement.ConflictManager", "default": "sbt.librarymanagement.ConflictManager.default", "since": "0.0.1" }
           ],
           "parentsCompanion": "sbt.internal.librarymanagement.InlineConfigurationFunctions"
         }

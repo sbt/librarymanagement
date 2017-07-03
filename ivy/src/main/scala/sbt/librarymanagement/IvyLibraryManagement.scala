@@ -13,19 +13,7 @@ class IvyLibraryManagement(ivyConfiguration: IvyConfiguration, updateOptons: Upd
   /**
    * Build a ModuleDescriptor that describes a subproject with dependencies.
    */
-  def buildModule(
-      moduleId: ModuleID,
-      deps: Vector[ModuleID],
-      scalaModuleInfo: Option[ScalaModuleInfo],
-      extraConfigurations: Vector[Configuration]
-  ): Module = {
-    val moduleSetting = InlineConfiguration(
-      validate = false,
-      scalaModuleInfo = scalaModuleInfo,
-      module = moduleId,
-      moduleInfo = ModuleInfo(moduleId.name),
-      dependencies = deps
-    ).withConfigurations(extraConfigurations)
+  def buildModule(moduleSetting: InlineConfiguration): ModuleDescriptor = {
     new Module(moduleSetting)
   }
 
