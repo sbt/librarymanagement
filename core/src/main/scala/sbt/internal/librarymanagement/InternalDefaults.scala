@@ -9,6 +9,9 @@ import sbt.io.syntax._
  * This is a list of functions with default values.
  */
 object InternalDefaults {
+  val sbtOrgTemp = JsonUtil.sbtOrgTemp
+  val modulePrefixTemp = "temp-module-"
+
   def getArtifactTypeFilter(opt: Option[ArtifactTypeFilter]): ArtifactTypeFilter =
     opt.getOrElse(Artifact.defaultArtifactTypeFilter)
 
@@ -28,7 +31,7 @@ object InternalDefaults {
     opt.getOrElse(false)
 
   def defaultRetrieveDirectory: File =
-    (new File(".")).getAbsoluteFile / "target" / "retrieve"
+    (new File(".")).getAbsoluteFile / "lib_managed"
 
   def getRetrieveDirectory(opt: Option[File]): File =
     opt.getOrElse(defaultRetrieveDirectory)

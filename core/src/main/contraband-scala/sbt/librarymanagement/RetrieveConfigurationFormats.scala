@@ -5,23 +5,23 @@
 // DO NOT EDIT MANUALLY
 package sbt.librarymanagement
 import _root_.sjsonnew.{ Unbuilder, Builder, JsonFormat, deserializationError }
-trait RetrieveConfigurationFormats { self: sbt.librarymanagement.ConfigurationFormats with sjsonnew.BasicJsonProtocol =>
-implicit lazy val RetrieveConfigurationFormat: JsonFormat[sbt.internal.librarymanagement.RetrieveConfiguration] = new JsonFormat[sbt.internal.librarymanagement.RetrieveConfiguration] {
-  override def read[J](jsOpt: Option[J], unbuilder: Unbuilder[J]): sbt.internal.librarymanagement.RetrieveConfiguration = {
+trait RetrieveConfigurationFormats { self: sjsonnew.BasicJsonProtocol =>
+implicit lazy val RetrieveConfigurationFormat: JsonFormat[sbt.librarymanagement.RetrieveConfiguration] = new JsonFormat[sbt.librarymanagement.RetrieveConfiguration] {
+  override def read[J](jsOpt: Option[J], unbuilder: Unbuilder[J]): sbt.librarymanagement.RetrieveConfiguration = {
     jsOpt match {
       case Some(js) =>
       unbuilder.beginObject(js)
       val retrieveDirectory = unbuilder.readField[Option[java.io.File]]("retrieveDirectory")
       val outputPattern = unbuilder.readField[Option[String]]("outputPattern")
       val sync = unbuilder.readField[Option[Boolean]]("sync")
-      val configurationsToRetrieve = unbuilder.readField[Option[Set[sbt.librarymanagement.Configuration]]]("configurationsToRetrieve")
+      val configurationsToRetrieve = unbuilder.readField[Option[scala.Vector[String]]]("configurationsToRetrieve")
       unbuilder.endObject()
-      sbt.internal.librarymanagement.RetrieveConfiguration(retrieveDirectory, outputPattern, sync, configurationsToRetrieve)
+      sbt.librarymanagement.RetrieveConfiguration(retrieveDirectory, outputPattern, sync, configurationsToRetrieve)
       case None =>
       deserializationError("Expected JsObject but found None")
     }
   }
-  override def write[J](obj: sbt.internal.librarymanagement.RetrieveConfiguration, builder: Builder[J]): Unit = {
+  override def write[J](obj: sbt.librarymanagement.RetrieveConfiguration, builder: Builder[J]): Unit = {
     builder.beginObject()
     builder.addField("retrieveDirectory", obj.retrieveDirectory)
     builder.addField("outputPattern", obj.outputPattern)

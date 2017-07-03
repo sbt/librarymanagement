@@ -3,6 +3,7 @@ package sbt.internal.librarymanagement
 import org.scalatest.Inside
 import sbt.internal.librarymanagement.impl.DependencyBuilders
 import sbt.librarymanagement._
+import InternalDefaults._
 
 class IvyRepoSpec extends BaseIvySpecification with DependencyBuilders {
 
@@ -66,9 +67,10 @@ class IvyRepoSpec extends BaseIvySpecification with DependencyBuilders {
                            attemptedClassifiers)
     }
 
+    val artifactFilter = getArtifactTypeFilter(c.artifactFilter)
     val gcm = GetClassifiersConfiguration(clMod,
                                           Map.empty,
-                                          c.withArtifactFilter(c.artifactFilter.invert),
+                                          c.withArtifactFilter(artifactFilter.invert),
                                           scalaModuleInfo,
                                           srcTypes,
                                           docTypes)

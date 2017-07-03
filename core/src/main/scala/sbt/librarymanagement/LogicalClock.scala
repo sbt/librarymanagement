@@ -1,4 +1,4 @@
-package sbt.internal.librarymanagement
+package sbt.librarymanagement
 
 /**
  * Represents a logical time point for dependency resolution.

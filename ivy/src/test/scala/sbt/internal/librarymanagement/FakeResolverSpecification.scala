@@ -4,7 +4,7 @@ package librarymanagement
 
 import java.io.File
 
-import sbt.librarymanagement.{ ModuleID, RawRepository, Resolver, UpdateReport }
+import sbt.librarymanagement.{ ModuleID, RawRepository, Resolver, UpdateReport, ResolveException }
 
 class FakeResolverSpecification extends BaseIvySpecification {
   import FakeResolver._

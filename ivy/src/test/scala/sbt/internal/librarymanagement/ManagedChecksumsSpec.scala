@@ -10,9 +10,7 @@ import sbt.internal.librarymanagement.{
   IvyActions,
   IvyConfiguration,
   IvyPaths,
-  IvySbt,
-  LogicalClock,
-  UnresolvedWarningConfiguration
+  IvySbt
 }
 import sbt.internal.librarymanagement.impl.DependencyBuilders
 import sbt.io.IO

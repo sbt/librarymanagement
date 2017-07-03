@@ -5,7 +5,6 @@ package sbt.internal.librarymanagement
 
 import java.io.File
 import scala.xml.{ Node => XNode, NodeSeq }
-import collection.mutable
 import ivyint.CachedResolutionResolveEngine
 
 import org.apache.ivy.Ivy
@@ -18,13 +17,11 @@ import org.apache.ivy.core.module.descriptor.{
   ModuleDescriptor,
   DefaultModuleDescriptor
 }
-import org.apache.ivy.core.report.ResolveReport
 import org.apache.ivy.core.resolve.ResolveOptions
 import org.apache.ivy.plugins.resolver.{ BasicResolver, DependencyResolver }
 import org.apache.ivy.util.filter.{ Filter => IvyFilter }
 import sbt.io.{ IO, PathFinder }
-import sbt.util.{ Logger, ShowLines }
-import sbt.internal.util.{ SourcePosition, LinePosition, RangePosition, LineRange }
+import sbt.util.Logger
 import sbt.librarymanagement._, syntax._
 import InternalDefaults._
 
@@ -78,15 +75,6 @@ final case class GetClassifiersModule(
     configurations: Vector[Configuration],
     classifiers: Vector[String]
 )
-
-final class UnresolvedWarningConfiguration private[sbt] (
-    val modulePositions: Map[ModuleID, SourcePosition]
-)
-object UnresolvedWarningConfiguration {
-  def apply(): UnresolvedWarningConfiguration = apply(Map())
-  def apply(modulePositions: Map[ModuleID, SourcePosition]): UnresolvedWarningConfiguration =
-    new UnresolvedWarningConfiguration(modulePositions)
-}
 
 object IvyActions {
 
@@ -150,7 +138,7 @@ object IvyActions {
   def deliver(module: IvySbt#Module, configuration: DeliverConfiguration, log: Logger): File = {
     import configuration._
     module.withModule(log) {
-      case (ivy, md, default) =>
+      case (ivy, md, _) =>
         val revID = md.getModuleRevisionId
         val options = DeliverOptions.newInstance(ivy.getSettings).setStatus(status)
         options.setConfs(IvySbt.getConfigurations(md, configurations))
@@ -166,7 +154,7 @@ object IvyActions {
   def publish(module: IvySbt#Module, configuration: PublishConfiguration, log: Logger): Unit = {
     import configuration._
     module.withModule(log) {
-      case (ivy, md, default) =>
+      case (ivy, md, _) =>
         val resolver = ivy.getSettings.getResolver(resolverName)
         if (resolver eq null) sys.error("Undefined resolver '" + resolverName + "'")
         val ivyArtifact = ivyFile map { file =>
@@ -244,9 +232,12 @@ object IvyActions {
         // Convert to unresolved warning or retrieve update report
         resolutionResult.fold(
           exception => Left(UnresolvedWarning(exception, uwconfig)),
-          updateReport => {
-            val retrieveConf = configuration.retrieve
-            Right(retrieveConf.map(retrieve(log, ivy, updateReport, _)).getOrElse(updateReport))
+          ur0 => {
+            val ur = configuration.retrieveManaged match {
+              case Some(retrieveConf) => retrieve(log, ivy, ur0, retrieveConf)
+              case _                  => ur0
+            }
+            Right(ur)
           }
         )
     }
@@ -562,13 +553,9 @@ object IvyActions {
       config: RetrieveConfiguration
   ): UpdateReport = {
     val copyChecksums = ivy.getVariable(ConvertResolver.ManagedChecksums).toBoolean
-    val toRetrieve = config.configurationsToRetrieve
     val base = getRetrieveDirectory(config.retrieveDirectory)
     val pattern = getRetrievePattern(config.outputPattern)
-    val configurationNames = toRetrieve match {
-      case None          => None
-      case Some(configs) => Some(configs.map(_.name))
-    }
+    val configurationNames = config.configurationsToRetrieve map { _.toSet }
     val existingFiles = PathFinder(base).allPaths.get filterNot { _.isDirectory }
     val toCopy = new collection.mutable.HashSet[(File, File)]
     val retReport = report retrieve { (conf, mid, art, cached) =>
@@ -682,83 +669,10 @@ object IvyActions {
     }
   }
   private[this] def checkFilesPresent(artifacts: Seq[(IArtifact, File)]): Unit = {
-    val missing = artifacts filter { case (a, file) => !file.exists }
+    val missing = artifacts filter { case (_, file) => !file.exists }
     if (missing.nonEmpty)
       sys.error(
         "Missing files for publishing:\n\t" + missing.map(_._2.getAbsolutePath).mkString("\n\t")
       )
-  }
-}
-
-private[sbt] final class ResolveException(
-    val messages: Seq[String],
-    val failed: Seq[ModuleID],
-    val failedPaths: Map[ModuleID, Seq[ModuleID]]
-) extends RuntimeException(messages.mkString("\n")) {
-  def this(messages: Seq[String], failed: Seq[ModuleID]) =
-    this(messages, failed, Map(failed map { m =>
-      m -> Nil
-    }: _*))
-}
-
-/**
- * Represents unresolved dependency warning, which displays reconstructed dependency tree
- * along with source position of each node.
- */
-final class UnresolvedWarning private[sbt] (
-    val resolveException: ResolveException,
-    val failedPaths: Seq[Seq[(ModuleID, Option[SourcePosition])]]
-)
-object UnresolvedWarning {
-  private[sbt] def apply(
-      err: ResolveException,
-      config: UnresolvedWarningConfiguration
-  ): UnresolvedWarning = {
-    def modulePosition(m0: ModuleID): Option[SourcePosition] =
-      config.modulePositions.find {
-        case (m, p) =>
-          (m.organization == m0.organization) &&
-            (m0.name startsWith m.name) &&
-            (m.revision == m0.revision)
-      } map {
-        case (m, p) => p
-      }
-    val failedPaths = err.failed map { x: ModuleID =>
-      err.failedPaths(x).toList.reverse map { id =>
-        (id, modulePosition(id))
-      }
-    }
-    new UnresolvedWarning(err, failedPaths)
-  }
-
-  private[sbt] def sourcePosStr(posOpt: Option[SourcePosition]): String =
-    posOpt match {
-      case Some(LinePosition(path, start))                  => s" ($path#L$start)"
-      case Some(RangePosition(path, LineRange(start, end))) => s" ($path#L$start-$end)"
-      case _                                                => ""
-    }
-  implicit val unresolvedWarningLines: ShowLines[UnresolvedWarning] = ShowLines { a =>
-    val withExtra = a.resolveException.failed.filter(_.extraDependencyAttributes.nonEmpty)
-    val buffer = mutable.ListBuffer[String]()
-    if (withExtra.nonEmpty) {
-      buffer += "\n\tNote: Some unresolved dependencies have extra attributes.  Check that these dependencies exist with the requested attributes."
-      withExtra foreach { id =>
-        buffer += "\t\t" + id
-      }
-    }
-    if (a.failedPaths.nonEmpty) {
-      buffer += "\n\tNote: Unresolved dependencies path:"
-      a.failedPaths foreach { path =>
-        if (path.nonEmpty) {
-          val head = path.head
-          buffer += "\t\t" + head._1.toString + sourcePosStr(head._2)
-          path.tail foreach {
-            case (m, pos) =>
-              buffer += "\t\t  +- " + m.toString + sourcePosStr(pos)
-          }
-        }
-      }
-    }
-    buffer.toList
   }
 }

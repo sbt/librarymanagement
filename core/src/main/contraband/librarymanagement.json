@@ -8,24 +8,33 @@
       "target": "Scala",
       "type": "record",
       "fields": [
-        { "name": "retrieve",       "type": "sbt.internal.librarymanagement.RetrieveConfiguration?" , "default": "None", "since": "0.0.1" },
-        { "name": "missingOk",      "type": "boolean?"                                              , "default": "None", "since": "0.0.1" },
-        { "name": "logging",        "type": "sbt.librarymanagement.UpdateLogging?"                  , "default": "None", "since": "0.0.1" },
-        { "name": "artifactFilter", "type": "sbt.librarymanagement.ArtifactTypeFilter?"             , "default": "None", "since": "0.0.1" },
-        { "name": "offline",        "type": "boolean?"                                              , "default": "None", "since": "0.0.1" },
-        { "name": "frozen",         "type": "boolean?"                                              , "default": "None", "since": "0.0.1" }
+        {
+          "name": "retrieveManaged",
+          "doc": [
+            "If set to some RetrieveConfiguration, this enables retrieving dependencies to the specified directory.",
+            "Otherwise, dependencies are used directly from the cache."
+          ],
+          "type": "sbt.librarymanagement.RetrieveConfiguration?", 
+          "default": "None", 
+          "since": "0.0.1"
+        },
+        { "name": "missingOk",      "type": "boolean?"                                 , "default": "None", "since": "0.0.1" },
+        { "name": "logging",        "type": "sbt.librarymanagement.UpdateLogging?"     , "default": "None", "since": "0.0.1" },
+        { "name": "artifactFilter", "type": "sbt.librarymanagement.ArtifactTypeFilter?", "default": "None", "since": "0.0.1" },
+        { "name": "offline",        "type": "boolean?"                                 , "default": "None", "since": "0.0.1" },
+        { "name": "frozen",         "type": "boolean?"                                 , "default": "None", "since": "0.0.1" }
       ]
     },
     {
       "name": "RetrieveConfiguration",
-      "namespace": "sbt.internal.librarymanagement",
+      "namespace": "sbt.librarymanagement",
       "target": "Scala",
       "type": "record",
       "fields": [
-        { "name": "retrieveDirectory",        "type": "java.io.File?",                             "default": "None", "since": "0.0.1" },
-        { "name": "outputPattern",            "type": "String?",                                   "default": "None", "since": "0.0.1" },
-        { "name": "sync",                     "type": "boolean?",                                  "default": "None", "since": "0.0.1" },
-        { "name": "configurationsToRetrieve", "type": "Set[sbt.librarymanagement.Configuration]?", "default": "None", "since": "0.0.1" }
+        { "name": "retrieveDirectory",        "type": "java.io.File?",   "default": "None", "since": "0.0.1" },
+        { "name": "outputPattern",            "type": "String?",         "default": "None", "since": "0.0.1" },
+        { "name": "sync",                     "type": "boolean?",        "default": "None", "since": "0.0.2" },
+        { "name": "configurationsToRetrieve", "type": "scala.Vector[String]?", "default": "None", "since": "0.0.2" }
       ]
     },
     {

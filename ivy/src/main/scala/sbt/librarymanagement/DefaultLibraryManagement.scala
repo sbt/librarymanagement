@@ -9,7 +9,7 @@ import sbt.io.Hash
 class DefaultLibraryManagement(ivyConfiguration: IvyConfiguration,
                                updateOptons: UpdateOptions,
                                log: Logger)
-    extends LibraryManagement {
+    extends AbstractLibraryManagement {
   private[sbt] val ivySbt: IvySbt = new IvySbt(ivyConfiguration)
   private val sbtOrgTemp = JsonUtil.sbtOrgTemp
   private val modulePrefixTemp = "temp-module-"
@@ -17,19 +17,8 @@ class DefaultLibraryManagement(ivyConfiguration: IvyConfiguration,
   type Module = ivySbt.Module
 
   /**
-   * Returns a dummy module that depends on `moduleID`.
-   * Note: Sbt's implementation of Ivy requires us to do this, because only the dependencies
-   *       of the specified module will be downloaded.
+   * Build a ModuleDescriptor that describes a subproject with dependencies.
    */
-  def buildModule(moduleId: ModuleID): Module = buildModule(moduleId, None)
-
-  def buildModule(moduleId: ModuleID, scalaModuleInfo: Option[ScalaModuleInfo]): Module = {
-    val sha1 = Hash.toHex(Hash(moduleId.name))
-    val dummyID = ModuleID(sbtOrgTemp, modulePrefixTemp + sha1, moduleId.revision)
-      .withConfigurations(moduleId.configurations)
-    buildModule(dummyID, Vector(moduleId), scalaModuleInfo)
-  }
-
   def buildModule(
       moduleId: ModuleID,
       deps: Vector[ModuleID],
@@ -45,53 +34,33 @@ class DefaultLibraryManagement(ivyConfiguration: IvyConfiguration,
     new Module(moduleSetting)
   }
 
-  private def dependenciesNames(module: ivySbt.Module): String =
-    module.moduleSettings match {
-      // `module` is a dummy module, we will only fetch its dependencies.
-      case ic: InlineConfiguration =>
-        ic.dependencies map {
-          case mID: ModuleID =>
-            import mID._
-            s"$organization % $name % $revision"
-        } mkString ", "
-      case _ =>
-        s"unknown"
-    }
+  /**
+   * Updates one module's dependencies performing a dependency resolution and retrieval.
+   *
+   * @param module The module to be resolved.
+   * @param configuration The update configuration.
+   * @param uwconfig The configuration to handle unresolved warnings.
+   * @param logicalClock The clock necessary to cache ivy.
+   * @param metadataDirectory The base directory used for caching resolution.
+   * @param log The logger.
+   * @return The result, either an unresolved warning or an update report. Note that this
+   *         update report will or will not be successful depending on the `missingOk` option.
+   */
+  def updateEither(module: ModuleDescriptor,
+                   configuration: UpdateConfiguration,
+                   uwconfig: UnresolvedWarningConfiguration,
+                   logicalClock: LogicalClock,
+                   metadataDirectory: Option[File],
+                   log: Logger): Either[UnresolvedWarning, UpdateReport] =
+    IvyActions.updateEither(toModule(module),
+                            configuration,
+                            uwconfig,
+                            logicalClock,
+                            metadataDirectory,
+                            log)
 
-  def update(module: Module,
-             retrieveDirectory: File,
-             predicate: File => Boolean): Option[Vector[File]] = {
-    val retrieveConfiguration = RetrieveConfiguration()
-      .withRetrieveDirectory(retrieveDirectory)
-    val updateConfiguration = UpdateConfiguration()
-      .withRetrieve(retrieveConfiguration)
-      .withMissingOk(true)
-    log.debug(s"Attempting to fetch ${dependenciesNames(module)}. This operation may fail.")
-    IvyActions.updateEither(
-      module,
-      updateConfiguration,
-      UnresolvedWarningConfiguration(),
-      LogicalClock.unknown,
-      None,
-      log
-    ) match {
-      case Left(unresolvedWarning) =>
-        log.debug(s"Couldn't retrieve module ${dependenciesNames(module)}.")
-        None
-      case Right(updateReport) =>
-        val allFiles =
-          for {
-            conf <- updateReport.configurations
-            m <- conf.modules
-            (_, f) <- m.artifacts
-          } yield f
-
-        log.debug(s"Files retrieved for ${dependenciesNames(module)}:")
-        log.debug(allFiles mkString ", ")
-        allFiles filter predicate match {
-          case Seq() => None
-          case files => Some(files)
-        }
+  private[sbt] def toModule(module: ModuleDescriptor): Module =
+    module match {
+      case m: Module => m
     }
-  }
 }

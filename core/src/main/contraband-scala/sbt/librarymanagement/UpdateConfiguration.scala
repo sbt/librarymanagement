@@ -5,7 +5,11 @@
 // DO NOT EDIT MANUALLY
 package sbt.librarymanagement
 final class UpdateConfiguration private (
-  val retrieve: Option[sbt.internal.librarymanagement.RetrieveConfiguration],
+  /**
+   * If set to some RetrieveConfiguration, this enables retrieving dependencies to the specified directory.
+   * Otherwise, dependencies are used directly from the cache.
+   */
+  val retrieveManaged: Option[sbt.librarymanagement.RetrieveConfiguration],
   val missingOk: Option[Boolean],
   val logging: Option[sbt.librarymanagement.UpdateLogging],
   val artifactFilter: Option[sbt.librarymanagement.ArtifactTypeFilter],
@@ -15,23 +19,23 @@ final class UpdateConfiguration private (
   private def this() = this(None, None, None, None, None, None)
   
   override def equals(o: Any): Boolean = o match {
-    case x: UpdateConfiguration => (this.retrieve == x.retrieve) && (this.missingOk == x.missingOk) && (this.logging == x.logging) && (this.artifactFilter == x.artifactFilter) && (this.offline == x.offline) && (this.frozen == x.frozen)
+    case x: UpdateConfiguration => (this.retrieveManaged == x.retrieveManaged) && (this.missingOk == x.missingOk) && (this.logging == x.logging) && (this.artifactFilter == x.artifactFilter) && (this.offline == x.offline) && (this.frozen == x.frozen)
     case _ => false
   }
   override def hashCode: Int = {
-    37 * (37 * (37 * (37 * (37 * (37 * (37 * (17 + "UpdateConfiguration".##) + retrieve.##) + missingOk.##) + logging.##) + artifactFilter.##) + offline.##) + frozen.##)
+    37 * (37 * (37 * (37 * (37 * (37 * (37 * (17 + "UpdateConfiguration".##) + retrieveManaged.##) + missingOk.##) + logging.##) + artifactFilter.##) + offline.##) + frozen.##)
   }
   override def toString: String = {
-    "UpdateConfiguration(" + retrieve + ", " + missingOk + ", " + logging + ", " + artifactFilter + ", " + offline + ", " + frozen + ")"
+    "UpdateConfiguration(" + retrieveManaged + ", " + missingOk + ", " + logging + ", " + artifactFilter + ", " + offline + ", " + frozen + ")"
   }
-  protected[this] def copy(retrieve: Option[sbt.internal.librarymanagement.RetrieveConfiguration] = retrieve, missingOk: Option[Boolean] = missingOk, logging: Option[sbt.librarymanagement.UpdateLogging] = logging, artifactFilter: Option[sbt.librarymanagement.ArtifactTypeFilter] = artifactFilter, offline: Option[Boolean] = offline, frozen: Option[Boolean] = frozen): UpdateConfiguration = {
-    new UpdateConfiguration(retrieve, missingOk, logging, artifactFilter, offline, frozen)
+  protected[this] def copy(retrieveManaged: Option[sbt.librarymanagement.RetrieveConfiguration] = retrieveManaged, missingOk: Option[Boolean] = missingOk, logging: Option[sbt.librarymanagement.UpdateLogging] = logging, artifactFilter: Option[sbt.librarymanagement.ArtifactTypeFilter] = artifactFilter, offline: Option[Boolean] = offline, frozen: Option[Boolean] = frozen): UpdateConfiguration = {
+    new UpdateConfiguration(retrieveManaged, missingOk, logging, artifactFilter, offline, frozen)
   }
-  def withRetrieve(retrieve: Option[sbt.internal.librarymanagement.RetrieveConfiguration]): UpdateConfiguration = {
-    copy(retrieve = retrieve)
+  def withRetrieveManaged(retrieveManaged: Option[sbt.librarymanagement.RetrieveConfiguration]): UpdateConfiguration = {
+    copy(retrieveManaged = retrieveManaged)
   }
-  def withRetrieve(retrieve: sbt.internal.librarymanagement.RetrieveConfiguration): UpdateConfiguration = {
-    copy(retrieve = Option(retrieve))
+  def withRetrieveManaged(retrieveManaged: sbt.librarymanagement.RetrieveConfiguration): UpdateConfiguration = {
+    copy(retrieveManaged = Option(retrieveManaged))
   }
   def withMissingOk(missingOk: Option[Boolean]): UpdateConfiguration = {
     copy(missingOk = missingOk)
@@ -67,6 +71,6 @@ final class UpdateConfiguration private (
 object UpdateConfiguration {
   
   def apply(): UpdateConfiguration = new UpdateConfiguration(None, None, None, None, None, None)
-  def apply(retrieve: Option[sbt.internal.librarymanagement.RetrieveConfiguration], missingOk: Option[Boolean], logging: Option[sbt.librarymanagement.UpdateLogging], artifactFilter: Option[sbt.librarymanagement.ArtifactTypeFilter], offline: Option[Boolean], frozen: Option[Boolean]): UpdateConfiguration = new UpdateConfiguration(retrieve, missingOk, logging, artifactFilter, offline, frozen)
-  def apply(retrieve: sbt.internal.librarymanagement.RetrieveConfiguration, missingOk: Boolean, logging: sbt.librarymanagement.UpdateLogging, artifactFilter: sbt.librarymanagement.ArtifactTypeFilter, offline: Boolean, frozen: Boolean): UpdateConfiguration = new UpdateConfiguration(Option(retrieve), Option(missingOk), Option(logging), Option(artifactFilter), Option(offline), Option(frozen))
+  def apply(retrieveManaged: Option[sbt.librarymanagement.RetrieveConfiguration], missingOk: Option[Boolean], logging: Option[sbt.librarymanagement.UpdateLogging], artifactFilter: Option[sbt.librarymanagement.ArtifactTypeFilter], offline: Option[Boolean], frozen: Option[Boolean]): UpdateConfiguration = new UpdateConfiguration(retrieveManaged, missingOk, logging, artifactFilter, offline, frozen)
+  def apply(retrieveManaged: sbt.librarymanagement.RetrieveConfiguration, missingOk: Boolean, logging: sbt.librarymanagement.UpdateLogging, artifactFilter: sbt.librarymanagement.ArtifactTypeFilter, offline: Boolean, frozen: Boolean): UpdateConfiguration = new UpdateConfiguration(Option(retrieveManaged), Option(missingOk), Option(logging), Option(artifactFilter), Option(offline), Option(frozen))
 }

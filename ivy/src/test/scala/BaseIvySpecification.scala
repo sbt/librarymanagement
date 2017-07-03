@@ -72,12 +72,10 @@ trait BaseIvySpecification extends UnitSpec {
   def makeUpdateConfiguration(offline: Boolean): UpdateConfiguration = {
     val retrieveConfig =
       RetrieveConfiguration(currentManaged, Resolver.defaultRetrievePattern).withSync(false)
-    UpdateConfiguration(Some(retrieveConfig),
-                        false,
-                        UpdateLogging.Full,
-                        ArtifactTypeFilter.forbid(Set("src", "doc")),
-                        offline,
-                        false)
+    UpdateConfiguration()
+      .withRetrieveManaged(retrieveConfig)
+      .withLogging(UpdateLogging.Full)
+      .withOffline(offline)
   }
 
   def ivyUpdateEither(module: IvySbt#Module): Either[UnresolvedWarning, UpdateReport] = {
