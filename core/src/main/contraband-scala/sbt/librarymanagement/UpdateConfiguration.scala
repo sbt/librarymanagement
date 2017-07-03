@@ -17,26 +17,28 @@ final class UpdateConfiguration private (
   val missingOk: Option[Boolean],
   /** Logging setting used specifially for library management. */
   val logging: Option[sbt.librarymanagement.UpdateLogging],
-  /** The clock that may be used for caching */
+  /** The clock that may be used for caching. */
   val logicalClock: Option[sbt.librarymanagement.LogicalClock],
+  /** The base directory that may be used to store metadata. */
+  val metadataDirectory: Option[java.io.File],
   val artifactFilter: Option[sbt.librarymanagement.ArtifactTypeFilter],
   val offline: Option[Boolean],
   val frozen: Option[Boolean]) extends Serializable {
   
-  private def this() = this(None, None, None, None, None, None, None)
+  private def this() = this(None, None, None, None, None, None, None, None)
   
   override def equals(o: Any): Boolean = o match {
-    case x: UpdateConfiguration => (this.retrieveManaged == x.retrieveManaged) && (this.missingOk == x.missingOk) && (this.logging == x.logging) && (this.logicalClock == x.logicalClock) && (this.artifactFilter == x.artifactFilter) && (this.offline == x.offline) && (this.frozen == x.frozen)
+    case x: UpdateConfiguration => (this.retrieveManaged == x.retrieveManaged) && (this.missingOk == x.missingOk) && (this.logging == x.logging) && (this.logicalClock == x.logicalClock) && (this.metadataDirectory == x.metadataDirectory) && (this.artifactFilter == x.artifactFilter) && (this.offline == x.offline) && (this.frozen == x.frozen)
     case _ => false
   }
   override def hashCode: Int = {
-    37 * (37 * (37 * (37 * (37 * (37 * (37 * (37 * (17 + "UpdateConfiguration".##) + retrieveManaged.##) + missingOk.##) + logging.##) + logicalClock.##) + artifactFilter.##) + offline.##) + frozen.##)
+    37 * (37 * (37 * (37 * (37 * (37 * (37 * (37 * (37 * (17 + "UpdateConfiguration".##) + retrieveManaged.##) + missingOk.##) + logging.##) + logicalClock.##) + metadataDirectory.##) + artifactFilter.##) + offline.##) + frozen.##)
   }
   override def toString: String = {
-    "UpdateConfiguration(" + retrieveManaged + ", " + missingOk + ", " + logging + ", " + logicalClock + ", " + artifactFilter + ", " + offline + ", " + frozen + ")"
+    "UpdateConfiguration(" + retrieveManaged + ", " + missingOk + ", " + logging + ", " + logicalClock + ", " + metadataDirectory + ", " + artifactFilter + ", " + offline + ", " + frozen + ")"
   }
-  protected[this] def copy(retrieveManaged: Option[sbt.librarymanagement.RetrieveConfiguration] = retrieveManaged, missingOk: Option[Boolean] = missingOk, logging: Option[sbt.librarymanagement.UpdateLogging] = logging, logicalClock: Option[sbt.librarymanagement.LogicalClock] = logicalClock, artifactFilter: Option[sbt.librarymanagement.ArtifactTypeFilter] = artifactFilter, offline: Option[Boolean] = offline, frozen: Option[Boolean] = frozen): UpdateConfiguration = {
-    new UpdateConfiguration(retrieveManaged, missingOk, logging, logicalClock, artifactFilter, offline, frozen)
+  protected[this] def copy(retrieveManaged: Option[sbt.librarymanagement.RetrieveConfiguration] = retrieveManaged, missingOk: Option[Boolean] = missingOk, logging: Option[sbt.librarymanagement.UpdateLogging] = logging, logicalClock: Option[sbt.librarymanagement.LogicalClock] = logicalClock, metadataDirectory: Option[java.io.File] = metadataDirectory, artifactFilter: Option[sbt.librarymanagement.ArtifactTypeFilter] = artifactFilter, offline: Option[Boolean] = offline, frozen: Option[Boolean] = frozen): UpdateConfiguration = {
+    new UpdateConfiguration(retrieveManaged, missingOk, logging, logicalClock, metadataDirectory, artifactFilter, offline, frozen)
   }
   def withRetrieveManaged(retrieveManaged: Option[sbt.librarymanagement.RetrieveConfiguration]): UpdateConfiguration = {
     copy(retrieveManaged = retrieveManaged)
@@ -62,6 +64,12 @@ final class UpdateConfiguration private (
   def withLogicalClock(logicalClock: sbt.librarymanagement.LogicalClock): UpdateConfiguration = {
     copy(logicalClock = Option(logicalClock))
   }
+  def withMetadataDirectory(metadataDirectory: Option[java.io.File]): UpdateConfiguration = {
+    copy(metadataDirectory = metadataDirectory)
+  }
+  def withMetadataDirectory(metadataDirectory: java.io.File): UpdateConfiguration = {
+    copy(metadataDirectory = Option(metadataDirectory))
+  }
   def withArtifactFilter(artifactFilter: Option[sbt.librarymanagement.ArtifactTypeFilter]): UpdateConfiguration = {
     copy(artifactFilter = artifactFilter)
   }
@@ -83,7 +91,7 @@ final class UpdateConfiguration private (
 }
 object UpdateConfiguration {
   
-  def apply(): UpdateConfiguration = new UpdateConfiguration(None, None, None, None, None, None, None)
-  def apply(retrieveManaged: Option[sbt.librarymanagement.RetrieveConfiguration], missingOk: Option[Boolean], logging: Option[sbt.librarymanagement.UpdateLogging], logicalClock: Option[sbt.librarymanagement.LogicalClock], artifactFilter: Option[sbt.librarymanagement.ArtifactTypeFilter], offline: Option[Boolean], frozen: Option[Boolean]): UpdateConfiguration = new UpdateConfiguration(retrieveManaged, missingOk, logging, logicalClock, artifactFilter, offline, frozen)
-  def apply(retrieveManaged: sbt.librarymanagement.RetrieveConfiguration, missingOk: Boolean, logging: sbt.librarymanagement.UpdateLogging, logicalClock: sbt.librarymanagement.LogicalClock, artifactFilter: sbt.librarymanagement.ArtifactTypeFilter, offline: Boolean, frozen: Boolean): UpdateConfiguration = new UpdateConfiguration(Option(retrieveManaged), Option(missingOk), Option(logging), Option(logicalClock), Option(artifactFilter), Option(offline), Option(frozen))
+  def apply(): UpdateConfiguration = new UpdateConfiguration(None, None, None, None, None, None, None, None)
+  def apply(retrieveManaged: Option[sbt.librarymanagement.RetrieveConfiguration], missingOk: Option[Boolean], logging: Option[sbt.librarymanagement.UpdateLogging], logicalClock: Option[sbt.librarymanagement.LogicalClock], metadataDirectory: Option[java.io.File], artifactFilter: Option[sbt.librarymanagement.ArtifactTypeFilter], offline: Option[Boolean], frozen: Option[Boolean]): UpdateConfiguration = new UpdateConfiguration(retrieveManaged, missingOk, logging, logicalClock, metadataDirectory, artifactFilter, offline, frozen)
+  def apply(retrieveManaged: sbt.librarymanagement.RetrieveConfiguration, missingOk: Boolean, logging: sbt.librarymanagement.UpdateLogging, logicalClock: sbt.librarymanagement.LogicalClock, metadataDirectory: java.io.File, artifactFilter: sbt.librarymanagement.ArtifactTypeFilter, offline: Boolean, frozen: Boolean): UpdateConfiguration = new UpdateConfiguration(Option(retrieveManaged), Option(missingOk), Option(logging), Option(logicalClock), Option(metadataDirectory), Option(artifactFilter), Option(offline), Option(frozen))
 }

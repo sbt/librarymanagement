@@ -45,7 +45,7 @@ class IvyRepoSpec extends BaseIvySpecification with DependencyBuilders {
     val m = makeModuleForDepWithSources
 
     // the "default" configuration used in updateEither.
-    val c = makeUpdateConfiguration(false)
+    val c = makeUpdateConfiguration(false, None)
 
     val scalaModuleInfo = m.moduleSettings.scalaModuleInfo
     val srcTypes = Set("src")
@@ -75,12 +75,8 @@ class IvyRepoSpec extends BaseIvySpecification with DependencyBuilders {
                                           srcTypes,
                                           docTypes)
 
-    val report2 = IvyActions.updateClassifiers(m.owner,
-                                               gcm,
-                                               UnresolvedWarningConfiguration(),
-                                               None,
-                                               Vector(),
-                                               log)
+    val report2 =
+      IvyActions.updateClassifiers(m.owner, gcm, UnresolvedWarningConfiguration(), Vector(), log)
 
     import Inside._
     inside(report2.configuration("compile").map(_.modules)) {

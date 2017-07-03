@@ -190,7 +190,6 @@ object IvyActions {
    * @param module The module to be resolved.
    * @param configuration The update configuration.
    * @param uwconfig The configuration to handle unresolved warnings.
-   * @param depDir The base directory used for caching resolution.
    * @param log The logger.
    * @return The result, either an unresolved warning or an update report. Note that this
    *         update report will or will not be successful depending on the `missingOk` option.
@@ -199,7 +198,6 @@ object IvyActions {
       module: IvySbt#Module,
       configuration: UpdateConfiguration,
       uwconfig: UnresolvedWarningConfiguration,
-      depDir: Option[File],
       log: Logger
   ): Either[UnresolvedWarning, UpdateReport] = {
     module.withModule(log) {
@@ -209,12 +207,14 @@ object IvyActions {
         iw.foreach(log.warn(_))
 
         val logicalClock = getLogicalClock(configuration.logicalClock)
+        val metadataDirectory = configuration.metadataDirectory
 
         // Create inputs, resolve and retrieve the module descriptor
         val inputs = ResolutionInputs(ivy, moduleDescriptor, configuration, log)
         val resolutionResult: Either[ResolveException, UpdateReport] = {
-          if (module.owner.configuration.updateOptions.cachedResolution && depDir.isDefined) {
-            val cache = depDir.getOrElse(sys.error("Missing directory for cached resolution."))
+          if (module.owner.configuration.updateOptions.cachedResolution && metadataDirectory.isDefined) {
+            val cache =
+              metadataDirectory.getOrElse(sys.error("Missing directory for cached resolution."))
             cachedResolveAndRetrieve(inputs, logicalClock, cache)
           } else resolveAndRetrieve(inputs, defaultConf)
         }
@@ -252,7 +252,6 @@ object IvyActions {
       label: String,
       config: GetClassifiersConfiguration,
       uwconfig: UnresolvedWarningConfiguration,
-      depDir: Option[File],
       log: Logger
   ): UpdateReport = {
     import config.{ configuration => c, scalaModuleInfo, module => mod }
@@ -261,13 +260,13 @@ object IvyActions {
     val module =
       new ivySbt.Module(
         InlineConfiguration(false, scalaModuleInfo, base, ModuleInfo(base.name), deps))
-    val report = updateEither(module, c, uwconfig, depDir, log) match {
+    val report = updateEither(module, c, uwconfig, log) match {
       case Right(r) => r
       case Left(w) =>
         throw w.resolveException
     }
     val newConfig = config.copy(module = mod.copy(modules = report.allModules))
-    updateClassifiers(ivySbt, newConfig, uwconfig, depDir, Vector(), log)
+    updateClassifiers(ivySbt, newConfig, uwconfig, Vector(), log)
   }
 
   /**
@@ -283,7 +282,6 @@ object IvyActions {
       ivySbt: IvySbt,
       config: GetClassifiersConfiguration,
       uwconfig: UnresolvedWarningConfiguration,
-      depDir: Option[File],
       artifacts: Vector[(String, ModuleID, Artifact, File)],
       log: Logger
   ): UpdateReport = {
@@ -304,7 +302,7 @@ object IvyActions {
     )
     // c.copy ensures c.types is preserved too
     val upConf = c.withMissingOk(true)
-    updateEither(module, upConf, uwconfig, depDir, log) match {
+    updateEither(module, upConf, uwconfig, log) match {
       case Right(r) =>
         // The artifacts that came from Ivy don't have their classifier set, let's set it according to
         // FIXME: this is only done because IDE plugins depend on `classifier` to determine type. They

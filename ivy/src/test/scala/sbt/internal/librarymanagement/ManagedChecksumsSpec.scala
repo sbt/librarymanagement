@@ -15,7 +15,7 @@ import sbt.io.IO
 
 class ManagedChecksumsSpec extends BaseIvySpecification with DependencyBuilders {
   private final def targetDir = Some(currentDependency)
-  private final def onlineConf = makeUpdateConfiguration(false)
+  private final def onlineConf = makeUpdateConfiguration(false, targetDir)
   private final def warningConf = UnresolvedWarningConfiguration()
   private final val Checksum = "sha1"
 
@@ -61,7 +61,7 @@ class ManagedChecksumsSpec extends BaseIvySpecification with DependencyBuilders 
     cleanAll()
     val updateOptions = UpdateOptions()
     val toResolve = module(defaultModuleId, dependencies, None, updateOptions)
-    val res = IvyActions.updateEither(toResolve, onlineConf, warningConf, targetDir, log)
+    val res = IvyActions.updateEither(toResolve, onlineConf, warningConf, log)
     assert(res.isRight, s"Resolution with managed checksums failed! $res")
     val updateReport = res.right.get
     val allModuleReports = updateReport.configurations.flatMap(_.modules)

@@ -15,11 +15,12 @@ implicit lazy val UpdateConfigurationFormat: JsonFormat[sbt.librarymanagement.Up
       val missingOk = unbuilder.readField[Option[Boolean]]("missingOk")
       val logging = unbuilder.readField[Option[sbt.librarymanagement.UpdateLogging]]("logging")
       val logicalClock = unbuilder.readField[Option[sbt.librarymanagement.LogicalClock]]("logicalClock")
+      val metadataDirectory = unbuilder.readField[Option[java.io.File]]("metadataDirectory")
       val artifactFilter = unbuilder.readField[Option[sbt.librarymanagement.ArtifactTypeFilter]]("artifactFilter")
       val offline = unbuilder.readField[Option[Boolean]]("offline")
       val frozen = unbuilder.readField[Option[Boolean]]("frozen")
       unbuilder.endObject()
-      sbt.librarymanagement.UpdateConfiguration(retrieveManaged, missingOk, logging, logicalClock, artifactFilter, offline, frozen)
+      sbt.librarymanagement.UpdateConfiguration(retrieveManaged, missingOk, logging, logicalClock, metadataDirectory, artifactFilter, offline, frozen)
       case None =>
       deserializationError("Expected JsObject but found None")
     }
@@ -30,6 +31,7 @@ implicit lazy val UpdateConfigurationFormat: JsonFormat[sbt.librarymanagement.Up
     builder.addField("missingOk", obj.missingOk)
     builder.addField("logging", obj.logging)
     builder.addField("logicalClock", obj.logicalClock)
+    builder.addField("metadataDirectory", obj.metadataDirectory)
     builder.addField("artifactFilter", obj.artifactFilter)
     builder.addField("offline", obj.offline)
     builder.addField("frozen", obj.frozen)

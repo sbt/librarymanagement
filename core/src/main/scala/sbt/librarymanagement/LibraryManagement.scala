@@ -22,7 +22,6 @@ abstract class LibraryManagement {
    * @param module The module to be resolved.
    * @param configuration The update configuration.
    * @param uwconfig The configuration to handle unresolved warnings.
-   * @param metadataDirectory The base directory used for caching resolution.
    * @param log The logger.
    * @return The result, either an unresolved warning or an update report. Note that this
    *         update report will or will not be successful depending on the `missingOk` option.
@@ -30,7 +29,6 @@ abstract class LibraryManagement {
   def updateEither(module: ModuleDescriptor,
                    configuration: UpdateConfiguration,
                    uwconfig: UnresolvedWarningConfiguration,
-                   metadataDirectory: Option[File],
                    log: Logger): Either[UnresolvedWarning, UpdateReport]
 
   /**
@@ -86,7 +84,6 @@ abstract class AbstractLibraryManagement extends LibraryManagement {
       module,
       updateConfiguration,
       UnresolvedWarningConfiguration(),
-      None,
       log
     ) match {
       case Left(unresolvedWarning) => Left(unresolvedWarning)

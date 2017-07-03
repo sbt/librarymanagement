@@ -35,7 +35,6 @@ class IvyLibraryManagement(ivyConfiguration: IvyConfiguration, updateOptons: Upd
    * @param module The module to be resolved.
    * @param configuration The update configuration.
    * @param uwconfig The configuration to handle unresolved warnings.
-   * @param metadataDirectory The base directory used for caching resolution.
    * @param log The logger.
    * @return The result, either an unresolved warning or an update report. Note that this
    *         update report will or will not be successful depending on the `missingOk` option.
@@ -43,9 +42,8 @@ class IvyLibraryManagement(ivyConfiguration: IvyConfiguration, updateOptons: Upd
   def updateEither(module: ModuleDescriptor,
                    configuration: UpdateConfiguration,
                    uwconfig: UnresolvedWarningConfiguration,
-                   metadataDirectory: Option[File],
                    log: Logger): Either[UnresolvedWarning, UpdateReport] =
-    IvyActions.updateEither(toModule(module), configuration, uwconfig, metadataDirectory, log)
+    IvyActions.updateEither(toModule(module), configuration, uwconfig, log)
 
   def publish(module: ModuleDescriptor, configuration: PublishConfiguration, log: Logger): Unit =
     IvyActions.publish(toModule(module), configuration, log)

@@ -40,9 +40,18 @@
         {
           "name": "logicalClock",
           "doc": [
-            "The clock that may be used for caching"
+            "The clock that may be used for caching."
           ],
           "type": "sbt.librarymanagement.LogicalClock?",
+          "default": "None",
+          "since": "0.0.1" 
+        },
+        {
+          "name": "metadataDirectory",
+          "doc": [
+            "The base directory that may be used to store metadata."
+          ],
+          "type": "java.io.File?",
           "default": "None",
           "since": "0.0.1" 
         },

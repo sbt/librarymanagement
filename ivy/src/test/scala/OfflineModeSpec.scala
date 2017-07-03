@@ -3,12 +3,12 @@ package sbt.librarymanagement
 import org.scalatest.Assertion
 import sbt.internal.librarymanagement._
 import sbt.internal.librarymanagement.impl.DependencyBuilders
-import sbt.io.{ FileFilter, IO, Path }
+import sbt.io.IO
 
 class OfflineModeSpec extends BaseIvySpecification with DependencyBuilders {
   private final def targetDir = Some(currentDependency)
-  private final def onlineConf = makeUpdateConfiguration(false)
-  private final def offlineConf = makeUpdateConfiguration(true)
+  private final def onlineConf = makeUpdateConfiguration(false, targetDir)
+  private final def offlineConf = makeUpdateConfiguration(true, targetDir)
   private final def warningConf = UnresolvedWarningConfiguration()
   private final def normalOptions = UpdateOptions()
   private final def cachedOptions = UpdateOptions().withCachedResolution(true)
@@ -33,7 +33,7 @@ class OfflineModeSpec extends BaseIvySpecification with DependencyBuilders {
       cleanCachedResolutionCache(toResolve)
 
     val onlineResolution =
-      IvyActions.updateEither(toResolve, onlineConf, warningConf, targetDir, log)
+      IvyActions.updateEither(toResolve, onlineConf, warningConf, log)
     assert(onlineResolution.isRight)
     assert(onlineResolution.right.exists(report => report.stats.resolveTime > 0))
 
@@ -42,7 +42,7 @@ class OfflineModeSpec extends BaseIvySpecification with DependencyBuilders {
     val estimatedCachedTime = originalResolveTime * 0.3
 
     val offlineResolution =
-      IvyActions.updateEither(toResolve, offlineConf, warningConf, targetDir, log)
+      IvyActions.updateEither(toResolve, offlineConf, warningConf, log)
     assert(offlineResolution.isRight, s"Offline resolution has failed with $offlineResolution.")
 
     val resolveTime = offlineResolution.right.get.stats.resolveTime
@@ -64,7 +64,7 @@ class OfflineModeSpec extends BaseIvySpecification with DependencyBuilders {
     val toResolve = module(defaultModuleId, dependencies, None, updateOptions)
     if (updateOptions.cachedResolution) cleanCachedResolutionCache(toResolve)
     val failedOfflineResolution =
-      IvyActions.updateEither(toResolve, offlineConf, warningConf, targetDir, log)
+      IvyActions.updateEither(toResolve, offlineConf, warningConf, log)
     assert(failedOfflineResolution.isLeft)
   }
 
