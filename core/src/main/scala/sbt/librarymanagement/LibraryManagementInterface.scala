@@ -14,7 +14,7 @@ abstract class LibraryManagementInterface {
    * @param moduleSetting It contains the information about the module including the dependencies.
    * @return A `ModuleDescriptor` describing a subproject and its dependencies.
    */
-  def buildModule(moduleSetting: InlineConfiguration): ModuleDescriptor
+  def moduleDescriptor(moduleSetting: InlineConfiguration): ModuleDescriptor
 
   /**
    * Resolves the given module's dependencies performing a retrieval.

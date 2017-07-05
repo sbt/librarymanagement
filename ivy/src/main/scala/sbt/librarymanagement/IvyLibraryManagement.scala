@@ -14,7 +14,7 @@ class IvyLibraryManagement(ivyConfiguration: IvyConfiguration, updateOptons: Upd
   /**
    * Build a ModuleDescriptor that describes a subproject with dependencies.
    */
-  def buildModule(moduleSetting: InlineConfiguration): ModuleDescriptor = {
+  def moduleDescriptor(moduleSetting: InlineConfiguration): ModuleDescriptor = {
     new Module(moduleSetting)
   }
 

@@ -15,10 +15,10 @@ abstract class LibraryManagement extends LibraryManagementInterface {
   /**
    * Build a ModuleDescriptor that describes a subproject with dependencies.
    */
-  def buildModule(moduleId: ModuleID,
-                  directDependencies: Vector[ModuleID],
-                  scalaModuleInfo: Option[ScalaModuleInfo],
-                  extraConfigurations: Vector[Configuration]): ModuleDescriptor = {
+  def moduleDescriptor(moduleId: ModuleID,
+                       directDependencies: Vector[ModuleID],
+                       scalaModuleInfo: Option[ScalaModuleInfo],
+                       extraConfigurations: Vector[Configuration]): ModuleDescriptor = {
     val moduleSetting = InlineConfiguration(
       validate = false,
       scalaModuleInfo = scalaModuleInfo,
@@ -26,16 +26,19 @@ abstract class LibraryManagement extends LibraryManagementInterface {
       moduleInfo = ModuleInfo(moduleId.name),
       dependencies = directDependencies
     ).withConfigurations(extraConfigurations)
-    buildModule(moduleSetting)
+    moduleDescriptor(moduleSetting)
   }
 
   /**
    * Build a ModuleDescriptor that describes a subproject with dependencies.
    */
-  def buildModule(moduleId: ModuleID,
-                  directDependencies: Vector[ModuleID],
-                  scalaModuleInfo: Option[ScalaModuleInfo]): ModuleDescriptor =
-    buildModule(moduleId, directDependencies, scalaModuleInfo, Vector(Configurations.Component))
+  def moduleDescriptor(moduleId: ModuleID,
+                       directDependencies: Vector[ModuleID],
+                       scalaModuleInfo: Option[ScalaModuleInfo]): ModuleDescriptor =
+    moduleDescriptor(moduleId,
+                     directDependencies,
+                     scalaModuleInfo,
+                     Vector(Configurations.Component))
 
   /**
    * Returns a dummy module that depends on `dependencyId`.
@@ -51,7 +54,7 @@ abstract class LibraryManagement extends LibraryManagementInterface {
     val sha1 = Hash.toHex(Hash(dependencyId.name))
     val dummyID = ModuleID(sbtOrgTemp, modulePrefixTemp + sha1, dependencyId.revision)
       .withConfigurations(dependencyId.configurations)
-    buildModule(dummyID, Vector(dependencyId), scalaModuleInfo)
+    moduleDescriptor(dummyID, Vector(dependencyId), scalaModuleInfo)
   }
 
   /**
@@ -120,7 +123,7 @@ abstract class LibraryManagement extends LibraryManagementInterface {
     import config.{ updateConfiguration => c, module => mod }
     import mod.{ id, dependencies => deps, scalaModuleInfo }
     val base = restrictedCopy(id, true).withName(id.name + "$" + label)
-    val module = buildModule(base, deps, scalaModuleInfo)
+    val module = moduleDescriptor(base, deps, scalaModuleInfo)
     val report = update(module, c, uwconfig, log) match {
       case Right(r) => r
       case Left(w) =>
@@ -158,7 +161,7 @@ abstract class LibraryManagement extends LibraryManagementInterface {
     val exls = Map(excludes map { case (k, v) => (k, v.toSet) }: _*)
     val deps = baseModules.distinct flatMap classifiedArtifacts(classifiers, exls, artifacts)
     val base = restrictedCopy(id, true).withName(id.name + classifiers.mkString("$", "_", ""))
-    val module = buildModule(base, deps, scalaModuleInfo, confs)
+    val module = moduleDescriptor(base, deps, scalaModuleInfo, confs)
 
     // c.copy ensures c.types is preserved too
     val upConf = c.withMissingOk(true)
