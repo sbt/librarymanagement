@@ -87,7 +87,7 @@ abstract class LibraryManagement extends LibraryManagementInterface {
       .withRetrieveManaged(retrieveConfiguration)
     // .withMissingOk(true)
     log.debug(s"Attempting to fetch ${dependenciesNames(module)}. This operation may fail.")
-    updateEither(
+    update(
       module,
       updateConfiguration,
       UnresolvedWarningConfiguration(),
@@ -121,7 +121,7 @@ abstract class LibraryManagement extends LibraryManagementInterface {
     import mod.{ id, dependencies => deps, scalaModuleInfo }
     val base = restrictedCopy(id, true).withName(id.name + "$" + label)
     val module = buildModule(base, deps, scalaModuleInfo)
-    val report = updateEither(module, c, uwconfig, log) match {
+    val report = update(module, c, uwconfig, log) match {
       case Right(r) => r
       case Left(w) =>
         throw w.resolveException
@@ -162,7 +162,7 @@ abstract class LibraryManagement extends LibraryManagementInterface {
 
     // c.copy ensures c.types is preserved too
     val upConf = c.withMissingOk(true)
-    updateEither(module, upConf, uwconfig, log) match {
+    update(module, upConf, uwconfig, log) match {
       case Right(r) =>
         // The artifacts that came from Ivy don't have their classifier set, let's set it according to
         // FIXME: this is only done because IDE plugins depend on `classifier` to determine type. They

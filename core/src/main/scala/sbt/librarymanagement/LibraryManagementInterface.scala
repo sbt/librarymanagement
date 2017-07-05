@@ -25,10 +25,10 @@ abstract class LibraryManagementInterface {
    * @return The result, either an unresolved warning or an update report. Note that this
    *         update report will or will not be successful depending on the `missingOk` option.
    */
-  def updateEither(module: ModuleDescriptor,
-                   configuration: UpdateConfiguration,
-                   uwconfig: UnresolvedWarningConfiguration,
-                   log: Logger): Either[UnresolvedWarning, UpdateReport]
+  def update(module: ModuleDescriptor,
+             configuration: UpdateConfiguration,
+             uwconfig: UnresolvedWarningConfiguration,
+             log: Logger): Either[UnresolvedWarning, UpdateReport]
 
   /**
    * Publishes the given module.
