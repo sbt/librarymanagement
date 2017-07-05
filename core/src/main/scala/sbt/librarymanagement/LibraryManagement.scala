@@ -108,7 +108,7 @@ abstract class LibraryManagement extends LibraryManagementInterface {
     val updateConfiguration = UpdateConfiguration()
       .withRetrieveManaged(retrieveConfiguration)
     // .withMissingOk(true)
-    log.debug(s"Attempting to fetch ${dependenciesNames(module)}. This operation may fail.")
+    log.debug(s"Attempting to fetch ${directDependenciesNames(module)}. This operation may fail.")
     update(
       module,
       updateConfiguration,
@@ -123,7 +123,7 @@ abstract class LibraryManagement extends LibraryManagementInterface {
             m <- conf.modules
             (_, f) <- m.artifacts
           } yield f
-        log.debug(s"Files retrieved for ${dependenciesNames(module)}:")
+        log.debug(s"Files retrieved for ${directDependenciesNames(module)}:")
         log.debug(allFiles mkString ", ")
         // allFiles filter predicate match {
         //   case Seq() => None
@@ -202,7 +202,7 @@ abstract class LibraryManagement extends LibraryManagementInterface {
     }
   }
 
-  protected def dependenciesNames(module: ModuleDescriptor): String =
+  protected def directDependenciesNames(module: ModuleDescriptor): String =
     (module.directDependencies map {
       case mID: ModuleID =>
         import mID._
