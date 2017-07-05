@@ -226,7 +226,7 @@ object EvictionWarning {
       options: EvictionWarningOptions,
       reports: Seq[OrganizationArtifactReport]
   ): EvictionWarning = {
-    val directDependencies = module.directDependenciesForWarning
+    val directDependencies = module.directDependencies
     val pairs = reports map { detail =>
       val evicteds = detail.modules filter { _.evicted }
       val winner = (detail.modules filterNot { _.evicted }).headOption

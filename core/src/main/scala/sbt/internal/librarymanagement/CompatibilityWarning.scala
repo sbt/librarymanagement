@@ -45,7 +45,7 @@ private[sbt] object CompatibilityWarning {
         case Some(c) => (c.split(",").toSet intersect monitoredConfigsStr).nonEmpty
         case None    => monitoredConfigsStr contains "compile"
       }
-    module.directDependenciesForWarning foreach { m =>
+    module.directDependencies foreach { m =>
       if (!m.isTransitive && inMonitoredConfigs(m.configurations)) {
         log.warn(
           s"""Found intransitive dependency ($m) while publishMavenStyle is true, but Maven repositories

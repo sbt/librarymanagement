@@ -181,7 +181,7 @@ abstract class LibraryManagement extends LibraryManagementInterface {
   }
 
   protected def dependenciesNames(module: ModuleDescriptor): String =
-    (module.directDependenciesForWarning map {
+    (module.directDependencies map {
       case mID: ModuleID =>
         import mID._
         s"$organization % $name % $revision"

@@ -61,6 +61,6 @@ abstract class LibraryManagementInterface {
 object LibraryManagementInterface
 
 trait ModuleDescriptor {
-  def directDependenciesForWarning: Vector[ModuleID]
+  def directDependencies: Vector[ModuleID]
   def scalaModuleInfo: Option[ScalaModuleInfo]
 }
