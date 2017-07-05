@@ -14,6 +14,12 @@ abstract class LibraryManagement extends LibraryManagementInterface {
 
   /**
    * Build a ModuleDescriptor that describes a subproject with dependencies.
+   *
+   * @param moduleId The root module for which to create a `ModuleDescriptor`.
+   * @param directDependencies The direct dependencies of the module.
+   * @param scalaModuleInfo The information about the Scala version used, if any.
+   * @param extraConfigurations Additional configurations that this module has.
+   * @return A `ModuleDescriptor` describing a subproject and its dependencies.
    */
   def moduleDescriptor(moduleId: ModuleID,
                        directDependencies: Vector[ModuleID],
@@ -31,6 +37,12 @@ abstract class LibraryManagement extends LibraryManagementInterface {
 
   /**
    * Build a ModuleDescriptor that describes a subproject with dependencies.
+   * Adds the `Component` configuration.
+   *
+   * @param moduleId The root module for which to create a `ModuleDescriptor`.
+   * @param directDependencies The direct dependencies of the module.
+   * @param scalaModuleInfo The information about the Scala version used, if any.
+   * @return A `ModuleDescriptor` describing a subproject and its dependencies.
    */
   def moduleDescriptor(moduleId: ModuleID,
                        directDependencies: Vector[ModuleID],
