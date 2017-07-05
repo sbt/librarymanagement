@@ -53,16 +53,23 @@ abstract class LibraryManagement extends LibraryManagementInterface {
                      Vector(Configurations.Component))
 
   /**
-   * Returns a dummy module that depends on `dependencyId`.
+   * Returns a `ModuleDescriptor` that depends on `dependencyId`.
+   *
+   * @param dependencyId The module to depend on.
+   * @return A `ModuleDescriptor` that depends on `dependencyId`.
    */
-  def dummyModule(dependencyId: ModuleID): ModuleDescriptor =
-    dummyModule(dependencyId, None)
+  def wrapDependencyInModule(dependencyId: ModuleID): ModuleDescriptor =
+    wrapDependencyInModule(dependencyId, None)
 
   /**
-   * Returns a dummy module that depends on `dependencyId`.
+   * Returns a `ModuleDescriptor` that depends on `dependencyId`.
+   *
+   * @param dependencyId The module to depend on.
+   * @param scalaModuleInfo The information about the Scala verson used, if any.
+   * @return A `ModuleDescriptor` that depends on `dependencyId`.
    */
-  def dummyModule(dependencyId: ModuleID,
-                  scalaModuleInfo: Option[ScalaModuleInfo]): ModuleDescriptor = {
+  def wrapDependencyInModule(dependencyId: ModuleID,
+                             scalaModuleInfo: Option[ScalaModuleInfo]): ModuleDescriptor = {
     val sha1 = Hash.toHex(Hash(dependencyId.name))
     val dummyID = ModuleID(sbtOrgTemp, modulePrefixTemp + sha1, dependencyId.revision)
       .withConfigurations(dependencyId.configurations)
@@ -82,7 +89,7 @@ abstract class LibraryManagement extends LibraryManagementInterface {
                scalaModuleInfo: Option[ScalaModuleInfo],
                retrieveDirectory: File,
                log: Logger): Either[UnresolvedWarning, Vector[File]] =
-    retrieve(dummyModule(dependencyId, scalaModuleInfo), retrieveDirectory, log)
+    retrieve(wrapDependencyInModule(dependencyId, scalaModuleInfo), retrieveDirectory, log)
 
   /**
    * Resolves the given module's dependencies, and retrieves the artifacts to a directory.
