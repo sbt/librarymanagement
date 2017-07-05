@@ -78,11 +78,11 @@ abstract class LibraryManagement extends LibraryManagementInterface {
    * @param log The logger.
    * @return The result, either an unresolved warning or a sequence of files.
    */
-  def retrieveEither(dependencyId: ModuleID,
-                     scalaModuleInfo: Option[ScalaModuleInfo],
-                     retrieveDirectory: File,
-                     log: Logger): Either[UnresolvedWarning, Vector[File]] =
-    retrieveEither(dummyModule(dependencyId, scalaModuleInfo), retrieveDirectory, log)
+  def retrieve(dependencyId: ModuleID,
+               scalaModuleInfo: Option[ScalaModuleInfo],
+               retrieveDirectory: File,
+               log: Logger): Either[UnresolvedWarning, Vector[File]] =
+    retrieve(dummyModule(dependencyId, scalaModuleInfo), retrieveDirectory, log)
 
   /**
    * Resolves the given module's dependencies, and retrieves the artifacts to a directory.
@@ -92,9 +92,9 @@ abstract class LibraryManagement extends LibraryManagementInterface {
    * @param log The logger.
    * @return The result, either an unresolved warning or a sequence of files.
    */
-  def retrieveEither(module: ModuleDescriptor,
-                     retrieveDirectory: File,
-                     log: Logger): Either[UnresolvedWarning, Vector[File]] = {
+  def retrieve(module: ModuleDescriptor,
+               retrieveDirectory: File,
+               log: Logger): Either[UnresolvedWarning, Vector[File]] = {
     // Using the default artifact type filter here, so sources and docs are excluded.
     val retrieveConfiguration = RetrieveConfiguration()
       .withRetrieveDirectory(retrieveDirectory)
@@ -143,7 +143,7 @@ abstract class LibraryManagement extends LibraryManagementInterface {
     }
     val newConfig = config
       .withModule(mod.withDependencies(report.allModules))
-    updateClassifiersEither(newConfig, uwconfig, Vector(), log)
+    updateClassifiers(newConfig, uwconfig, Vector(), log)
   }
 
   /**
@@ -155,7 +155,7 @@ abstract class LibraryManagement extends LibraryManagementInterface {
    * @param config important to set `config.configuration.types` to only allow artifact types that can correspond to
    *               "classified" artifacts (sources and javadocs).
    */
-  def updateClassifiersEither(
+  def updateClassifiers(
       config: GetClassifiersConfiguration,
       uwconfig: UnresolvedWarningConfiguration,
       artifacts: Vector[(String, ModuleID, Artifact, File)],
