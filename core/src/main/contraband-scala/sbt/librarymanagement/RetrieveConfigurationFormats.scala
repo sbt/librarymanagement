@@ -5,7 +5,7 @@
 // DO NOT EDIT MANUALLY
 package sbt.librarymanagement
 import _root_.sjsonnew.{ Unbuilder, Builder, JsonFormat, deserializationError }
-trait RetrieveConfigurationFormats { self: sjsonnew.BasicJsonProtocol =>
+trait RetrieveConfigurationFormats { self: sbt.librarymanagement.ConfigRefFormats with sjsonnew.BasicJsonProtocol =>
 implicit lazy val RetrieveConfigurationFormat: JsonFormat[sbt.librarymanagement.RetrieveConfiguration] = new JsonFormat[sbt.librarymanagement.RetrieveConfiguration] {
   override def read[J](jsOpt: Option[J], unbuilder: Unbuilder[J]): sbt.librarymanagement.RetrieveConfiguration = {
     jsOpt match {
@@ -14,7 +14,7 @@ implicit lazy val RetrieveConfigurationFormat: JsonFormat[sbt.librarymanagement.
       val retrieveDirectory = unbuilder.readField[Option[java.io.File]]("retrieveDirectory")
       val outputPattern = unbuilder.readField[Option[String]]("outputPattern")
       val sync = unbuilder.readField[Option[Boolean]]("sync")
-      val configurationsToRetrieve = unbuilder.readField[Option[scala.Vector[String]]]("configurationsToRetrieve")
+      val configurationsToRetrieve = unbuilder.readField[Option[scala.Vector[sbt.librarymanagement.ConfigRef]]]("configurationsToRetrieve")
       unbuilder.endObject()
       sbt.librarymanagement.RetrieveConfiguration(retrieveDirectory, outputPattern, sync, configurationsToRetrieve)
       case None =>

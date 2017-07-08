@@ -37,8 +37,9 @@ lazy val lmRoot = (project in file("."))
       Seq(
         homepage := Some(url("https://github.com/sbt/librarymanagement")),
         description := "Library management module for sbt",
-        scmInfo := Some(ScmInfo(url("https://github.com/sbt/librarymanagement"),
-                                "git@github.com:sbt/librarymanagement.git")),
+        scmInfo := Some(ScmInfo(
+          url("https://github.com/sbt/librarymanagement"), "git@github.com:sbt/librarymanagement.git"
+        )),
         bintrayPackage := "librarymanagement",
         scalafmtOnCompile := true,
         // scalafmtVersion 1.0.0-RC3 has regression
@@ -66,18 +67,19 @@ lazy val lmCore = (project in file("core"))
     name := "librarymanagement-core",
     libraryDependencies ++= Seq(jsch,
                                 scalaReflect.value,
+                                scalaCompiler.value,
                                 launcherInterface,
                                 gigahorseOkhttp,
                                 okhttpUrlconnection,
-                                sjsonnewScalaJson.value % Optional),
+                                sjsonnewScalaJson.value % Optional,
+                                scalaTest,
+                                scalaCheck),
     libraryDependencies ++= scalaXml.value,
-    resourceGenerators in Compile += Def
-      .task(
-        Util.generateVersionFile(version.value,
-                                 resourceManaged.value,
-                                 streams.value,
-                                 (compile in Compile).value))
-      .taskValue,
+    resourceGenerators in Compile += Def.task(
+      Util.generateVersionFile(
+        version.value, resourceManaged.value, streams.value, (compile in Compile).value
+      )
+    ).taskValue,
     // mimaBinaryIssueFilters ++= Seq(),
     managedSourceDirectories in Compile +=
       baseDirectory.value / "src" / "main" / "contraband-scala",
@@ -93,8 +95,7 @@ lazy val lmCore = (project in file("core"))
   )
   .configure(addSbtIO,
              addSbtUtilLogging,
-             addSbtUtilCollection,
-             addSbtUtilCompletion,
+             addSbtUtilPosition,
              addSbtUtilCache)
 
 lazy val lmIvy = (project in file("ivy"))
@@ -103,19 +104,18 @@ lazy val lmIvy = (project in file("ivy"))
   .settings(
     commonSettings,
     name := "librarymanagement-ivy",
-    libraryDependencies ++= Seq(ivy),
+    libraryDependencies ++= Seq(ivy, scalaTest, scalaCheck),
     managedSourceDirectories in Compile +=
       baseDirectory.value / "src" / "main" / "contraband-scala",
     sourceManaged in (Compile, generateContrabands) := baseDirectory.value / "src" / "main" / "contraband-scala",
     contrabandFormatsForType in generateContrabands in Compile := DatatypeConfig.getFormats,
   )
-  .configure(addSbtUtilTesting)
 
 def customCommands: Seq[Setting[_]] = Seq(
   commands += Command.command("release") { state =>
     // "clean" ::
-    "so compile" ::
-      "so publishSigned" ::
+    "+compile" ::
+      "+publishSigned" ::
       "reload" ::
       state
   }

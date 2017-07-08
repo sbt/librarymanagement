@@ -5,13 +5,13 @@
 // DO NOT EDIT MANUALLY
 package sbt.librarymanagement
 trait LibraryManagementCodec extends sjsonnew.BasicJsonProtocol
+  with sbt.librarymanagement.ConfigRefFormats
   with sbt.librarymanagement.RetrieveConfigurationFormats
   with sbt.librarymanagement.UpdateLoggingFormats
   with sbt.internal.librarymanagement.formats.LogicalClockFormats
   with sbt.librarymanagement.ArtifactTypeFilterFormats
   with sbt.librarymanagement.UpdateConfigurationFormats
   with sbt.librarymanagement.DeliverConfigurationFormats
-  with sbt.librarymanagement.ConfigurationFormats
   with sbt.librarymanagement.ChecksumFormats
   with sbt.librarymanagement.ArtifactFormats
   with sbt.librarymanagement.DisabledFormats
@@ -22,6 +22,7 @@ trait LibraryManagementCodec extends sjsonnew.BasicJsonProtocol
   with sbt.librarymanagement.CrossVersionFormats
   with sbt.librarymanagement.InclExclRuleFormats
   with sbt.librarymanagement.ModuleIDFormats
+  with sbt.librarymanagement.ConfigurationFormats
   with sbt.librarymanagement.ScalaModuleInfoFormats
   with sbt.librarymanagement.GetClassifiersModuleFormats
   with sbt.librarymanagement.GetClassifiersConfigurationFormats
