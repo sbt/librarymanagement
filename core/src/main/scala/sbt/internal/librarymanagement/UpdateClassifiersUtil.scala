@@ -16,7 +16,7 @@ object UpdateClassifiersUtil {
   // This version adds explicit artifact
   def classifiedArtifacts(
       classifiers: Vector[String],
-      exclude: Map[ModuleID, Set[String]],
+      exclude: Map[ModuleID, Set[ConfigRef]],
       artifacts: Vector[(String, ModuleID, Artifact, File)]
   )(m: ModuleID): Option[ModuleID] = {
     def sameModule(m1: ModuleID, m2: ModuleID): Boolean =
@@ -34,10 +34,11 @@ object UpdateClassifiersUtil {
 
   def classifiedArtifacts(
       classifiers: Vector[String],
-      exclude: Map[ModuleID, Set[String]]
+      exclude: Map[ModuleID, Set[ConfigRef]]
   )(m: ModuleID): Option[ModuleID] = {
-    val excluded = exclude getOrElse (restrictedCopy(m, false), Set.empty)
-    val included = classifiers filterNot excluded
+    val excluded: Set[ConfigRef] = exclude getOrElse (restrictedCopy(m, false), Set.empty)
+    val exls = excluded map { _.name }
+    val included = classifiers filterNot exls
     if (included.isEmpty) None
     else {
       Some(

@@ -5,7 +5,7 @@
 // DO NOT EDIT MANUALLY
 package sbt.librarymanagement
 import _root_.sjsonnew.{ Unbuilder, Builder, JsonFormat, deserializationError }
-trait DeliverConfigurationFormats { self: sbt.librarymanagement.UpdateLoggingFormats with sjsonnew.BasicJsonProtocol =>
+trait DeliverConfigurationFormats { self: sbt.librarymanagement.ConfigRefFormats with sbt.librarymanagement.UpdateLoggingFormats with sjsonnew.BasicJsonProtocol =>
 implicit lazy val DeliverConfigurationFormat: JsonFormat[sbt.librarymanagement.DeliverConfiguration] = new JsonFormat[sbt.librarymanagement.DeliverConfiguration] {
   override def read[J](jsOpt: Option[J], unbuilder: Unbuilder[J]): sbt.librarymanagement.DeliverConfiguration = {
     jsOpt match {
@@ -13,7 +13,7 @@ implicit lazy val DeliverConfigurationFormat: JsonFormat[sbt.librarymanagement.D
       unbuilder.beginObject(js)
       val deliverIvyPattern = unbuilder.readField[Option[String]]("deliverIvyPattern")
       val status = unbuilder.readField[Option[String]]("status")
-      val configurations = unbuilder.readField[Option[scala.Vector[String]]]("configurations")
+      val configurations = unbuilder.readField[Option[scala.Vector[sbt.librarymanagement.ConfigRef]]]("configurations")
       val logging = unbuilder.readField[Option[sbt.librarymanagement.UpdateLogging]]("logging")
       unbuilder.endObject()
       sbt.librarymanagement.DeliverConfiguration(deliverIvyPattern, status, configurations, logging)

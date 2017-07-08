@@ -6,7 +6,7 @@
 package sbt.librarymanagement
 final class GetClassifiersConfiguration private (
   val module: sbt.librarymanagement.GetClassifiersModule,
-  val excludes: Vector[scala.Tuple2[sbt.librarymanagement.ModuleID, scala.Vector[String]]],
+  val excludes: Vector[scala.Tuple2[sbt.librarymanagement.ModuleID, scala.Vector[sbt.librarymanagement.ConfigRef]]],
   val updateConfiguration: sbt.librarymanagement.UpdateConfiguration,
   val sourceArtifactTypes: Vector[String],
   val docArtifactTypes: Vector[String]) extends Serializable {
@@ -23,13 +23,13 @@ final class GetClassifiersConfiguration private (
   override def toString: String = {
     "GetClassifiersConfiguration(" + module + ", " + excludes + ", " + updateConfiguration + ", " + sourceArtifactTypes + ", " + docArtifactTypes + ")"
   }
-  protected[this] def copy(module: sbt.librarymanagement.GetClassifiersModule = module, excludes: Vector[scala.Tuple2[sbt.librarymanagement.ModuleID, scala.Vector[String]]] = excludes, updateConfiguration: sbt.librarymanagement.UpdateConfiguration = updateConfiguration, sourceArtifactTypes: Vector[String] = sourceArtifactTypes, docArtifactTypes: Vector[String] = docArtifactTypes): GetClassifiersConfiguration = {
+  protected[this] def copy(module: sbt.librarymanagement.GetClassifiersModule = module, excludes: Vector[scala.Tuple2[sbt.librarymanagement.ModuleID, scala.Vector[sbt.librarymanagement.ConfigRef]]] = excludes, updateConfiguration: sbt.librarymanagement.UpdateConfiguration = updateConfiguration, sourceArtifactTypes: Vector[String] = sourceArtifactTypes, docArtifactTypes: Vector[String] = docArtifactTypes): GetClassifiersConfiguration = {
     new GetClassifiersConfiguration(module, excludes, updateConfiguration, sourceArtifactTypes, docArtifactTypes)
   }
   def withModule(module: sbt.librarymanagement.GetClassifiersModule): GetClassifiersConfiguration = {
     copy(module = module)
   }
-  def withExcludes(excludes: Vector[scala.Tuple2[sbt.librarymanagement.ModuleID, scala.Vector[String]]]): GetClassifiersConfiguration = {
+  def withExcludes(excludes: Vector[scala.Tuple2[sbt.librarymanagement.ModuleID, scala.Vector[sbt.librarymanagement.ConfigRef]]]): GetClassifiersConfiguration = {
     copy(excludes = excludes)
   }
   def withUpdateConfiguration(updateConfiguration: sbt.librarymanagement.UpdateConfiguration): GetClassifiersConfiguration = {
@@ -44,5 +44,5 @@ final class GetClassifiersConfiguration private (
 }
 object GetClassifiersConfiguration {
   
-  def apply(module: sbt.librarymanagement.GetClassifiersModule, excludes: Vector[scala.Tuple2[sbt.librarymanagement.ModuleID, scala.Vector[String]]], updateConfiguration: sbt.librarymanagement.UpdateConfiguration, sourceArtifactTypes: Vector[String], docArtifactTypes: Vector[String]): GetClassifiersConfiguration = new GetClassifiersConfiguration(module, excludes, updateConfiguration, sourceArtifactTypes, docArtifactTypes)
+  def apply(module: sbt.librarymanagement.GetClassifiersModule, excludes: Vector[scala.Tuple2[sbt.librarymanagement.ModuleID, scala.Vector[sbt.librarymanagement.ConfigRef]]], updateConfiguration: sbt.librarymanagement.UpdateConfiguration, sourceArtifactTypes: Vector[String], docArtifactTypes: Vector[String]): GetClassifiersConfiguration = new GetClassifiersConfiguration(module, excludes, updateConfiguration, sourceArtifactTypes, docArtifactTypes)
 }

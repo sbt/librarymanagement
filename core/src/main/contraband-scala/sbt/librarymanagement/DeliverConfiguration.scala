@@ -7,7 +7,7 @@ package sbt.librarymanagement
 final class DeliverConfiguration private (
   val deliverIvyPattern: Option[String],
   val status: Option[String],
-  val configurations: Option[scala.Vector[String]],
+  val configurations: Option[scala.Vector[sbt.librarymanagement.ConfigRef]],
   val logging: Option[sbt.librarymanagement.UpdateLogging]) extends Serializable {
   
   private def this() = this(None, None, None, None)
@@ -22,7 +22,7 @@ final class DeliverConfiguration private (
   override def toString: String = {
     "DeliverConfiguration(" + deliverIvyPattern + ", " + status + ", " + configurations + ", " + logging + ")"
   }
-  protected[this] def copy(deliverIvyPattern: Option[String] = deliverIvyPattern, status: Option[String] = status, configurations: Option[scala.Vector[String]] = configurations, logging: Option[sbt.librarymanagement.UpdateLogging] = logging): DeliverConfiguration = {
+  protected[this] def copy(deliverIvyPattern: Option[String] = deliverIvyPattern, status: Option[String] = status, configurations: Option[scala.Vector[sbt.librarymanagement.ConfigRef]] = configurations, logging: Option[sbt.librarymanagement.UpdateLogging] = logging): DeliverConfiguration = {
     new DeliverConfiguration(deliverIvyPattern, status, configurations, logging)
   }
   def withDeliverIvyPattern(deliverIvyPattern: Option[String]): DeliverConfiguration = {
@@ -37,10 +37,10 @@ final class DeliverConfiguration private (
   def withStatus(status: String): DeliverConfiguration = {
     copy(status = Option(status))
   }
-  def withConfigurations(configurations: Option[scala.Vector[String]]): DeliverConfiguration = {
+  def withConfigurations(configurations: Option[scala.Vector[sbt.librarymanagement.ConfigRef]]): DeliverConfiguration = {
     copy(configurations = configurations)
   }
-  def withConfigurations(configurations: scala.Vector[String]): DeliverConfiguration = {
+  def withConfigurations(configurations: scala.Vector[sbt.librarymanagement.ConfigRef]): DeliverConfiguration = {
     copy(configurations = Option(configurations))
   }
   def withLogging(logging: Option[sbt.librarymanagement.UpdateLogging]): DeliverConfiguration = {
@@ -53,6 +53,6 @@ final class DeliverConfiguration private (
 object DeliverConfiguration {
   
   def apply(): DeliverConfiguration = new DeliverConfiguration(None, None, None, None)
-  def apply(deliverIvyPattern: Option[String], status: Option[String], configurations: Option[scala.Vector[String]], logging: Option[sbt.librarymanagement.UpdateLogging]): DeliverConfiguration = new DeliverConfiguration(deliverIvyPattern, status, configurations, logging)
-  def apply(deliverIvyPattern: String, status: String, configurations: scala.Vector[String], logging: sbt.librarymanagement.UpdateLogging): DeliverConfiguration = new DeliverConfiguration(Option(deliverIvyPattern), Option(status), Option(configurations), Option(logging))
+  def apply(deliverIvyPattern: Option[String], status: Option[String], configurations: Option[scala.Vector[sbt.librarymanagement.ConfigRef]], logging: Option[sbt.librarymanagement.UpdateLogging]): DeliverConfiguration = new DeliverConfiguration(deliverIvyPattern, status, configurations, logging)
+  def apply(deliverIvyPattern: String, status: String, configurations: scala.Vector[sbt.librarymanagement.ConfigRef], logging: sbt.librarymanagement.UpdateLogging): DeliverConfiguration = new DeliverConfiguration(Option(deliverIvyPattern), Option(status), Option(configurations), Option(logging))
 }

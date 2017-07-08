@@ -78,10 +78,10 @@
       "target": "Scala",
       "type": "record",
       "fields": [
-        { "name": "deliverIvyPattern", "type": "String?",                              "default": "None", "since": "0.0.1" },
-        { "name": "status",            "type": "String?",                              "default": "None", "since": "0.0.1" },
-        { "name": "configurations",    "type": "scala.Vector[String]?",                "default": "None", "since": "0.0.1" },
-        { "name": "logging",           "type": "sbt.librarymanagement.UpdateLogging?", "default": "None", "since": "0.0.1" }
+        { "name": "deliverIvyPattern", "type": "String?",                                        "default": "None", "since": "0.0.1" },
+        { "name": "status",            "type": "String?",                                        "default": "None", "since": "0.0.1" },
+        { "name": "configurations",    "type": "scala.Vector[sbt.librarymanagement.ConfigRef]?", "default": "None", "since": "0.0.1" },
+        { "name": "logging",           "type": "sbt.librarymanagement.UpdateLogging?",           "default": "None", "since": "0.0.1" }
       ]
     },
     {
@@ -91,7 +91,7 @@
       "type": "record",
       "fields": [
         { "name": "module",              "type": "sbt.librarymanagement.GetClassifiersModule" },
-        { "name": "excludes",            "type": "scala.Tuple2[sbt.librarymanagement.ModuleID, scala.Vector[String]]*" },
+        { "name": "excludes",            "type": "scala.Tuple2[sbt.librarymanagement.ModuleID, scala.Vector[sbt.librarymanagement.ConfigRef]]*" },
         { "name": "updateConfiguration", "type": "sbt.librarymanagement.UpdateConfiguration" },
         { "name": "sourceArtifactTypes", "type": "String*" },
         { "name": "docArtifactTypes",    "type": "String*" }

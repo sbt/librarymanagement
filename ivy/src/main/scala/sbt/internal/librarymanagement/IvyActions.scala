@@ -101,10 +101,10 @@ object IvyActions {
 
   def getConfigurations(
       module: ModuleDescriptor,
-      configurations: Option[Vector[String]]
+      configurations: Option[Vector[ConfigRef]]
   ): Array[String] =
     configurations match {
-      case Some(confs) => confs.toArray
+      case Some(confs) => (confs map { _.name }).toArray
       case None        => module.getPublicConfigurationsNames
     }
 
