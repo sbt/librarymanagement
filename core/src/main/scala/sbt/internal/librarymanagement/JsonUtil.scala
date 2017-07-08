@@ -1,8 +1,6 @@
 package sbt.internal.librarymanagement
 
 import java.io.File
-// import org.apache.ivy.core
-// import core.module.descriptor.ModuleDescriptor
 import sbt.util.{ CacheStore, Logger }
 import sbt.librarymanagement._
 import sbt.librarymanagement.LibraryManagementCodec._
@@ -12,7 +10,6 @@ private[sbt] object JsonUtil {
   def fakeCallerOrganization = "org.scala-sbt.temp-callers"
 
   def parseUpdateReport(
-      // md: ModuleDescriptor,
       path: File,
       cachedDescriptor: File,
       log: Logger

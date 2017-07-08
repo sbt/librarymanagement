@@ -196,7 +196,7 @@ final class IvySbt(val configuration: IvyConfiguration) { self =>
 
   final class Module(rawModuleSettings: ModuleSettings)
       extends sbt.librarymanagement.ModuleDescriptor {
-    def directDependenciesForWarning: Vector[ModuleID] =
+    def directDependencies: Vector[ModuleID] =
       moduleSettings match {
         case x: InlineConfiguration => x.dependencies
         case _                      => Vector()

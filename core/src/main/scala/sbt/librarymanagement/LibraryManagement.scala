@@ -14,11 +14,17 @@ abstract class LibraryManagement extends LibraryManagementInterface {
 
   /**
    * Build a ModuleDescriptor that describes a subproject with dependencies.
+   *
+   * @param moduleId The root module for which to create a `ModuleDescriptor`.
+   * @param directDependencies The direct dependencies of the module.
+   * @param scalaModuleInfo The information about the Scala version used, if any.
+   * @param extraConfigurations Additional configurations that this module has.
+   * @return A `ModuleDescriptor` describing a subproject and its dependencies.
    */
-  def buildModule(moduleId: ModuleID,
-                  directDependencies: Vector[ModuleID],
-                  scalaModuleInfo: Option[ScalaModuleInfo],
-                  extraConfigurations: Vector[Configuration]): ModuleDescriptor = {
+  def moduleDescriptor(moduleId: ModuleID,
+                       directDependencies: Vector[ModuleID],
+                       scalaModuleInfo: Option[ScalaModuleInfo],
+                       extraConfigurations: Vector[Configuration]): ModuleDescriptor = {
     val moduleSetting = InlineConfiguration(
       validate = false,
       scalaModuleInfo = scalaModuleInfo,
@@ -26,32 +32,48 @@ abstract class LibraryManagement extends LibraryManagementInterface {
       moduleInfo = ModuleInfo(moduleId.name),
       dependencies = directDependencies
     ).withConfigurations(extraConfigurations)
-    buildModule(moduleSetting)
+    moduleDescriptor(moduleSetting)
   }
 
   /**
    * Build a ModuleDescriptor that describes a subproject with dependencies.
+   * Adds the `Component` configuration.
+   *
+   * @param moduleId The root module for which to create a `ModuleDescriptor`.
+   * @param directDependencies The direct dependencies of the module.
+   * @param scalaModuleInfo The information about the Scala version used, if any.
+   * @return A `ModuleDescriptor` describing a subproject and its dependencies.
    */
-  def buildModule(moduleId: ModuleID,
-                  directDependencies: Vector[ModuleID],
-                  scalaModuleInfo: Option[ScalaModuleInfo]): ModuleDescriptor =
-    buildModule(moduleId, directDependencies, scalaModuleInfo, Vector(Configurations.Component))
+  def moduleDescriptor(moduleId: ModuleID,
+                       directDependencies: Vector[ModuleID],
+                       scalaModuleInfo: Option[ScalaModuleInfo]): ModuleDescriptor =
+    moduleDescriptor(moduleId,
+                     directDependencies,
+                     scalaModuleInfo,
+                     Vector(Configurations.Component))
 
   /**
-   * Returns a dummy module that depends on `dependencyId`.
+   * Returns a `ModuleDescriptor` that depends on `dependencyId`.
+   *
+   * @param dependencyId The module to depend on.
+   * @return A `ModuleDescriptor` that depends on `dependencyId`.
    */
-  def dummyModule(dependencyId: ModuleID): ModuleDescriptor =
-    dummyModule(dependencyId, None)
+  def wrapDependencyInModule(dependencyId: ModuleID): ModuleDescriptor =
+    wrapDependencyInModule(dependencyId, None)
 
   /**
-   * Returns a dummy module that depends on `dependencyId`.
+   * Returns a `ModuleDescriptor` that depends on `dependencyId`.
+   *
+   * @param dependencyId The module to depend on.
+   * @param scalaModuleInfo The information about the Scala verson used, if any.
+   * @return A `ModuleDescriptor` that depends on `dependencyId`.
    */
-  def dummyModule(dependencyId: ModuleID,
-                  scalaModuleInfo: Option[ScalaModuleInfo]): ModuleDescriptor = {
+  def wrapDependencyInModule(dependencyId: ModuleID,
+                             scalaModuleInfo: Option[ScalaModuleInfo]): ModuleDescriptor = {
     val sha1 = Hash.toHex(Hash(dependencyId.name))
     val dummyID = ModuleID(sbtOrgTemp, modulePrefixTemp + sha1, dependencyId.revision)
       .withConfigurations(dependencyId.configurations)
-    buildModule(dummyID, Vector(dependencyId), scalaModuleInfo)
+    moduleDescriptor(dummyID, Vector(dependencyId), scalaModuleInfo)
   }
 
   /**
@@ -63,11 +85,11 @@ abstract class LibraryManagement extends LibraryManagementInterface {
    * @param log The logger.
    * @return The result, either an unresolved warning or a sequence of files.
    */
-  def retrieveEither(dependencyId: ModuleID,
-                     scalaModuleInfo: Option[ScalaModuleInfo],
-                     retrieveDirectory: File,
-                     log: Logger): Either[UnresolvedWarning, Vector[File]] =
-    retrieveEither(dummyModule(dependencyId, scalaModuleInfo), retrieveDirectory, log)
+  def retrieve(dependencyId: ModuleID,
+               scalaModuleInfo: Option[ScalaModuleInfo],
+               retrieveDirectory: File,
+               log: Logger): Either[UnresolvedWarning, Vector[File]] =
+    retrieve(wrapDependencyInModule(dependencyId, scalaModuleInfo), retrieveDirectory, log)
 
   /**
    * Resolves the given module's dependencies, and retrieves the artifacts to a directory.
@@ -77,17 +99,17 @@ abstract class LibraryManagement extends LibraryManagementInterface {
    * @param log The logger.
    * @return The result, either an unresolved warning or a sequence of files.
    */
-  def retrieveEither(module: ModuleDescriptor,
-                     retrieveDirectory: File,
-                     log: Logger): Either[UnresolvedWarning, Vector[File]] = {
+  def retrieve(module: ModuleDescriptor,
+               retrieveDirectory: File,
+               log: Logger): Either[UnresolvedWarning, Vector[File]] = {
     // Using the default artifact type filter here, so sources and docs are excluded.
     val retrieveConfiguration = RetrieveConfiguration()
       .withRetrieveDirectory(retrieveDirectory)
     val updateConfiguration = UpdateConfiguration()
       .withRetrieveManaged(retrieveConfiguration)
     // .withMissingOk(true)
-    log.debug(s"Attempting to fetch ${dependenciesNames(module)}. This operation may fail.")
-    updateEither(
+    log.debug(s"Attempting to fetch ${directDependenciesNames(module)}. This operation may fail.")
+    update(
       module,
       updateConfiguration,
       UnresolvedWarningConfiguration(),
@@ -101,7 +123,7 @@ abstract class LibraryManagement extends LibraryManagementInterface {
             m <- conf.modules
             (_, f) <- m.artifacts
           } yield f
-        log.debug(s"Files retrieved for ${dependenciesNames(module)}:")
+        log.debug(s"Files retrieved for ${directDependenciesNames(module)}:")
         log.debug(allFiles mkString ", ")
         // allFiles filter predicate match {
         //   case Seq() => None
@@ -120,15 +142,15 @@ abstract class LibraryManagement extends LibraryManagementInterface {
     import config.{ updateConfiguration => c, module => mod }
     import mod.{ id, dependencies => deps, scalaModuleInfo }
     val base = restrictedCopy(id, true).withName(id.name + "$" + label)
-    val module = buildModule(base, deps, scalaModuleInfo)
-    val report = updateEither(module, c, uwconfig, log) match {
+    val module = moduleDescriptor(base, deps, scalaModuleInfo)
+    val report = update(module, c, uwconfig, log) match {
       case Right(r) => r
       case Left(w) =>
         throw w.resolveException
     }
     val newConfig = config
       .withModule(mod.withDependencies(report.allModules))
-    updateClassifiersEither(newConfig, uwconfig, Vector(), log)
+    updateClassifiers(newConfig, uwconfig, Vector(), log)
   }
 
   /**
@@ -140,7 +162,7 @@ abstract class LibraryManagement extends LibraryManagementInterface {
    * @param config important to set `config.configuration.types` to only allow artifact types that can correspond to
    *               "classified" artifacts (sources and javadocs).
    */
-  def updateClassifiersEither(
+  def updateClassifiers(
       config: GetClassifiersConfiguration,
       uwconfig: UnresolvedWarningConfiguration,
       artifacts: Vector[(String, ModuleID, Artifact, File)],
@@ -158,11 +180,11 @@ abstract class LibraryManagement extends LibraryManagementInterface {
     val exls = Map(excludes map { case (k, v) => (k, v.toSet) }: _*)
     val deps = baseModules.distinct flatMap classifiedArtifacts(classifiers, exls, artifacts)
     val base = restrictedCopy(id, true).withName(id.name + classifiers.mkString("$", "_", ""))
-    val module = buildModule(base, deps, scalaModuleInfo, confs)
+    val module = moduleDescriptor(base, deps, scalaModuleInfo, confs)
 
     // c.copy ensures c.types is preserved too
     val upConf = c.withMissingOk(true)
-    updateEither(module, upConf, uwconfig, log) match {
+    update(module, upConf, uwconfig, log) match {
       case Right(r) =>
         // The artifacts that came from Ivy don't have their classifier set, let's set it according to
         // FIXME: this is only done because IDE plugins depend on `classifier` to determine type. They
@@ -180,8 +202,8 @@ abstract class LibraryManagement extends LibraryManagementInterface {
     }
   }
 
-  protected def dependenciesNames(module: ModuleDescriptor): String =
-    (module.directDependenciesForWarning map {
+  protected def directDependenciesNames(module: ModuleDescriptor): String =
+    (module.directDependencies map {
       case mID: ModuleID =>
         import mID._
         s"$organization % $name % $revision"

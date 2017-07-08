@@ -44,7 +44,7 @@ class IvyRepoSpec extends BaseIvySpecification with DependencyBuilders {
 
     val m = makeModuleForDepWithSources
 
-    // the "default" configuration used in updateEither.
+    // the "default" configuration used in `update`.
     val c = makeUpdateConfiguration(false, None)
 
     val scalaModuleInfo = m.moduleSettings.scalaModuleInfo
@@ -77,7 +77,7 @@ class IvyRepoSpec extends BaseIvySpecification with DependencyBuilders {
 
     val report2 =
       lmEngine()
-        .updateClassifiersEither(gcm, UnresolvedWarningConfiguration(), Vector(), log)
+        .updateClassifiers(gcm, UnresolvedWarningConfiguration(), Vector(), log)
         .right
         .get
 
