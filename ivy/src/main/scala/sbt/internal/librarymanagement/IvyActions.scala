@@ -120,8 +120,7 @@ object IvyActions {
     }
     val ivyFile = configuration.metadataFile
     val artifacts = Map(configuration.artifacts: _*)
-    val checksums = getChecksums(configuration.checksums)
-    val overwrite = getPublishOverwrite(configuration.overwrite)
+    val checksums = configuration.checksums
     module.withModule(log) {
       case (ivy, md, _) =>
         val resolver = ivy.getSettings.getResolver(resolverName)
@@ -131,7 +130,9 @@ object IvyActions {
         }
         val cross = crossVersionMap(module.moduleSettings)
         val as = mapArtifacts(md, cross, artifacts) ++ ivyArtifact.toList
-        withChecksums(resolver, checksums) { publish(md, as, resolver, overwrite = overwrite) }
+        withChecksums(resolver, checksums) {
+          publish(md, as, resolver, overwrite = configuration.overwrite)
+        }
     }
   }
   private[this] def withChecksums[T](resolver: DependencyResolver, checksums: Vector[String])(
@@ -185,7 +186,7 @@ object IvyActions {
         val iw = IvySbt.inconsistentDuplicateWarning(moduleDescriptor)
         iw.foreach(log.warn(_))
 
-        val logicalClock = getLogicalClock(configuration.logicalClock)
+        val logicalClock = configuration.logicalClock
         val metadataDirectory = configuration.metadataDirectory
 
         // Create inputs, resolve and retrieve the module descriptor
@@ -291,13 +292,10 @@ object IvyActions {
     val ivyInstance = inputs.ivy
     val moduleDescriptor = inputs.module
     val updateConfiguration = inputs.updateConfiguration
-    val logging = getUpdateLogging(updateConfiguration.logging)
     val resolveOptions = new ResolveOptions
     val resolveId = ResolveOptions.getDefaultResolveId(moduleDescriptor)
     val artifactFilter = getArtifactTypeFilter(updateConfiguration.artifactFilter)
-    val offline = getOffline(updateConfiguration.offline)
-    val frozen = getFrozen(updateConfiguration.frozen)
-    val missingOk = getMissingOk(updateConfiguration.missingOk)
+    import updateConfiguration._
     resolveOptions.setResolveId(resolveId)
     resolveOptions.setArtifactFilter(artifactFilter)
     resolveOptions.setUseCacheOnly(offline)
@@ -352,14 +350,11 @@ object IvyActions {
     val log = inputs.log
     val descriptor = inputs.module
     val updateConfiguration = inputs.updateConfiguration
-    val logging = getUpdateLogging(updateConfiguration.logging)
     val resolver = inputs.ivy.getResolveEngine.asInstanceOf[CachedResolutionResolveEngine]
     val resolveOptions = new ResolveOptions
     val resolveId = ResolveOptions.getDefaultResolveId(descriptor)
     val artifactFilter = getArtifactTypeFilter(updateConfiguration.artifactFilter)
-    val offline = getOffline(updateConfiguration.offline)
-    val frozen = getFrozen(updateConfiguration.frozen)
-    val missingOk = getMissingOk(updateConfiguration.missingOk)
+    import updateConfiguration._
     resolveOptions.setResolveId(resolveId)
     resolveOptions.setArtifactFilter(artifactFilter)
     resolveOptions.setUseCacheOnly(offline)
@@ -368,7 +363,12 @@ object IvyActions {
       resolveOptions.setTransitive(false)
       resolveOptions.setCheckIfChanged(false)
     }
-    resolver.customResolve(descriptor, missingOk, logicalClock, resolveOptions, cache, log)
+    resolver.customResolve(descriptor,
+                           missingOk,
+                           updateConfiguration.logicalClock,
+                           resolveOptions,
+                           cache,
+                           log)
   }
 
   private def retrieve(
@@ -393,8 +393,7 @@ object IvyActions {
     }
     IO.copy(toCopy)
     val resolvedFiles = toCopy.map(_._2)
-    val sync = getSync(config.sync)
-    if (sync) {
+    if (config.sync) {
       val filesToDelete = existingFiles.filterNot(resolvedFiles.contains)
       filesToDelete foreach { f =>
         log.info(s"Deleting old dependency: ${f.getAbsolutePath}")

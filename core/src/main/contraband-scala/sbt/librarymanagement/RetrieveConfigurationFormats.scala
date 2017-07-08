@@ -13,7 +13,7 @@ implicit lazy val RetrieveConfigurationFormat: JsonFormat[sbt.librarymanagement.
       unbuilder.beginObject(js)
       val retrieveDirectory = unbuilder.readField[Option[java.io.File]]("retrieveDirectory")
       val outputPattern = unbuilder.readField[Option[String]]("outputPattern")
-      val sync = unbuilder.readField[Option[Boolean]]("sync")
+      val sync = unbuilder.readField[Boolean]("sync")
       val configurationsToRetrieve = unbuilder.readField[Option[scala.Vector[sbt.librarymanagement.ConfigRef]]]("configurationsToRetrieve")
       unbuilder.endObject()
       sbt.librarymanagement.RetrieveConfiguration(retrieveDirectory, outputPattern, sync, configurationsToRetrieve)

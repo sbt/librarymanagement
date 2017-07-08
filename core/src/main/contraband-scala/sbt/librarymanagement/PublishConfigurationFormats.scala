@@ -14,9 +14,9 @@ implicit lazy val PublishConfigurationFormat: JsonFormat[sbt.librarymanagement.P
       val metadataFile = unbuilder.readField[Option[java.io.File]]("metadataFile")
       val resolverName = unbuilder.readField[Option[String]]("resolverName")
       val artifacts = unbuilder.readField[Vector[scala.Tuple2[sbt.librarymanagement.Artifact, java.io.File]]]("artifacts")
-      val checksums = unbuilder.readField[Option[scala.Vector[String]]]("checksums")
+      val checksums = unbuilder.readField[scala.Vector[String]]("checksums")
       val logging = unbuilder.readField[Option[sbt.librarymanagement.UpdateLogging]]("logging")
-      val overwrite = unbuilder.readField[Option[Boolean]]("overwrite")
+      val overwrite = unbuilder.readField[Boolean]("overwrite")
       unbuilder.endObject()
       sbt.librarymanagement.PublishConfiguration(metadataFile, resolverName, artifacts, checksums, logging, overwrite)
       case None =>

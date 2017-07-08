@@ -15,24 +15,6 @@ object InternalDefaults {
   def getArtifactTypeFilter(opt: Option[ArtifactTypeFilter]): ArtifactTypeFilter =
     opt.getOrElse(Artifact.defaultArtifactTypeFilter)
 
-  def getOffline(opt: Option[Boolean]): Boolean =
-    opt.getOrElse(false)
-
-  def getFrozen(opt: Option[Boolean]): Boolean =
-    opt.getOrElse(false)
-
-  def getMissingOk(opt: Option[Boolean]): Boolean =
-    opt.getOrElse(false)
-
-  def getUpdateLogging(opt: Option[UpdateLogging]): UpdateLogging =
-    opt.getOrElse(UpdateLogging.Default)
-
-  def getSync(opt: Option[Boolean]): Boolean =
-    opt.getOrElse(false)
-
-  def getPublishOverwrite(opt: Option[Boolean]): Boolean =
-    opt.getOrElse(false)
-
   def defaultRetrieveDirectory: File =
     (new File(".")).getAbsoluteFile / "lib_managed"
 
@@ -41,12 +23,6 @@ object InternalDefaults {
 
   def getRetrievePattern(opt: Option[String]): String =
     opt.getOrElse(Resolver.defaultRetrievePattern)
-
-  def getChecksums(opt: Option[Vector[String]]): Vector[String] =
-    opt.getOrElse(Vector("sha1", "md1"))
-
-  def getLogicalClock(opt: Option[LogicalClock]): LogicalClock =
-    opt.getOrElse(LogicalClock.unknown)
 
   def getDeliverStatus(opt: Option[String]): String =
     opt.getOrElse("release")

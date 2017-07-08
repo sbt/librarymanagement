@@ -8,11 +8,11 @@ final class PublishConfiguration private (
   val metadataFile: Option[java.io.File],
   val resolverName: Option[String],
   val artifacts: Vector[scala.Tuple2[sbt.librarymanagement.Artifact, java.io.File]],
-  val checksums: Option[scala.Vector[String]],
+  val checksums: scala.Vector[String],
   val logging: Option[sbt.librarymanagement.UpdateLogging],
-  val overwrite: Option[Boolean]) extends Serializable {
+  val overwrite: Boolean) extends Serializable {
   
-  private def this() = this(None, None, Vector(), None, None, None)
+  private def this() = this(None, None, Vector(), Vector("sha1", "md5"), None, false)
   
   override def equals(o: Any): Boolean = o match {
     case x: PublishConfiguration => (this.metadataFile == x.metadataFile) && (this.resolverName == x.resolverName) && (this.artifacts == x.artifacts) && (this.checksums == x.checksums) && (this.logging == x.logging) && (this.overwrite == x.overwrite)
@@ -24,7 +24,7 @@ final class PublishConfiguration private (
   override def toString: String = {
     "PublishConfiguration(" + metadataFile + ", " + resolverName + ", " + artifacts + ", " + checksums + ", " + logging + ", " + overwrite + ")"
   }
-  protected[this] def copy(metadataFile: Option[java.io.File] = metadataFile, resolverName: Option[String] = resolverName, artifacts: Vector[scala.Tuple2[sbt.librarymanagement.Artifact, java.io.File]] = artifacts, checksums: Option[scala.Vector[String]] = checksums, logging: Option[sbt.librarymanagement.UpdateLogging] = logging, overwrite: Option[Boolean] = overwrite): PublishConfiguration = {
+  protected[this] def copy(metadataFile: Option[java.io.File] = metadataFile, resolverName: Option[String] = resolverName, artifacts: Vector[scala.Tuple2[sbt.librarymanagement.Artifact, java.io.File]] = artifacts, checksums: scala.Vector[String] = checksums, logging: Option[sbt.librarymanagement.UpdateLogging] = logging, overwrite: Boolean = overwrite): PublishConfiguration = {
     new PublishConfiguration(metadataFile, resolverName, artifacts, checksums, logging, overwrite)
   }
   def withMetadataFile(metadataFile: Option[java.io.File]): PublishConfiguration = {
@@ -42,11 +42,8 @@ final class PublishConfiguration private (
   def withArtifacts(artifacts: Vector[scala.Tuple2[sbt.librarymanagement.Artifact, java.io.File]]): PublishConfiguration = {
     copy(artifacts = artifacts)
   }
-  def withChecksums(checksums: Option[scala.Vector[String]]): PublishConfiguration = {
-    copy(checksums = checksums)
-  }
   def withChecksums(checksums: scala.Vector[String]): PublishConfiguration = {
-    copy(checksums = Option(checksums))
+    copy(checksums = checksums)
   }
   def withLogging(logging: Option[sbt.librarymanagement.UpdateLogging]): PublishConfiguration = {
     copy(logging = logging)
@@ -54,16 +51,13 @@ final class PublishConfiguration private (
   def withLogging(logging: sbt.librarymanagement.UpdateLogging): PublishConfiguration = {
     copy(logging = Option(logging))
   }
-  def withOverwrite(overwrite: Option[Boolean]): PublishConfiguration = {
-    copy(overwrite = overwrite)
-  }
   def withOverwrite(overwrite: Boolean): PublishConfiguration = {
-    copy(overwrite = Option(overwrite))
+    copy(overwrite = overwrite)
   }
 }
 object PublishConfiguration {
   
-  def apply(): PublishConfiguration = new PublishConfiguration(None, None, Vector(), None, None, None)
-  def apply(metadataFile: Option[java.io.File], resolverName: Option[String], artifacts: Vector[scala.Tuple2[sbt.librarymanagement.Artifact, java.io.File]], checksums: Option[scala.Vector[String]], logging: Option[sbt.librarymanagement.UpdateLogging], overwrite: Option[Boolean]): PublishConfiguration = new PublishConfiguration(metadataFile, resolverName, artifacts, checksums, logging, overwrite)
-  def apply(metadataFile: java.io.File, resolverName: String, artifacts: Vector[scala.Tuple2[sbt.librarymanagement.Artifact, java.io.File]], checksums: scala.Vector[String], logging: sbt.librarymanagement.UpdateLogging, overwrite: Boolean): PublishConfiguration = new PublishConfiguration(Option(metadataFile), Option(resolverName), artifacts, Option(checksums), Option(logging), Option(overwrite))
+  def apply(): PublishConfiguration = new PublishConfiguration(None, None, Vector(), Vector("sha1", "md5"), None, false)
+  def apply(metadataFile: Option[java.io.File], resolverName: Option[String], artifacts: Vector[scala.Tuple2[sbt.librarymanagement.Artifact, java.io.File]], checksums: scala.Vector[String], logging: Option[sbt.librarymanagement.UpdateLogging], overwrite: Boolean): PublishConfiguration = new PublishConfiguration(metadataFile, resolverName, artifacts, checksums, logging, overwrite)
+  def apply(metadataFile: java.io.File, resolverName: String, artifacts: Vector[scala.Tuple2[sbt.librarymanagement.Artifact, java.io.File]], checksums: scala.Vector[String], logging: sbt.librarymanagement.UpdateLogging, overwrite: Boolean): PublishConfiguration = new PublishConfiguration(Option(metadataFile), Option(resolverName), artifacts, checksums, Option(logging), overwrite)
 }

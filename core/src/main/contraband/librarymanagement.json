@@ -24,8 +24,8 @@
             "If set to true, it ignores when artifacts are missing.",
             "This setting could be uses when retrieving source/javadocs jars opportunistically."
           ],
-          "type": "boolean?",
-          "default": "None",
+          "type": "boolean",
+          "default": "false",
           "since": "0.0.1"
         },
         {
@@ -33,8 +33,8 @@
           "doc": [
             "Logging setting used specifially for library management."
           ],
-          "type": "sbt.librarymanagement.UpdateLogging?",
-          "default": "None",
+          "type": "sbt.librarymanagement.UpdateLogging",
+          "default": "sbt.librarymanagement.UpdateLogging.Default",
           "since": "0.0.1" 
         },
         {
@@ -42,8 +42,8 @@
           "doc": [
             "The clock that may be used for caching."
           ],
-          "type": "sbt.librarymanagement.LogicalClock?",
-          "default": "None",
+          "type": "sbt.librarymanagement.LogicalClock",
+          "default": "sbt.librarymanagement.LogicalClock.unknown",
           "since": "0.0.1" 
         },
         {
@@ -56,8 +56,18 @@
           "since": "0.0.1" 
         },
         { "name": "artifactFilter", "type": "sbt.librarymanagement.ArtifactTypeFilter?", "default": "None", "since": "0.0.1" },
-        { "name": "offline",        "type": "boolean?"                                 , "default": "None", "since": "0.0.1" },
-        { "name": "frozen",         "type": "boolean?"                                 , "default": "None", "since": "0.0.1" }
+        {
+          "name": "offline",
+          "type": "boolean",
+          "default": "false",
+          "since": "0.0.1"
+        },
+        {
+          "name": "frozen",
+          "type": "boolean",
+          "default": "false",
+          "since": "0.0.1"
+        }
       ]
     },
     {
@@ -68,7 +78,7 @@
       "fields": [
         { "name": "retrieveDirectory",        "type": "java.io.File?",   "default": "None", "since": "0.0.1" },
         { "name": "outputPattern",            "type": "String?",         "default": "None", "since": "0.0.1" },
-        { "name": "sync",                     "type": "boolean?",        "default": "None", "since": "0.0.2" },
+        { "name": "sync",                     "type": "boolean",         "default": "false", "since": "0.0.2" },
         { "name": "configurationsToRetrieve", "type": "scala.Vector[sbt.librarymanagement.ConfigRef]?", "default": "None", "since": "0.0.2" }
       ]
     },
@@ -119,9 +129,13 @@
         { "name": "metadataFile",  "type": "java.io.File?",                        "default": "None", "since": "0.0.1" },
         { "name": "resolverName",  "type": "String?",                              "default": "None", "since": "0.0.1" },
         { "name": "artifacts",     "type": "scala.Tuple2[sbt.librarymanagement.Artifact, java.io.File]*", "default": "Vector()", "since": "0.0.1" },
-        { "name": "checksums",     "type": "scala.Vector[String]?",                "default": "None", "since": "0.0.1" },
+        { 
+          "name": "checksums", 
+          "type": "scala.Vector[String]",
+          "default": "Vector(\"sha1\", \"md5\")",
+          "since": "0.0.1" },
         { "name": "logging",       "type": "sbt.librarymanagement.UpdateLogging?", "default": "None", "since": "0.0.1" },
-        { "name": "overwrite",     "type": "boolean?",                             "default": "None", "since": "0.0.1" }
+        { "name": "overwrite",     "type": "boolean",                              "default": "false", "since": "0.0.1" }
       ]
     },
     {
