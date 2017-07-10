@@ -6,8 +6,7 @@ import sbt.internal.librarymanagement._
 import sbt.util.Logger
 import java.io.File
 
-class IvyLibraryManagement(ivyConfiguration: IvyConfiguration, updateOptons: UpdateOptions)
-    extends LibraryManagement {
+class IvyLibraryManagement(ivyConfiguration: IvyConfiguration) extends LibraryManagement {
   private[sbt] val ivySbt: IvySbt = new IvySbt(ivyConfiguration)
 
   type Module = ivySbt.Module

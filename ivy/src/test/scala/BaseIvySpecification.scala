@@ -19,7 +19,7 @@ trait BaseIvySpecification extends UnitSpec {
 
   lazy val log = ConsoleLogger()
   def lmEngine(uo: UpdateOptions = UpdateOptions()): LibraryManagement =
-    new IvyLibraryManagement(mkIvyConfiguration(uo), uo)
+    new IvyLibraryManagement(mkIvyConfiguration(uo))
 
   def configurations = Vector(Compile, Test, Runtime)
   def module(moduleId: ModuleID,
