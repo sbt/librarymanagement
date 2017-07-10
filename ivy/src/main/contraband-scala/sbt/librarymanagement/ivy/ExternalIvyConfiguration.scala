@@ -3,14 +3,14 @@
  */
 
 // DO NOT EDIT MANUALLY
-package sbt.internal.librarymanagement
+package sbt.librarymanagement.ivy
 final class ExternalIvyConfiguration private (
   lock: Option[xsbti.GlobalLock],
   baseDirectory: java.io.File,
   log: xsbti.Logger,
   updateOptions: sbt.librarymanagement.ivy.UpdateOptions,
   val uri: java.net.URI,
-  val extraResolvers: Vector[sbt.librarymanagement.Resolver]) extends sbt.internal.librarymanagement.IvyConfiguration(lock, baseDirectory, log, updateOptions) with Serializable {
+  val extraResolvers: Vector[sbt.librarymanagement.Resolver]) extends sbt.librarymanagement.ivy.IvyConfiguration(lock, baseDirectory, log, updateOptions) with Serializable {
   
   
   

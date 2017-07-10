@@ -6,8 +6,8 @@
 package sbt.librarymanagement
 import _root_.sjsonnew.{ Unbuilder, Builder, JsonFormat, deserializationError }
 trait ExternalIvyConfigurationFormats { self: sbt.internal.librarymanagement.formats.GlobalLockFormat with sbt.internal.librarymanagement.formats.LoggerFormat with sbt.librarymanagement.ivy.formats.UpdateOptionsFormat with sbt.librarymanagement.ResolverFormats with sjsonnew.BasicJsonProtocol =>
-implicit lazy val ExternalIvyConfigurationFormat: JsonFormat[sbt.internal.librarymanagement.ExternalIvyConfiguration] = new JsonFormat[sbt.internal.librarymanagement.ExternalIvyConfiguration] {
-  override def read[J](jsOpt: Option[J], unbuilder: Unbuilder[J]): sbt.internal.librarymanagement.ExternalIvyConfiguration = {
+implicit lazy val ExternalIvyConfigurationFormat: JsonFormat[sbt.librarymanagement.ivy.ExternalIvyConfiguration] = new JsonFormat[sbt.librarymanagement.ivy.ExternalIvyConfiguration] {
+  override def read[J](jsOpt: Option[J], unbuilder: Unbuilder[J]): sbt.librarymanagement.ivy.ExternalIvyConfiguration = {
     jsOpt match {
       case Some(js) =>
       unbuilder.beginObject(js)
@@ -18,12 +18,12 @@ implicit lazy val ExternalIvyConfigurationFormat: JsonFormat[sbt.internal.librar
       val uri = unbuilder.readField[java.net.URI]("uri")
       val extraResolvers = unbuilder.readField[Vector[sbt.librarymanagement.Resolver]]("extraResolvers")
       unbuilder.endObject()
-      sbt.internal.librarymanagement.ExternalIvyConfiguration(lock, baseDirectory, log, updateOptions, uri, extraResolvers)
+      sbt.librarymanagement.ivy.ExternalIvyConfiguration(lock, baseDirectory, log, updateOptions, uri, extraResolvers)
       case None =>
       deserializationError("Expected JsObject but found None")
     }
   }
-  override def write[J](obj: sbt.internal.librarymanagement.ExternalIvyConfiguration, builder: Builder[J]): Unit = {
+  override def write[J](obj: sbt.librarymanagement.ivy.ExternalIvyConfiguration, builder: Builder[J]): Unit = {
     builder.beginObject()
     builder.addField("lock", obj.lock)
     builder.addField("baseDirectory", obj.baseDirectory)

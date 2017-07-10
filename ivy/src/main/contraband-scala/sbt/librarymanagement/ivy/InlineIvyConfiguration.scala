@@ -3,21 +3,21 @@
  */
 
 // DO NOT EDIT MANUALLY
-package sbt.internal.librarymanagement
+package sbt.librarymanagement.ivy
 final class InlineIvyConfiguration private (
   lock: Option[xsbti.GlobalLock],
   baseDirectory: java.io.File,
   log: xsbti.Logger,
   updateOptions: sbt.librarymanagement.ivy.UpdateOptions,
-  val paths: sbt.internal.librarymanagement.IvyPaths,
+  val paths: sbt.librarymanagement.ivy.IvyPaths,
   val resolvers: Vector[sbt.librarymanagement.Resolver],
   val otherResolvers: Vector[sbt.librarymanagement.Resolver],
   val moduleConfigurations: Vector[sbt.librarymanagement.ModuleConfiguration],
   val checksums: Vector[String],
   val managedChecksums: Boolean,
-  val resolutionCacheDir: Option[java.io.File]) extends sbt.internal.librarymanagement.IvyConfiguration(lock, baseDirectory, log, updateOptions) with Serializable {
+  val resolutionCacheDir: Option[java.io.File]) extends sbt.librarymanagement.ivy.IvyConfiguration(lock, baseDirectory, log, updateOptions) with Serializable {
   def this(
-  paths:                sbt.internal.librarymanagement.IvyPaths,
+  paths:                sbt.librarymanagement.ivy.IvyPaths,
   resolvers:            Vector[sbt.librarymanagement.Resolver],
   otherResolvers:       Vector[sbt.librarymanagement.Resolver],
   moduleConfigurations: Vector[sbt.librarymanagement.ModuleConfiguration],
@@ -42,7 +42,7 @@ final class InlineIvyConfiguration private (
   override def toString: String = {
     "InlineIvyConfiguration(" + lock + ", " + baseDirectory + ", " + log + ", " + updateOptions + ", " + paths + ", " + resolvers + ", " + otherResolvers + ", " + moduleConfigurations + ", " + checksums + ", " + managedChecksums + ", " + resolutionCacheDir + ")"
   }
-  protected[this] def copy(lock: Option[xsbti.GlobalLock] = lock, baseDirectory: java.io.File = baseDirectory, log: xsbti.Logger = log, updateOptions: sbt.librarymanagement.ivy.UpdateOptions = updateOptions, paths: sbt.internal.librarymanagement.IvyPaths = paths, resolvers: Vector[sbt.librarymanagement.Resolver] = resolvers, otherResolvers: Vector[sbt.librarymanagement.Resolver] = otherResolvers, moduleConfigurations: Vector[sbt.librarymanagement.ModuleConfiguration] = moduleConfigurations, checksums: Vector[String] = checksums, managedChecksums: Boolean = managedChecksums, resolutionCacheDir: Option[java.io.File] = resolutionCacheDir): InlineIvyConfiguration = {
+  protected[this] def copy(lock: Option[xsbti.GlobalLock] = lock, baseDirectory: java.io.File = baseDirectory, log: xsbti.Logger = log, updateOptions: sbt.librarymanagement.ivy.UpdateOptions = updateOptions, paths: sbt.librarymanagement.ivy.IvyPaths = paths, resolvers: Vector[sbt.librarymanagement.Resolver] = resolvers, otherResolvers: Vector[sbt.librarymanagement.Resolver] = otherResolvers, moduleConfigurations: Vector[sbt.librarymanagement.ModuleConfiguration] = moduleConfigurations, checksums: Vector[String] = checksums, managedChecksums: Boolean = managedChecksums, resolutionCacheDir: Option[java.io.File] = resolutionCacheDir): InlineIvyConfiguration = {
     new InlineIvyConfiguration(lock, baseDirectory, log, updateOptions, paths, resolvers, otherResolvers, moduleConfigurations, checksums, managedChecksums, resolutionCacheDir)
   }
   def withLock(lock: Option[xsbti.GlobalLock]): InlineIvyConfiguration = {
@@ -60,7 +60,7 @@ final class InlineIvyConfiguration private (
   def withUpdateOptions(updateOptions: sbt.librarymanagement.ivy.UpdateOptions): InlineIvyConfiguration = {
     copy(updateOptions = updateOptions)
   }
-  def withPaths(paths: sbt.internal.librarymanagement.IvyPaths): InlineIvyConfiguration = {
+  def withPaths(paths: sbt.librarymanagement.ivy.IvyPaths): InlineIvyConfiguration = {
     copy(paths = paths)
   }
   def withResolvers(resolvers: Vector[sbt.librarymanagement.Resolver]): InlineIvyConfiguration = {
@@ -87,6 +87,6 @@ final class InlineIvyConfiguration private (
 }
 object InlineIvyConfiguration {
   
-  def apply(lock: Option[xsbti.GlobalLock], baseDirectory: java.io.File, log: xsbti.Logger, updateOptions: sbt.librarymanagement.ivy.UpdateOptions, paths: sbt.internal.librarymanagement.IvyPaths, resolvers: Vector[sbt.librarymanagement.Resolver], otherResolvers: Vector[sbt.librarymanagement.Resolver], moduleConfigurations: Vector[sbt.librarymanagement.ModuleConfiguration], checksums: Vector[String], managedChecksums: Boolean, resolutionCacheDir: Option[java.io.File]): InlineIvyConfiguration = new InlineIvyConfiguration(lock, baseDirectory, log, updateOptions, paths, resolvers, otherResolvers, moduleConfigurations, checksums, managedChecksums, resolutionCacheDir)
-  def apply(lock: xsbti.GlobalLock, baseDirectory: java.io.File, log: xsbti.Logger, updateOptions: sbt.librarymanagement.ivy.UpdateOptions, paths: sbt.internal.librarymanagement.IvyPaths, resolvers: Vector[sbt.librarymanagement.Resolver], otherResolvers: Vector[sbt.librarymanagement.Resolver], moduleConfigurations: Vector[sbt.librarymanagement.ModuleConfiguration], checksums: Vector[String], managedChecksums: Boolean, resolutionCacheDir: java.io.File): InlineIvyConfiguration = new InlineIvyConfiguration(Option(lock), baseDirectory, log, updateOptions, paths, resolvers, otherResolvers, moduleConfigurations, checksums, managedChecksums, Option(resolutionCacheDir))
+  def apply(lock: Option[xsbti.GlobalLock], baseDirectory: java.io.File, log: xsbti.Logger, updateOptions: sbt.librarymanagement.ivy.UpdateOptions, paths: sbt.librarymanagement.ivy.IvyPaths, resolvers: Vector[sbt.librarymanagement.Resolver], otherResolvers: Vector[sbt.librarymanagement.Resolver], moduleConfigurations: Vector[sbt.librarymanagement.ModuleConfiguration], checksums: Vector[String], managedChecksums: Boolean, resolutionCacheDir: Option[java.io.File]): InlineIvyConfiguration = new InlineIvyConfiguration(lock, baseDirectory, log, updateOptions, paths, resolvers, otherResolvers, moduleConfigurations, checksums, managedChecksums, resolutionCacheDir)
+  def apply(lock: xsbti.GlobalLock, baseDirectory: java.io.File, log: xsbti.Logger, updateOptions: sbt.librarymanagement.ivy.UpdateOptions, paths: sbt.librarymanagement.ivy.IvyPaths, resolvers: Vector[sbt.librarymanagement.Resolver], otherResolvers: Vector[sbt.librarymanagement.Resolver], moduleConfigurations: Vector[sbt.librarymanagement.ModuleConfiguration], checksums: Vector[String], managedChecksums: Boolean, resolutionCacheDir: java.io.File): InlineIvyConfiguration = new InlineIvyConfiguration(Option(lock), baseDirectory, log, updateOptions, paths, resolvers, otherResolvers, moduleConfigurations, checksums, managedChecksums, Option(resolutionCacheDir))
 }

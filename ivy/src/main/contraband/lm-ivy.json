@@ -3,7 +3,7 @@
   "types": [
     {
       "name": "IvyConfiguration",
-      "namespace": "sbt.internal.librarymanagement",
+      "namespace": "sbt.librarymanagement.ivy",
       "target": "Scala",
       "type": "interface",
       "fields": [
@@ -15,11 +15,11 @@
       "types": [
         {
           "name": "InlineIvyConfiguration",
-          "namespace": "sbt.internal.librarymanagement",
+          "namespace": "sbt.librarymanagement.ivy",
           "target": "Scala",
           "type": "record",
           "fields": [
-            { "name": "paths",                "type": "sbt.internal.librarymanagement.IvyPaths"    },
+            { "name": "paths",                "type": "sbt.librarymanagement.ivy.IvyPaths"         },
             { "name": "resolvers",            "type": "sbt.librarymanagement.Resolver*"            },
             { "name": "otherResolvers",       "type": "sbt.librarymanagement.Resolver*"            },
             { "name": "moduleConfigurations", "type": "sbt.librarymanagement.ModuleConfiguration*" },
@@ -29,7 +29,7 @@
           ],
           "extra": [
             "def this(",
-            "  paths:                sbt.internal.librarymanagement.IvyPaths,",
+            "  paths:                sbt.librarymanagement.ivy.IvyPaths,",
             "  resolvers:            Vector[sbt.librarymanagement.Resolver],",
             "  otherResolvers:       Vector[sbt.librarymanagement.Resolver],",
             "  moduleConfigurations: Vector[sbt.librarymanagement.ModuleConfiguration],",
@@ -46,7 +46,7 @@
         },
         {
           "name": "ExternalIvyConfiguration",
-          "namespace": "sbt.internal.librarymanagement",
+          "namespace": "sbt.librarymanagement.ivy",
           "target": "Scala",
           "type": "record",
           "fields": [
@@ -58,7 +58,7 @@
     },
     {
       "name": "IvyPaths",
-      "namespace": "sbt.internal.librarymanagement",
+      "namespace": "sbt.librarymanagement.ivy",
       "target": "Scala",
       "type": "record",
       "fields": [

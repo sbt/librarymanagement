@@ -3,7 +3,7 @@
  */
 
 // DO NOT EDIT MANUALLY
-package sbt.internal.librarymanagement
+package sbt.librarymanagement.ivy
 abstract class IvyConfiguration(
   val lock: Option[xsbti.GlobalLock],
   val baseDirectory: java.io.File,
