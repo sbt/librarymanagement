@@ -5,7 +5,7 @@
 // DO NOT EDIT MANUALLY
 package sbt.librarymanagement
 import _root_.sjsonnew.{ Unbuilder, Builder, JsonFormat, deserializationError }
-trait ExternalIvyConfigurationFormats { self: sbt.internal.librarymanagement.formats.GlobalLockFormat with sbt.internal.librarymanagement.formats.LoggerFormat with sbt.internal.librarymanagement.formats.UpdateOptionsFormat with sbt.librarymanagement.ResolverFormats with sjsonnew.BasicJsonProtocol =>
+trait ExternalIvyConfigurationFormats { self: sbt.internal.librarymanagement.formats.GlobalLockFormat with sbt.internal.librarymanagement.formats.LoggerFormat with sbt.librarymanagement.ivy.formats.UpdateOptionsFormat with sbt.librarymanagement.ResolverFormats with sjsonnew.BasicJsonProtocol =>
 implicit lazy val ExternalIvyConfigurationFormat: JsonFormat[sbt.internal.librarymanagement.ExternalIvyConfiguration] = new JsonFormat[sbt.internal.librarymanagement.ExternalIvyConfiguration] {
   override def read[J](jsOpt: Option[J], unbuilder: Unbuilder[J]): sbt.internal.librarymanagement.ExternalIvyConfiguration = {
     jsOpt match {
@@ -14,7 +14,7 @@ implicit lazy val ExternalIvyConfigurationFormat: JsonFormat[sbt.internal.librar
       val lock = unbuilder.readField[Option[xsbti.GlobalLock]]("lock")
       val baseDirectory = unbuilder.readField[java.io.File]("baseDirectory")
       val log = unbuilder.readField[xsbti.Logger]("log")
-      val updateOptions = unbuilder.readField[sbt.librarymanagement.UpdateOptions]("updateOptions")
+      val updateOptions = unbuilder.readField[sbt.librarymanagement.ivy.UpdateOptions]("updateOptions")
       val uri = unbuilder.readField[java.net.URI]("uri")
       val extraResolvers = unbuilder.readField[Vector[sbt.librarymanagement.Resolver]]("extraResolvers")
       unbuilder.endObject()

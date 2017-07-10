@@ -10,6 +10,7 @@ import sbt.internal.librarymanagement.{
   IvyConfiguration,
   IvyPaths
 }
+import sbt.librarymanagement.ivy.UpdateOptions
 import sbt.internal.librarymanagement.impl.DependencyBuilders
 import sbt.io.IO
 

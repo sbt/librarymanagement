@@ -38,6 +38,7 @@ import scala.xml.NodeSeq
 import scala.collection.mutable
 import sbt.util.Logger
 import sbt.librarymanagement._
+import sbt.librarymanagement.ivy.UpdateOptions
 import Resolver.PluginPattern
 import ivyint.{
   CachedResolutionResolveCache,

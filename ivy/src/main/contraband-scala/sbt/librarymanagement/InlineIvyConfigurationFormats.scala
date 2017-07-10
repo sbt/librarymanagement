@@ -5,7 +5,7 @@
 // DO NOT EDIT MANUALLY
 package sbt.librarymanagement
 import _root_.sjsonnew.{ Unbuilder, Builder, JsonFormat, deserializationError }
-trait InlineIvyConfigurationFormats { self: sbt.internal.librarymanagement.formats.GlobalLockFormat with sbt.internal.librarymanagement.formats.LoggerFormat with sbt.internal.librarymanagement.formats.UpdateOptionsFormat with sbt.librarymanagement.IvyPathsFormats with sbt.librarymanagement.ResolverFormats with sbt.librarymanagement.ModuleConfigurationFormats with sjsonnew.BasicJsonProtocol =>
+trait InlineIvyConfigurationFormats { self: sbt.internal.librarymanagement.formats.GlobalLockFormat with sbt.internal.librarymanagement.formats.LoggerFormat with sbt.librarymanagement.ivy.formats.UpdateOptionsFormat with sbt.librarymanagement.IvyPathsFormats with sbt.librarymanagement.ResolverFormats with sbt.librarymanagement.ModuleConfigurationFormats with sjsonnew.BasicJsonProtocol =>
 implicit lazy val InlineIvyConfigurationFormat: JsonFormat[sbt.internal.librarymanagement.InlineIvyConfiguration] = new JsonFormat[sbt.internal.librarymanagement.InlineIvyConfiguration] {
   override def read[J](jsOpt: Option[J], unbuilder: Unbuilder[J]): sbt.internal.librarymanagement.InlineIvyConfiguration = {
     jsOpt match {
@@ -14,7 +14,7 @@ implicit lazy val InlineIvyConfigurationFormat: JsonFormat[sbt.internal.librarym
       val lock = unbuilder.readField[Option[xsbti.GlobalLock]]("lock")
       val baseDirectory = unbuilder.readField[java.io.File]("baseDirectory")
       val log = unbuilder.readField[xsbti.Logger]("log")
-      val updateOptions = unbuilder.readField[sbt.librarymanagement.UpdateOptions]("updateOptions")
+      val updateOptions = unbuilder.readField[sbt.librarymanagement.ivy.UpdateOptions]("updateOptions")
       val paths = unbuilder.readField[sbt.internal.librarymanagement.IvyPaths]("paths")
       val resolvers = unbuilder.readField[Vector[sbt.librarymanagement.Resolver]]("resolvers")
       val otherResolvers = unbuilder.readField[Vector[sbt.librarymanagement.Resolver]]("otherResolvers")

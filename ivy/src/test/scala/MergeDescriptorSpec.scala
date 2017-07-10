@@ -2,6 +2,7 @@ package sbt.internal.librarymanagement
 
 import org.apache.ivy.core.module.descriptor.DependencyArtifactDescriptor
 import sbt.librarymanagement._
+import sbt.librarymanagement.ivy.UpdateOptions
 import sbt.internal.librarymanagement.ivyint._
 
 class MergeDescriptorSpec extends BaseIvySpecification {

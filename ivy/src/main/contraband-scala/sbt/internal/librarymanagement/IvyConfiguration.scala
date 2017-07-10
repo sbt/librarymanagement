@@ -8,7 +8,7 @@ abstract class IvyConfiguration(
   val lock: Option[xsbti.GlobalLock],
   val baseDirectory: java.io.File,
   val log: xsbti.Logger,
-  val updateOptions: sbt.librarymanagement.UpdateOptions) extends Serializable {
+  val updateOptions: sbt.librarymanagement.ivy.UpdateOptions) extends Serializable {
   
   
   

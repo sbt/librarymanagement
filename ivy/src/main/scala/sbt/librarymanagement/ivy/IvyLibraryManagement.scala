@@ -1,5 +1,6 @@
 package sbt
 package librarymanagement
+package ivy
 
 import sbt.internal.librarymanagement._
 import sbt.util.Logger

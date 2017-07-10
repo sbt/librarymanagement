@@ -8,7 +8,7 @@ final class ExternalIvyConfiguration private (
   lock: Option[xsbti.GlobalLock],
   baseDirectory: java.io.File,
   log: xsbti.Logger,
-  updateOptions: sbt.librarymanagement.UpdateOptions,
+  updateOptions: sbt.librarymanagement.ivy.UpdateOptions,
   val uri: java.net.URI,
   val extraResolvers: Vector[sbt.librarymanagement.Resolver]) extends sbt.internal.librarymanagement.IvyConfiguration(lock, baseDirectory, log, updateOptions) with Serializable {
   
@@ -24,7 +24,7 @@ final class ExternalIvyConfiguration private (
   override def toString: String = {
     "ExternalIvyConfiguration(" + lock + ", " + baseDirectory + ", " + log + ", " + updateOptions + ", " + uri + ", " + extraResolvers + ")"
   }
-  protected[this] def copy(lock: Option[xsbti.GlobalLock] = lock, baseDirectory: java.io.File = baseDirectory, log: xsbti.Logger = log, updateOptions: sbt.librarymanagement.UpdateOptions = updateOptions, uri: java.net.URI = uri, extraResolvers: Vector[sbt.librarymanagement.Resolver] = extraResolvers): ExternalIvyConfiguration = {
+  protected[this] def copy(lock: Option[xsbti.GlobalLock] = lock, baseDirectory: java.io.File = baseDirectory, log: xsbti.Logger = log, updateOptions: sbt.librarymanagement.ivy.UpdateOptions = updateOptions, uri: java.net.URI = uri, extraResolvers: Vector[sbt.librarymanagement.Resolver] = extraResolvers): ExternalIvyConfiguration = {
     new ExternalIvyConfiguration(lock, baseDirectory, log, updateOptions, uri, extraResolvers)
   }
   def withLock(lock: Option[xsbti.GlobalLock]): ExternalIvyConfiguration = {
@@ -39,7 +39,7 @@ final class ExternalIvyConfiguration private (
   def withLog(log: xsbti.Logger): ExternalIvyConfiguration = {
     copy(log = log)
   }
-  def withUpdateOptions(updateOptions: sbt.librarymanagement.UpdateOptions): ExternalIvyConfiguration = {
+  def withUpdateOptions(updateOptions: sbt.librarymanagement.ivy.UpdateOptions): ExternalIvyConfiguration = {
     copy(updateOptions = updateOptions)
   }
   def withUri(uri: java.net.URI): ExternalIvyConfiguration = {
@@ -51,6 +51,6 @@ final class ExternalIvyConfiguration private (
 }
 object ExternalIvyConfiguration {
   
-  def apply(lock: Option[xsbti.GlobalLock], baseDirectory: java.io.File, log: xsbti.Logger, updateOptions: sbt.librarymanagement.UpdateOptions, uri: java.net.URI, extraResolvers: Vector[sbt.librarymanagement.Resolver]): ExternalIvyConfiguration = new ExternalIvyConfiguration(lock, baseDirectory, log, updateOptions, uri, extraResolvers)
-  def apply(lock: xsbti.GlobalLock, baseDirectory: java.io.File, log: xsbti.Logger, updateOptions: sbt.librarymanagement.UpdateOptions, uri: java.net.URI, extraResolvers: Vector[sbt.librarymanagement.Resolver]): ExternalIvyConfiguration = new ExternalIvyConfiguration(Option(lock), baseDirectory, log, updateOptions, uri, extraResolvers)
+  def apply(lock: Option[xsbti.GlobalLock], baseDirectory: java.io.File, log: xsbti.Logger, updateOptions: sbt.librarymanagement.ivy.UpdateOptions, uri: java.net.URI, extraResolvers: Vector[sbt.librarymanagement.Resolver]): ExternalIvyConfiguration = new ExternalIvyConfiguration(lock, baseDirectory, log, updateOptions, uri, extraResolvers)
+  def apply(lock: xsbti.GlobalLock, baseDirectory: java.io.File, log: xsbti.Logger, updateOptions: sbt.librarymanagement.ivy.UpdateOptions, uri: java.net.URI, extraResolvers: Vector[sbt.librarymanagement.Resolver]): ExternalIvyConfiguration = new ExternalIvyConfiguration(Option(lock), baseDirectory, log, updateOptions, uri, extraResolvers)
 }

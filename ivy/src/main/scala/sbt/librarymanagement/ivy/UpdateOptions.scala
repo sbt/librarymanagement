@@ -1,4 +1,5 @@
 package sbt.librarymanagement
+package ivy
 
 import org.apache.ivy.plugins.resolver.DependencyResolver
 import org.apache.ivy.core.settings.IvySettings

@@ -37,6 +37,7 @@ import org.apache.ivy.core.module.descriptor.{ Artifact => IArtifact }
 import sbt.io.IO
 import sbt.util.Logger
 import sbt.librarymanagement._
+import sbt.librarymanagement.ivy.UpdateOptions
 
 private[sbt] object ConvertResolver {
   import UpdateOptions.ResolverConverter

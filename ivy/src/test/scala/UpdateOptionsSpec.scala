@@ -1,4 +1,4 @@
-package sbt.librarymanagement
+package sbt.librarymanagement.ivy
 
 import sbt.internal.librarymanagement.UnitSpec
 

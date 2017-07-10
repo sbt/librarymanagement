@@ -6,6 +6,7 @@ import java.io.File
 import cross.CrossVersionUtil
 import sbt.internal.util.ConsoleLogger
 import sbt.librarymanagement._
+import sbt.librarymanagement.ivy._
 import Configurations._
 
 trait BaseIvySpecification extends UnitSpec {

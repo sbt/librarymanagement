@@ -7,10 +7,10 @@
       "target": "Scala",
       "type": "interface",
       "fields": [
-        { "name": "lock",          "type": "xsbti.GlobalLock?"                   },
-        { "name": "baseDirectory", "type": "java.io.File"                        },
-        { "name": "log",           "type": "xsbti.Logger"                        },
-        { "name": "updateOptions", "type": "sbt.librarymanagement.UpdateOptions" }
+        { "name": "lock",          "type": "xsbti.GlobalLock?"                       },
+        { "name": "baseDirectory", "type": "java.io.File"                            },
+        { "name": "log",           "type": "xsbti.Logger"                            },
+        { "name": "updateOptions", "type": "sbt.librarymanagement.ivy.UpdateOptions" }
       ],
       "types": [
         {
@@ -37,7 +37,7 @@
             "  checksums:            Vector[String],",
             "  managedChecksums:     Boolean,",
             "  resolutionCacheDir:   Option[java.io.File],",
-            "  updateOptions:        sbt.librarymanagement.UpdateOptions,",
+            "  updateOptions:        sbt.librarymanagement.ivy.UpdateOptions,",
             "  log:                  xsbti.Logger",
             ") =",
             "  this(lock, paths.baseDirectory, log, updateOptions, paths, resolvers, otherResolvers,",
