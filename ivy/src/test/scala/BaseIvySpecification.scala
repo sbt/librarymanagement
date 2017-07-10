@@ -6,6 +6,7 @@ import java.io.File
 import cross.CrossVersionUtil
 import sbt.internal.util.ConsoleLogger
 import sbt.librarymanagement._
+import sbt.librarymanagement.ivy._
 import Configurations._
 
 trait BaseIvySpecification extends UnitSpec {
@@ -18,7 +19,7 @@ trait BaseIvySpecification extends UnitSpec {
 
   lazy val log = ConsoleLogger()
   def lmEngine(uo: UpdateOptions = UpdateOptions()): LibraryManagement =
-    new IvyLibraryManagement(mkIvyConfiguration(uo), uo)
+    new IvyLibraryManagement(mkIvyConfiguration(uo))
 
   def configurations = Vector(Compile, Test, Runtime)
   def module(moduleId: ModuleID,

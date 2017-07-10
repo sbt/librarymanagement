@@ -2,6 +2,7 @@
  * Copyright 2009 Mark Harrah
  */
 package sbt.librarymanagement
+package ivy
 
 import java.io.File
 import org.apache.ivy.util.url.CredentialsStore

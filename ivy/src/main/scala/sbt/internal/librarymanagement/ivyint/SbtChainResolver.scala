@@ -21,6 +21,7 @@ import org.apache.ivy.plugins.resolver.util.{ HasLatestStrategy, ResolvedResourc
 import org.apache.ivy.util.{ Message, StringUtils => IvyStringUtils }
 import sbt.util.Logger
 import sbt.librarymanagement._
+import sbt.librarymanagement.ivy.UpdateOptions
 
 import scala.util.control.NonFatal
 

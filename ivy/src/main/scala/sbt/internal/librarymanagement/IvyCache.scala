@@ -17,6 +17,7 @@ import org.apache.ivy.plugins.resolver.util.ResolvedResource
 import org.apache.ivy.util.FileUtil
 import sbt.io.Path
 import sbt.librarymanagement._
+import sbt.librarymanagement.ivy.{ InlineIvyConfiguration, IvyPaths, UpdateOptions }
 import sbt.util.Logger
 
 import scalajson.ast.unsafe._

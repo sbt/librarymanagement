@@ -1,5 +1,6 @@
 package sbt.librarymanagement
 
+import sbt.librarymanagement.ivy.UpdateOptions
 import org.scalatest.Assertion
 import sbt.internal.librarymanagement._
 import sbt.internal.librarymanagement.impl.DependencyBuilders

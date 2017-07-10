@@ -24,6 +24,7 @@ import org.apache.ivy.util.extendable.ExtendableItem
 
 import java.io.{ File, InputStream }
 import java.net.URL
+import sbt.librarymanagement.ivy.UpdateOptions
 import sbt.internal.librarymanagement.mavenint.{
   PomExtraDependencyAttributes,
   SbtPomExtraProperties

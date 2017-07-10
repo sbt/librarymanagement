@@ -3,13 +3,8 @@ package sbt.librarymanagement
 import java.io.File
 
 import org.apache.ivy.util.Message
-import sbt.internal.librarymanagement.{
-  BaseIvySpecification,
-  InlineIvyConfiguration,
-  IvyActions,
-  IvyConfiguration,
-  IvyPaths
-}
+import sbt.internal.librarymanagement.{ BaseIvySpecification, IvyActions }
+import sbt.librarymanagement.ivy._
 import sbt.internal.librarymanagement.impl.DependencyBuilders
 import sbt.io.IO
 

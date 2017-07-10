@@ -1,4 +1,5 @@
 package sbt.librarymanagement
+package ivy
 
 import org.apache.ivy.plugins.circular.{
   CircularDependencyStrategy,

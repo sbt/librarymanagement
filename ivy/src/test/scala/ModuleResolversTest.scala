@@ -1,5 +1,6 @@
 package sbt.librarymanagement
 
+import sbt.librarymanagement.ivy.UpdateOptions
 import sbt.internal.librarymanagement.BaseIvySpecification
 import sbt.internal.librarymanagement.impl.DependencyBuilders
 
