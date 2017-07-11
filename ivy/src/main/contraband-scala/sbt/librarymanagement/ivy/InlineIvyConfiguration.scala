@@ -17,7 +17,7 @@ final class InlineIvyConfiguration private (
   val managedChecksums: Boolean,
   val resolutionCacheDir: Option[java.io.File]) extends sbt.librarymanagement.ivy.IvyConfiguration(log, lock, baseDirectory, ivyHome, updateOptions) with Serializable {
   
-  private def this(log: xsbti.Logger) = this(log, scala.None, new java.io.File("."), scala.None, sbt.librarymanagement.ivy.UpdateOptions(), sbt.librarymanagement.Resolver.withDefaultResolvers(Seq.empty, true, true).toVector, scala.collection.immutable.Vector.empty, scala.collection.immutable.Vector.empty, scala.collection.immutable.Vector.empty // Or IvySbt.DefaultChecksums?
+  private def this(log: xsbti.Logger) = this(log, scala.None, new java.io.File("."), scala.None, sbt.librarymanagement.ivy.UpdateOptions(), sbt.librarymanagement.Resolver.defaultResolvers(Vector.empty, true, true).toVector, scala.collection.immutable.Vector.empty, scala.collection.immutable.Vector.empty, scala.collection.immutable.Vector.empty // Or IvySbt.DefaultChecksums?
   , false, scala.None)
   
   override def equals(o: Any): Boolean = o match {
@@ -78,7 +78,7 @@ final class InlineIvyConfiguration private (
 }
 object InlineIvyConfiguration {
   
-  def apply(log: xsbti.Logger): InlineIvyConfiguration = new InlineIvyConfiguration(log, scala.None, new java.io.File("."), scala.None, sbt.librarymanagement.ivy.UpdateOptions(), sbt.librarymanagement.Resolver.withDefaultResolvers(Seq.empty, true, true).toVector, scala.collection.immutable.Vector.empty, scala.collection.immutable.Vector.empty, scala.collection.immutable.Vector.empty // Or IvySbt.DefaultChecksums?
+  def apply(log: xsbti.Logger): InlineIvyConfiguration = new InlineIvyConfiguration(log, scala.None, new java.io.File("."), scala.None, sbt.librarymanagement.ivy.UpdateOptions(), sbt.librarymanagement.Resolver.defaultResolvers(Vector.empty, true, true).toVector, scala.collection.immutable.Vector.empty, scala.collection.immutable.Vector.empty, scala.collection.immutable.Vector.empty // Or IvySbt.DefaultChecksums?
   , false, scala.None)
   def apply(log: xsbti.Logger, lock: Option[xsbti.GlobalLock], baseDirectory: java.io.File, ivyHome: Option[java.io.File], updateOptions: sbt.librarymanagement.ivy.UpdateOptions, resolvers: Vector[sbt.librarymanagement.Resolver], otherResolvers: Vector[sbt.librarymanagement.Resolver], moduleConfigurations: Vector[sbt.librarymanagement.ModuleConfiguration], checksums: Vector[String], managedChecksums: Boolean, resolutionCacheDir: Option[java.io.File]): InlineIvyConfiguration = new InlineIvyConfiguration(log, lock, baseDirectory, ivyHome, updateOptions, resolvers, otherResolvers, moduleConfigurations, checksums, managedChecksums, resolutionCacheDir)
   def apply(log: xsbti.Logger, lock: xsbti.GlobalLock, baseDirectory: java.io.File, ivyHome: java.io.File, updateOptions: sbt.librarymanagement.ivy.UpdateOptions, resolvers: Vector[sbt.librarymanagement.Resolver], otherResolvers: Vector[sbt.librarymanagement.Resolver], moduleConfigurations: Vector[sbt.librarymanagement.ModuleConfiguration], checksums: Vector[String], managedChecksums: Boolean, resolutionCacheDir: java.io.File): InlineIvyConfiguration = new InlineIvyConfiguration(log, Option(lock), baseDirectory, Option(ivyHome), updateOptions, resolvers, otherResolvers, moduleConfigurations, checksums, managedChecksums, Option(resolutionCacheDir))

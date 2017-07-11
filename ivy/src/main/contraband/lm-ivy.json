@@ -20,12 +20,12 @@
           "target": "Scala",
           "type": "record",
           "fields": [
-            { "name": "resolvers",            "type": "sbt.librarymanagement.Resolver*"           , "since": "0.0.1", "default": "sbt.librarymanagement.Resolver.withDefaultResolvers(Seq.empty, true, true).toVector" },
-            { "name": "otherResolvers",       "type": "sbt.librarymanagement.Resolver*"           , "since": "0.0.1", "default": "scala.collection.immutable.Vector.empty"                                             },
-            { "name": "moduleConfigurations", "type": "sbt.librarymanagement.ModuleConfiguration*", "since": "0.0.1", "default": "scala.collection.immutable.Vector.empty"                                             },
-            { "name": "checksums",            "type": "String*"                                   , "since": "0.0.1", "default": "scala.collection.immutable.Vector.empty // Or IvySbt.DefaultChecksums?\n"            },
-            { "name": "managedChecksums",     "type": "Boolean"                                   , "since": "0.0.1", "default": "false"                                                                               },
-            { "name": "resolutionCacheDir",   "type": "java.io.File?"                             , "since": "0.0.1", "default": "scala.None"                                                                          }
+            { "name": "resolvers",            "type": "sbt.librarymanagement.Resolver*"           , "since": "0.0.1", "default": "sbt.librarymanagement.Resolver.defaultResolvers(Vector.empty, true, true).toVector" },
+            { "name": "otherResolvers",       "type": "sbt.librarymanagement.Resolver*"           , "since": "0.0.1", "default": "scala.collection.immutable.Vector.empty"                                            },
+            { "name": "moduleConfigurations", "type": "sbt.librarymanagement.ModuleConfiguration*", "since": "0.0.1", "default": "scala.collection.immutable.Vector.empty"                                            },
+            { "name": "checksums",            "type": "String*"                                   , "since": "0.0.1", "default": "scala.collection.immutable.Vector.empty // Or IvySbt.DefaultChecksums?\n"           },
+            { "name": "managedChecksums",     "type": "Boolean"                                   , "since": "0.0.1", "default": "false"                                                                              },
+            { "name": "resolutionCacheDir",   "type": "java.io.File?"                             , "since": "0.0.1", "default": "scala.None"                                                                         }
           ]
         },
         {

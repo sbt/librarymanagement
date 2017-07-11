@@ -162,27 +162,27 @@ abstract class ResolverFunctions {
   def jcenterRepo = JCenterRepository
 
   /** Add the local and Maven Central repositories to the user repositories.  */
-  def withDefaultResolvers(userResolvers: Seq[Resolver]): Seq[Resolver] =
-    withDefaultResolvers(userResolvers, mavenCentral = true)
+  def defaultResolvers(userResolvers: Vector[Resolver]): Vector[Resolver] =
+    defaultResolvers(userResolvers, mavenCentral = true)
 
   /**
    * Add the local Ivy repository to the user repositories.
    * If `mavenCentral` is true, add the Maven Central repository.
    */
-  def withDefaultResolvers(userResolvers: Seq[Resolver], mavenCentral: Boolean): Seq[Resolver] =
-    withDefaultResolvers(userResolvers, jcenter = false, mavenCentral)
+  def defaultResolvers(userResolvers: Vector[Resolver], mavenCentral: Boolean): Vector[Resolver] =
+    defaultResolvers(userResolvers, jcenter = false, mavenCentral)
 
   /**
    * Add the local Ivy repository to the user repositories.
    * If `jcenter` is true, add the JCenter.
    * If `mavenCentral` is true, add the Maven Central repository.
    */
-  def withDefaultResolvers(
-      userResolvers: Seq[Resolver],
+  def defaultResolvers(
+      userResolvers: Vector[Resolver],
       jcenter: Boolean,
       mavenCentral: Boolean
-  ): Seq[Resolver] =
-    Seq(Resolver.defaultLocal) ++
+  ): Vector[Resolver] =
+    Vector(Resolver.defaultLocal) ++
       userResolvers ++
       single(JCenterRepository, jcenter) ++
       single(DefaultMavenRepository, mavenCentral)
@@ -193,10 +193,10 @@ abstract class ResolverFunctions {
    * If `mavenCentral` is true, add the Maven Central repository.
    */
   private[sbt] def reorganizeAppResolvers(
-      appResolvers: Seq[Resolver],
+      appResolvers: Vector[Resolver],
       jcenter: Boolean,
       mavenCentral: Boolean
-  ): Seq[Resolver] =
+  ): Vector[Resolver] =
     appResolvers.partition(_ == Resolver.defaultLocal) match {
       case (locals, xs) =>
         locals ++
@@ -210,7 +210,8 @@ abstract class ResolverFunctions {
           })
     }
 
-  private def single[T](value: T, nonEmpty: Boolean): Seq[T] = if (nonEmpty) Seq(value) else Nil
+  private def single[T](value: T, nonEmpty: Boolean): Vector[T] =
+    if (nonEmpty) Vector(value) else Vector.empty
 
   /** A base class for defining factories for interfaces to Ivy repositories that require a hostname , port, and patterns.  */
   sealed abstract class Define[RepositoryType <: SshBasedRepository] {
