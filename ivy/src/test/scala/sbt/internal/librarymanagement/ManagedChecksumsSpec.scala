@@ -22,21 +22,18 @@ class ManagedChecksumsSpec extends BaseIvySpecification with DependencyBuilders 
 
   import sbt.io.syntax._
   override def mkIvyConfiguration(uo: UpdateOptions): IvyConfiguration = {
-    val paths = IvyPaths(currentBase, Some(currentTarget))
-    val other = Vector.empty
     val check = Vector(Checksum)
     val moduleConfs = Vector(ModuleConfiguration("*", chainResolver))
     val resCacheDir = currentTarget / "resolution-cache"
-    new InlineIvyConfiguration(paths,
-                               resolvers,
-                               other,
-                               moduleConfs,
-                               None,
-                               check,
-                               managedChecksums = true,
-                               Some(resCacheDir),
-                               uo,
-                               log)
+    InlineIvyConfiguration(log)
+      .withBaseDirectory(currentBase)
+      .withIvyHome(Some(currentTarget))
+      .withUpdateOptions(uo)
+      .withResolvers(resolvers)
+      .withModuleConfigurations(moduleConfs)
+      .withResolutionCacheDir(Some(resCacheDir))
+      .withChecksums(check)
+      .withManagedChecksums(true)
   }
 
   def cleanAll(): Unit = {

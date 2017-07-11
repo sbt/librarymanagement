@@ -17,7 +17,7 @@ import org.apache.ivy.plugins.resolver.util.ResolvedResource
 import org.apache.ivy.util.FileUtil
 import sbt.io.Path
 import sbt.librarymanagement._
-import sbt.librarymanagement.ivy.{ InlineIvyConfiguration, IvyPaths, UpdateOptions }
+import sbt.librarymanagement.ivy.{ InlineIvyConfiguration, UpdateOptions }
 import sbt.util.Logger
 
 import scalajson.ast.unsafe._
@@ -103,19 +103,11 @@ class IvyCache(val ivyHome: Option[File]) {
   /** A minimal Ivy setup with only a local resolver and the current directory as the base directory.*/
   private def basicLocalIvy(lock: Option[xsbti.GlobalLock], log: Logger) = {
     val local = Resolver.defaultLocal
-    val paths = IvyPaths(new File("."), ivyHome)
-    val conf = new InlineIvyConfiguration(
-      paths,
-      Vector(local),
-      Vector.empty,
-      Vector.empty,
-      lock,
-      IvySbt.DefaultChecksums,
-      false,
-      None,
-      UpdateOptions(),
-      log
-    )
+    val conf = InlineIvyConfiguration(log)
+      .withLock(lock)
+      .withIvyHome(ivyHome)
+      .withResolvers(Vector(local))
+      .withChecksums(IvySbt.DefaultChecksums)
     (new IvySbt(conf), local)
   }
 
