@@ -7,7 +7,6 @@ trait IvyLibraryManagementCodec
     with sbt.internal.librarymanagement.formats.GlobalLockFormat
     with sbt.internal.librarymanagement.formats.LoggerFormat
     with sbt.librarymanagement.ivy.formats.UpdateOptionsFormat
-    with IvyPathsFormats
     with ResolverFormats
     with ModuleConfigurationFormats
     with InlineIvyConfigurationFormats
