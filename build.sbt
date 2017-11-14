@@ -49,7 +49,7 @@ val mimaSettings = Def settings (
 )
 
 lazy val lmRoot = (project in file("."))
-  .aggregate(lmCore, lmIvy)
+  .aggregate(lmCore, lmIvy, lmCoursier)
   .settings(
     inThisBuild(
       Seq(
@@ -146,6 +146,23 @@ lazy val lmIvy = (project in file("ivy"))
       Vector("-Ywarn-unused-import", "-Ywarn-unused", "-Xlint"),
     mimaSettings,
   )
+
+lazy val lmCoursier = (project in file("coursier"))
+  .enablePlugins(ContrabandPlugin, JsonCodecPlugin)
+  .dependsOn(lmCore)
+  .settings(
+    commonSettings,
+    name := "librarymanagement-coursier",
+    libraryDependencies ++= Seq(coursier, coursierCache, scalaTest, scalaCheck),
+    managedSourceDirectories in Compile +=
+      baseDirectory.value / "src" / "main" / "contraband-scala",
+    sourceManaged in (Compile, generateContrabands) := baseDirectory.value / "src" / "main" / "contraband-scala",
+    contrabandFormatsForType in generateContrabands in Compile := DatatypeConfig.getFormats,
+    scalacOptions in (Compile, console) --=
+      Vector("-Ywarn-unused-import", "-Ywarn-unused", "-Xlint"),
+    mimaSettings,
+  )
+
 
 def customCommands: Seq[Setting[_]] = Seq(
   commands += Command.command("release") { state =>
