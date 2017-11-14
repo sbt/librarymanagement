@@ -2,7 +2,7 @@ package sbt.librarymanagement.coursier
 
 import java.io.File
 
-import coursier.{ MavenRepository, Resolution, _ }
+import coursier.{ MavenRepository, Resolution, Artifact, _ }
 import sbt.librarymanagement._
 import sbt.util.Logger
 
@@ -81,9 +81,10 @@ class CoursierDependencyResolution private[sbt] extends DependencyResolutionInte
                              localArtificats: Seq[FileError \/ File],
                              log: Logger): Either[UnresolvedWarning, UpdateReport] = {
 
-    val errors = localArtificats.collect {
-      case -\/(fileError) => fileError
-    }
+    // can be non empty only if ignoreArtifactErrors is true or some optional artifacts are not found
+    val erroredArtifacts = localArtificats.collect {
+      case (artifact, -\/(_)) => artifact
+    }.toSet
 
     lazy val downloaded = localArtificats.collect {
       case \/-(file) => file
@@ -92,7 +93,7 @@ class CoursierDependencyResolution private[sbt] extends DependencyResolutionInte
     val depsByConfig = resolution.dependencies.groupBy(_.configuration).mapValues(_.toSeq)
     val configResolutions = depsByConfig.mapValues(_ => resolution)
 
-    if (errors.isEmpty) {
+    if (erroredArtifacts.isEmpty) {
       ToSbt.updateReport(
         depsByConfig,
         configResolutions,
@@ -111,9 +112,40 @@ class CoursierDependencyResolution private[sbt] extends DependencyResolutionInte
         includeSignatures = includeSignatures
       )
     } else {
-      throw new RuntimeException(s"Could not save downloaded dependencies: $errors")
+      throw new RuntimeException(s"Could not save downloaded dependencies: $erroredArtifacts")
     }
 
+  }
+
+  private def artifactFileOpt(
+      sbtBootJarOverrides: Map[(Module, String), File],
+      artifactFiles: Map[Artifact, File],
+      erroredArtifacts: Set[Artifact],
+      log: Logger,
+      module: Module,
+      version: String,
+      artifact: Artifact
+  ) = {
+
+    val artifact0 = artifact
+      .copy(attributes = Attributes()) // temporary hack :-(
+
+    // Under some conditions, SBT puts the scala JARs of its own classpath
+    // in the application classpath. Ensuring we return SBT's jars rather than
+    // JARs from the coursier cache, so that a same JAR doesn't land twice in the
+    // application classpath (once via SBT jars, once via coursier cache).
+    val fromBootJars =
+      if (artifact.classifier.isEmpty && artifact.`type` == "jar")
+        sbtBootJarOverrides.get((module, version))
+      else
+        None
+
+    val res = fromBootJars.orElse(artifactFiles.get(artifact0))
+
+    if (res.isEmpty && !erroredArtifacts(artifact0))
+      log.error(s"${artifact.url} not downloaded (should not happen)")
+
+    res
   }
 
   private def toSbtError(uwconfig: UnresolvedWarningConfiguration, resolution: Resolution) = {
