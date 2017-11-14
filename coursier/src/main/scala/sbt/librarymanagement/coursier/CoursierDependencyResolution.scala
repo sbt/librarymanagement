@@ -37,7 +37,7 @@ class CoursierDependencyResolution private[sbt] extends DependencyResolutionInte
       moduleSetting.dependencies,
       moduleSetting.scalaModuleInfo,
       CoursierModuleSettings(),
-      1L
+      1L // FIXME: use correct value
     )
   }
 
@@ -66,15 +66,9 @@ class CoursierDependencyResolution private[sbt] extends DependencyResolutionInte
           resolution.artifacts.map(Cache.file(_).run)
         )
         .unsafePerformSync
-      toUpdateResult(localArtifacts)
+      toUpdateResult(resolution, localArtifacts)
     } else {
-      val failedResolution = resolution.metadataErrors.map {
-        case ((failedModule, failedVersion), _) =>
-          ModuleID(failedModule.organization, failedModule.name, failedVersion)
-      }
-      val msgs = resolution.metadataErrors.flatMap(_._2)
-      val ex = new ResolveException(msgs, failedResolution)
-      Left(UnresolvedWarning(ex, uwconfig))
+      toSbtError(uwconfig, resolution)
     }
   }
 
@@ -84,6 +78,7 @@ class CoursierDependencyResolution private[sbt] extends DependencyResolutionInte
     Dependency(Module(moduleID.organization, moduleID.name), moduleID.revision)
 
   private def toUpdateResult(
+      resolution: Resolution,
       localArtificats: Seq[FileError \/ File]): Either[UnresolvedWarning, UpdateReport] = {
 
     val errors = localArtificats.collect {
@@ -95,11 +90,25 @@ class CoursierDependencyResolution private[sbt] extends DependencyResolutionInte
     }
 
     if (errors.isEmpty) {
-      Right(UpdateReport())
+      // FIXME: use correct times
+      val updateStats = UpdateStats(0l, 0l, 0l, false)
+      val cachedDescriptor: File = ???
+      val configurations: Vector[ConfigurationReport] = ???
+      val stamps: Map[File, Long] = Map.empty
+      Right(UpdateReport(cachedDescriptor, configurations, updateStats, stamps))
     } else {
-      throw new RuntimeException(s"Could not save downloaded depenencies: $errors")
+      throw new RuntimeException(s"Could not save downloaded dependencies: $errors")
     }
 
   }
 
+  private def toSbtError(uwconfig: UnresolvedWarningConfiguration, resolution: Resolution) = {
+    val failedResolution = resolution.metadataErrors.map {
+      case ((failedModule, failedVersion), _) =>
+        ModuleID(failedModule.organization, failedModule.name, failedVersion)
+    }
+    val msgs = resolution.metadataErrors.flatMap(_._2)
+    val ex = new ResolveException(msgs, failedResolution)
+    Left(UnresolvedWarning(ex, uwconfig))
+  }
 }
