@@ -66,7 +66,7 @@ class CoursierDependencyResolution private[sbt] extends DependencyResolutionInte
           resolution.artifacts.map(Cache.file(_).run)
         )
         .unsafePerformSync
-      toUpdateResult(resolution, localArtifacts)
+      toUpdateResult(resolution, localArtifacts, log)
     } else {
       toSbtError(uwconfig, resolution)
     }
@@ -77,9 +77,9 @@ class CoursierDependencyResolution private[sbt] extends DependencyResolutionInte
   private def toCoursierDependency(moduleID: ModuleID): Dependency =
     Dependency(Module(moduleID.organization, moduleID.name), moduleID.revision)
 
-  private def toUpdateResult(
-      resolution: Resolution,
-      localArtificats: Seq[FileError \/ File]): Either[UnresolvedWarning, UpdateReport] = {
+  private def toUpdateResult(resolution: Resolution,
+                             localArtificats: Seq[FileError \/ File],
+                             log: Logger): Either[UnresolvedWarning, UpdateReport] = {
 
     val errors = localArtificats.collect {
       case -\/(fileError) => fileError
@@ -89,13 +89,27 @@ class CoursierDependencyResolution private[sbt] extends DependencyResolutionInte
       case \/-(file) => file
     }
 
+    val depsByConfig = resolution.dependencies.groupBy(_.configuration).mapValues(_.toSeq)
+    val configResolutions = depsByConfig.mapValues(_ => resolution)
+
     if (errors.isEmpty) {
-      // FIXME: use correct times
-      val updateStats = UpdateStats(0l, 0l, 0l, false)
-      val cachedDescriptor: File = ???
-      val configurations: Vector[ConfigurationReport] = ???
-      val stamps: Map[File, Long] = Map.empty
-      Right(UpdateReport(cachedDescriptor, configurations, updateStats, stamps))
+      ToSbt.updateReport(
+        depsByConfig,
+        configResolutions,
+        configs,
+        classifiers,
+        artifactFileOpt(
+          sbtBootJarOverrides,
+          artifactFiles,
+          erroredArtifacts,
+          log,
+          _,
+          _,
+          _
+        ),
+        log,
+        includeSignatures = includeSignatures
+      )
     } else {
       throw new RuntimeException(s"Could not save downloaded dependencies: $errors")
     }
