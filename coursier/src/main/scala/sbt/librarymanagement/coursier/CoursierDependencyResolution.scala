@@ -1,8 +1,8 @@
 package sbt.librarymanagement.coursier
 
-import java.io.File
+import java.io.{ File, OutputStreamWriter }
 
-import coursier.{ MavenRepository, Resolution, Artifact, _ }
+import coursier.{ Artifact, MavenRepository, Resolution, _ }
 import sbt.librarymanagement._
 import sbt.util.Logger
 
@@ -63,10 +63,10 @@ class CoursierDependencyResolution private[sbt] extends DependencyResolutionInte
     if (resolution.metadataErrors.isEmpty) {
       val localArtifacts: Seq[FileError \/ File] = Task
         .gatherUnordered(
-          resolution.artifacts.map(Cache.file(_).run)
+          resolution.artifacts.map(a => Cache.file(artifact = a, logger = Some(createLogger())).run)
         )
         .unsafePerformSync
-      toUpdateResult(resolution, localArtifacts, log)
+      toUpdateReport(resolution, localArtifacts, log)
     } else {
       toSbtError(uwconfig, resolution)
     }
@@ -74,10 +74,12 @@ class CoursierDependencyResolution private[sbt] extends DependencyResolutionInte
 
   // utilities
 
+  private def createLogger() = new TermDisplay(new OutputStreamWriter(System.err))
+
   private def toCoursierDependency(moduleID: ModuleID): Dependency =
     Dependency(Module(moduleID.organization, moduleID.name), moduleID.revision)
 
-  private def toUpdateResult(resolution: Resolution,
+  private def toUpdateReport(resolution: Resolution,
                              localArtificats: Seq[FileError \/ File],
                              log: Logger): Either[UnresolvedWarning, UpdateReport] = {
 
@@ -108,8 +110,7 @@ class CoursierDependencyResolution private[sbt] extends DependencyResolutionInte
           _,
           _
         ),
-        log,
-        includeSignatures = includeSignatures
+        log
       )
     } else {
       throw new RuntimeException(s"Could not save downloaded dependencies: $erroredArtifacts")
