@@ -59,12 +59,23 @@ class CoursierDependencyResolution private[sbt] extends DependencyResolutionInte
     val start = Resolution(dependencies)
     val fetch = Fetch.from(repositories, Cache.fetch())
     val resolution = start.process.run(fetch).unsafePerformSync
-    val localArtifacts: Seq[FileError \/ File] = Task
-      .gatherUnordered(
-        resolution.artifacts.map(Cache.file(_).run)
-      )
-      .unsafePerformSync
-    toUpdateResult(localArtifacts, uwconfig)
+
+    if (resolution.metadataErrors.isEmpty) {
+      val localArtifacts: Seq[FileError \/ File] = Task
+        .gatherUnordered(
+          resolution.artifacts.map(Cache.file(_).run)
+        )
+        .unsafePerformSync
+      toUpdateResult(localArtifacts)
+    } else {
+      val failedResolution = resolution.metadataErrors.map {
+        case ((failedModule, failedVersion), _) =>
+          ModuleID(failedModule.organization, failedModule.name, failedVersion)
+      }
+      val msgs = resolution.metadataErrors.flatMap(_._2)
+      val ex = new ResolveException(msgs, failedResolution)
+      Left(UnresolvedWarning(ex, uwconfig))
+    }
   }
 
   // utilities
@@ -73,8 +84,7 @@ class CoursierDependencyResolution private[sbt] extends DependencyResolutionInte
     Dependency(Module(moduleID.organization, moduleID.name), moduleID.revision)
 
   private def toUpdateResult(
-      localArtificats: Seq[FileError \/ File],
-      uwconfig: UnresolvedWarningConfiguration): Either[UnresolvedWarning, UpdateReport] = {
+      localArtificats: Seq[FileError \/ File]): Either[UnresolvedWarning, UpdateReport] = {
 
     val errors = localArtificats.collect {
       case -\/(fileError) => fileError
@@ -84,12 +94,10 @@ class CoursierDependencyResolution private[sbt] extends DependencyResolutionInte
       case \/-(file) => file
     }
 
-    if (errors.nonEmpty) {
-      val msgs = errors.map(_.message)
-      val e = new ResolveException(msgs, )
-      Left(UnresolvedWarning(e, uwconfig))
-    } else {
+    if (errors.isEmpty) {
       Right(UpdateReport())
+    } else {
+      throw new RuntimeException(s"Could not save downloaded depenencies: $errors")
     }
 
   }
