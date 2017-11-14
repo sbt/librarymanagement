@@ -2,11 +2,11 @@ package sbt.librarymanagement.coursier
 
 import java.io.File
 
-import coursier.{ Resolution, _ }
+import coursier.{ MavenRepository, Resolution, _ }
 import sbt.librarymanagement._
 import sbt.util.Logger
 
-import scalaz.\/
+import scalaz.{ -\/, \/, \/- }
 import scalaz.concurrent.Task
 
 case class CoursierModuleDescriptor(
@@ -33,7 +33,6 @@ class CoursierDependencyResolution private[sbt] extends DependencyResolutionInte
    * @return A `ModuleDescriptor` describing a subproject and its dependencies.
    */
   override def moduleDescriptor(moduleSetting: ModuleDescriptorConfiguration): Module = {
-    ModuleSettings
     CoursierModuleDescriptor(
       moduleSetting.dependencies,
       moduleSetting.scalaModuleInfo,
@@ -56,18 +55,8 @@ class CoursierDependencyResolution private[sbt] extends DependencyResolutionInte
                       configuration: UpdateConfiguration,
                       uwconfig: UnresolvedWarningConfiguration,
                       log: Logger): Either[UnresolvedWarning, UpdateReport] = {
-    val start = Resolution(
-      Set(
-        Dependency(
-          Module("org.typelevel", "cats-core_2.11"),
-          "0.6.0"
-        ),
-        Dependency(
-          Module("org.scalaz", "scalaz-core_2.11"),
-          "7.2.3"
-        )
-      )
-    )
+    val dependencies = module.directDependencies.map(toCoursierDependency).toSet
+    val start = Resolution(dependencies)
     val fetch = Fetch.from(repositories, Cache.fetch())
     val resolution = start.process.run(fetch).unsafePerformSync
     val localArtifacts: Seq[FileError \/ File] = Task
@@ -75,6 +64,34 @@ class CoursierDependencyResolution private[sbt] extends DependencyResolutionInte
         resolution.artifacts.map(Cache.file(_).run)
       )
       .unsafePerformSync
-    ???
+    toUpdateResult(localArtifacts, uwconfig)
   }
+
+  // utilities
+
+  private def toCoursierDependency(moduleID: ModuleID): Dependency =
+    Dependency(Module(moduleID.organization, moduleID.name), moduleID.revision)
+
+  private def toUpdateResult(
+      localArtificats: Seq[FileError \/ File],
+      uwconfig: UnresolvedWarningConfiguration): Either[UnresolvedWarning, UpdateReport] = {
+
+    val errors = localArtificats.collect {
+      case -\/(fileError) => fileError
+    }
+
+    lazy val downloaded = localArtificats.collect {
+      case \/-(file) => file
+    }
+
+    if (errors.nonEmpty) {
+      val msgs = errors.map(_.message)
+      val e = new ResolveException(msgs, )
+      Left(UnresolvedWarning(e, uwconfig))
+    } else {
+      Right(UpdateReport())
+    }
+
+  }
+
 }
