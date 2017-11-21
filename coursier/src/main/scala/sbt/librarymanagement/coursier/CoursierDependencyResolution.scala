@@ -74,7 +74,11 @@ class CoursierDependencyResolution private[sbt] extends DependencyResolutionInte
 
   // utilities
 
-  private def createLogger() = new TermDisplay(new OutputStreamWriter(System.err))
+  private def createLogger() = {
+    val t = new TermDisplay(new OutputStreamWriter(System.err))
+    t.init()
+    t
+  }
 
   private def toCoursierDependency(moduleID: ModuleID): Dependency =
     Dependency(Module(moduleID.organization, moduleID.name), moduleID.revision)
