@@ -24,15 +24,14 @@ class CoursierDependencyResolution private[sbt] extends DependencyResolutionInte
     MavenRepository("https://repo1.maven.org/maven2")
   )
 
-  type Module = CoursierModuleDescriptor
-
   /**
    * Builds a ModuleDescriptor that describes a subproject with dependencies.
    *
    * @param moduleSetting It contains the information about the module including the dependencies.
    * @return A `ModuleDescriptor` describing a subproject and its dependencies.
    */
-  override def moduleDescriptor(moduleSetting: ModuleDescriptorConfiguration): Module = {
+  override def moduleDescriptor(
+      moduleSetting: ModuleDescriptorConfiguration): CoursierModuleDescriptor = {
     CoursierModuleDescriptor(
       moduleSetting.dependencies,
       moduleSetting.scalaModuleInfo,
@@ -63,7 +62,8 @@ class CoursierDependencyResolution private[sbt] extends DependencyResolutionInte
     if (resolution.metadataErrors.isEmpty) {
       val localArtifacts: Seq[(Artifact, FileError \/ File)] = Task
         .gatherUnordered(
-          resolution.artifacts.map(a => Cache.file(artifact = a, logger = Some(createLogger())).run.map(t => (a,t)))
+          resolution.artifacts.map(a =>
+            Cache.file(artifact = a, logger = Some(createLogger())).run.map(t => (a, t)))
         )
         .unsafePerformSync
       toUpdateReport(resolution, localArtifacts, log)
@@ -88,7 +88,6 @@ class CoursierDependencyResolution private[sbt] extends DependencyResolutionInte
       case (artifact, -\/(_)) => artifact
     }.toSet
 
-
     lazy val downloaded = localArtificats.collect {
       case (artifact, \/-(file)) => (artifact, file)
     }
@@ -97,26 +96,28 @@ class CoursierDependencyResolution private[sbt] extends DependencyResolutionInte
     val configResolutions = depsByConfig.mapValues(_ => resolution)
 
     val sbtBootJarOverrides = Map.empty[(Module, String), File] // TODO: get correct values
+    val classifiers = None // TODO: get correct values
+    val configs = Map.empty[String, Set[String]] // TODO: get correct value
     val artifactFiles = downloaded.toMap
 
-
     if (erroredArtifacts.isEmpty) {
-      ToSbt.updateReport(
-        depsByConfig,
-        configResolutions,
-        configs,
-        classifiers,
-        artifactFileOpt(
-          sbtBootJarOverrides,
-          artifactFiles,
-          erroredArtifacts,
-          log,
-          _,
-          _,
-          _
-        ),
-        log
-      )
+      Right(
+        ToSbt.updateReport(
+          depsByConfig,
+          configResolutions,
+          configs,
+          classifiers,
+          artifactFileOpt(
+            sbtBootJarOverrides,
+            artifactFiles,
+            erroredArtifacts,
+            log,
+            _,
+            _,
+            _
+          ),
+          log
+        ))
     } else {
       throw new RuntimeException(s"Could not save downloaded dependencies: $erroredArtifacts")
     }
