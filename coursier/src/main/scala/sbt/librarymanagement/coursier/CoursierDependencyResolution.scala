@@ -165,3 +165,7 @@ class CoursierDependencyResolution private[sbt] extends DependencyResolutionInte
     Left(UnresolvedWarning(ex, uwconfig))
   }
 }
+
+object CoursierDependencyResolution {
+  def apply() = DependencyResolution(new CoursierDependencyResolution())
+}

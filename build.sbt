@@ -2,7 +2,7 @@ import Dependencies._
 import Path._
 //import com.typesafe.tools.mima.core._, ProblemFilters._
 
-def baseVersion = "1.0.0-SNAPSHOT"
+def baseVersion = "10.0.3-SNAPSHOT"
 
 def commonSettings: Seq[Setting[_]] = Seq(
   scalaVersion := scala212,
