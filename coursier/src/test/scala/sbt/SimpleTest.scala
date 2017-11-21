@@ -26,9 +26,11 @@ class SimpleTest extends BaseCoursierSpecification {
 
   "Coursier dependency resolution" should "resolve very simple module" in {
     val coursierModule = module(stubModule, dependencies, Some("2.12.4"))
-    val normalResolution =
+    val resolution =
       lmEngine.update(coursierModule, UpdateConfiguration(), UnresolvedWarningConfiguration(), log)
 
-    normalResolution should be('right)
+    val r = resolution.toOption.get
+    println(r.stamps)
+    resolution should be('right)
   }
 }

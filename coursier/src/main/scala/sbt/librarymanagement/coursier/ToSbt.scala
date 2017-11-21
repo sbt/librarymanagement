@@ -252,7 +252,7 @@ private[this] object ToSbt {
     }
 
     UpdateReport(
-      null,
+      new File("/tmp/coursier-doesnt-implement-cached-resolution"),
       configReports.toVector,
       UpdateStats(-1L, -1L, -1L, cached = false),
       Map.empty
