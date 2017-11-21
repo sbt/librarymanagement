@@ -61,9 +61,9 @@ class CoursierDependencyResolution private[sbt] extends DependencyResolutionInte
     val resolution = start.process.run(fetch).unsafePerformSync
 
     if (resolution.metadataErrors.isEmpty) {
-      val localArtifacts: Seq[FileError \/ File] = Task
+      val localArtifacts: Seq[(Artifact, FileError \/ File)] = Task
         .gatherUnordered(
-          resolution.artifacts.map(a => Cache.file(artifact = a, logger = Some(createLogger())).run)
+          resolution.artifacts.map(a => Cache.file(artifact = a, logger = Some(createLogger())).run.map(t => (a,t)))
         )
         .unsafePerformSync
       toUpdateReport(resolution, localArtifacts, log)
@@ -80,7 +80,7 @@ class CoursierDependencyResolution private[sbt] extends DependencyResolutionInte
     Dependency(Module(moduleID.organization, moduleID.name), moduleID.revision)
 
   private def toUpdateReport(resolution: Resolution,
-                             localArtificats: Seq[FileError \/ File],
+                             localArtificats: Seq[(Artifact, FileError \/ File)],
                              log: Logger): Either[UnresolvedWarning, UpdateReport] = {
 
     // can be non empty only if ignoreArtifactErrors is true or some optional artifacts are not found
@@ -88,12 +88,17 @@ class CoursierDependencyResolution private[sbt] extends DependencyResolutionInte
       case (artifact, -\/(_)) => artifact
     }.toSet
 
+
     lazy val downloaded = localArtificats.collect {
-      case \/-(file) => file
+      case (artifact, \/-(file)) => (artifact, file)
     }
 
     val depsByConfig = resolution.dependencies.groupBy(_.configuration).mapValues(_.toSeq)
     val configResolutions = depsByConfig.mapValues(_ => resolution)
+
+    val sbtBootJarOverrides = Map.empty[(Module, String), File] // TODO: get correct values
+    val artifactFiles = downloaded.toMap
+
 
     if (erroredArtifacts.isEmpty) {
       ToSbt.updateReport(
