@@ -8,7 +8,7 @@ import sbt.librarymanagement.Resolver.{
 }
 import sbt.librarymanagement.syntax._
 
-class SimpleTest extends BaseCoursierSpecification {
+class ResolutionSpec extends BaseCoursierSpecification {
   override final val resolvers = Vector(
     DefaultMavenRepository,
     JavaNet2Repository,
@@ -21,7 +21,8 @@ class SimpleTest extends BaseCoursierSpecification {
   val pluginAttributes = Map("scalaVersion" -> "2.10")
 
   private final val dependencies = Vector(
-    "com.typesafe.scala-logging" % "scala-logging_2.12" % "3.7.2"
+    "com.typesafe.scala-logging" % "scala-logging_2.12" % "3.7.2" % "compile",
+    "org.scalatest" %% "scalatest_2.12" % "3.0.4" % "test"
   ).map(_.withIsTransitive(false))
 
   "Coursier dependency resolution" should "resolve very simple module" in {
@@ -29,8 +30,12 @@ class SimpleTest extends BaseCoursierSpecification {
     val resolution =
       lmEngine.update(coursierModule, UpdateConfiguration(), UnresolvedWarningConfiguration(), log)
 
-    val r = resolution.toOption.get
-    println(r.stamps)
     resolution should be('right)
+    val r = resolution.toOption.get
+    //println(r.configurations)
+    r.configurations should have size 2
+    r.configurations.map(_.configuration) should contain only (Compile.toConfigRef, Test.toConfigRef)
+    val testConfig = r.configurations.find(_.configuration == Test.toConfigRef).get
+    testConfig.modules should have size 1
   }
 }

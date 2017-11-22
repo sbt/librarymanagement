@@ -81,7 +81,9 @@ class CoursierDependencyResolution private[sbt] extends DependencyResolutionInte
   }
 
   private def toCoursierDependency(moduleID: ModuleID): Dependency =
-    Dependency(Module(moduleID.organization, moduleID.name), moduleID.revision)
+    Dependency(Module(moduleID.organization, moduleID.name),
+               moduleID.revision,
+               moduleID.configurations.getOrElse(""))
 
   private def toUpdateReport(resolution: Resolution,
                              localArtificats: Seq[(Artifact, FileError \/ File)],
@@ -97,11 +99,12 @@ class CoursierDependencyResolution private[sbt] extends DependencyResolutionInte
     }
 
     val depsByConfig = resolution.dependencies.groupBy(_.configuration).mapValues(_.toSeq)
+
     val configResolutions = depsByConfig.mapValues(_ => resolution)
 
     val sbtBootJarOverrides = Map.empty[(Module, String), File] // TODO: get correct values
     val classifiers = None // TODO: get correct values
-    val configs = Map.empty[String, Set[String]] // TODO: get correct value
+    val configs = resolution.dependencies.map(d => (d.configuration, Set(d.configuration))).toMap // TODO: is this the correct value?
     val artifactFiles = downloaded.toMap
 
     if (erroredArtifacts.isEmpty) {
