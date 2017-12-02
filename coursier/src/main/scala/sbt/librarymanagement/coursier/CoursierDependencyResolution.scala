@@ -13,6 +13,7 @@ case class CoursierModuleDescriptor(
     directDependencies: Vector[ModuleID],
     scalaModuleInfo: Option[ScalaModuleInfo],
     moduleSettings: ModuleSettings,
+    configurations: Vector[Configuration],
     extraInputHash: Long
 ) extends ModuleDescriptor
 
@@ -36,6 +37,7 @@ class CoursierDependencyResolution private[sbt] extends DependencyResolutionInte
       moduleSetting.dependencies,
       moduleSetting.scalaModuleInfo,
       CoursierModuleSettings(),
+      moduleSetting.configurations,
       1L // FIXME: use correct value
     )
   }
@@ -66,13 +68,18 @@ class CoursierDependencyResolution private[sbt] extends DependencyResolutionInte
             Cache.file(artifact = a, logger = Some(createLogger())).run.map(t => (a, t)))
         )
         .unsafePerformSync
-      toUpdateReport(resolution, localArtifacts, log)
+      toUpdateReport(toModule(module), resolution, localArtifacts, log)
     } else {
       toSbtError(uwconfig, resolution)
     }
   }
 
   // utilities
+
+  private def toModule(module: ModuleDescriptor): CoursierModuleDescriptor =
+    module match {
+      case m: CoursierModuleDescriptor => m
+    }
 
   private def createLogger() = {
     val t = new TermDisplay(new OutputStreamWriter(System.err))
@@ -85,7 +92,8 @@ class CoursierDependencyResolution private[sbt] extends DependencyResolutionInte
                moduleID.revision,
                moduleID.configurations.getOrElse(""))
 
-  private def toUpdateReport(resolution: Resolution,
+  private def toUpdateReport(module: CoursierModuleDescriptor,
+                             resolution: Resolution,
                              localArtificats: Seq[(Artifact, FileError \/ File)],
                              log: Logger): Either[UnresolvedWarning, UpdateReport] = {
 
@@ -99,12 +107,20 @@ class CoursierDependencyResolution private[sbt] extends DependencyResolutionInte
     }
 
     val depsByConfig = resolution.dependencies.groupBy(_.configuration).mapValues(_.toSeq)
+    println(depsByConfig)
 
-    val configResolutions = depsByConfig.mapValues(_ => resolution)
+    val configurations = module.configurations
+      .map(c => (c.name, c.extendsConfigs.map(_.name)))
+      .toMap
+      .mapValues(_.toSet)
+
+    println(configurations)
+
+    val configResolutions =
+      (depsByConfig.keys ++ configurations.keys).map(k => (k, resolution)).toMap
 
     val sbtBootJarOverrides = Map.empty[(Module, String), File] // TODO: get correct values
     val classifiers = None // TODO: get correct values
-    val configs = resolution.dependencies.map(d => (d.configuration, Set(d.configuration))).toMap // TODO: is this the correct value?
     val artifactFiles = downloaded.toMap
 
     if (erroredArtifacts.isEmpty) {
@@ -112,7 +128,7 @@ class CoursierDependencyResolution private[sbt] extends DependencyResolutionInte
         ToSbt.updateReport(
           depsByConfig,
           configResolutions,
-          configs,
+          configurations,
           classifiers,
           artifactFileOpt(
             sbtBootJarOverrides,
