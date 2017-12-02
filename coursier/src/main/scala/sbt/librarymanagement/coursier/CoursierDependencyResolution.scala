@@ -107,14 +107,13 @@ class CoursierDependencyResolution private[sbt] extends DependencyResolutionInte
     }
 
     val depsByConfig = resolution.dependencies.groupBy(_.configuration).mapValues(_.toSeq)
-    println(depsByConfig)
 
+    // Key is the name of the configuration (i.e. `compile`) and the values are the name itself plus the
+    // names of the configurations that this one depends on.
     val configurations = module.configurations
-      .map(c => (c.name, c.extendsConfigs.map(_.name)))
+      .map(c => (c.name, c.extendsConfigs.map(_.name) :+ c.name))
       .toMap
       .mapValues(_.toSet)
-
-    println(configurations)
 
     val configResolutions =
       (depsByConfig.keys ++ configurations.keys).map(k => (k, resolution)).toMap
