@@ -1,12 +1,12 @@
-package sbt
+package sbt.librarymanagement.coursier
 
-import sbt.librarymanagement.{ Resolver, UnresolvedWarningConfiguration, UpdateConfiguration }
 import sbt.librarymanagement.Resolver.{
   DefaultMavenRepository,
   JCenterRepository,
   JavaNet2Repository
 }
 import sbt.librarymanagement.syntax._
+import sbt.librarymanagement.{ Resolver, UnresolvedWarningConfiguration, UpdateConfiguration }
 
 class ResolutionSpec extends BaseCoursierSpecification {
   override final val resolvers = Vector(

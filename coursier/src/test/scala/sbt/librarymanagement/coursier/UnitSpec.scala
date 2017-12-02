@@ -1,4 +1,4 @@
-package sbt
+package sbt.librarymanagement.coursier
 
 import org.scalatest.{ FlatSpec, Matchers }
 

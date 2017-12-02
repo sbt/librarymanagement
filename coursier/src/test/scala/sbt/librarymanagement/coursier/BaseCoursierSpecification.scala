@@ -1,4 +1,4 @@
-package sbt
+package sbt.librarymanagement.coursier
 
 import java.io.File
 
@@ -7,7 +7,6 @@ import sbt.internal.util.ConsoleLogger
 import sbt.io.syntax._
 import sbt.librarymanagement.Configurations._
 import sbt.librarymanagement._
-import sbt.librarymanagement.coursier.CoursierDependencyResolution
 
 trait BaseCoursierSpecification extends UnitSpec {
   def currentBase: File = new File(".")
