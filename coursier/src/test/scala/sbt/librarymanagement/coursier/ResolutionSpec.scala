@@ -32,7 +32,7 @@ class ResolutionSpec extends BaseCoursierSpecification {
 
     resolution should be('right)
     val r = resolution.toOption.get
-    r.configurations.map(_.configuration) should contain only (Compile.toConfigRef, Test.toConfigRef, Runtime.toConfigRef)
+    r.configurations.map(_.configuration) should have size 8
 
     val compileConfig = r.configurations.find(_.configuration == Runtime.toConfigRef).get
     compileConfig.modules should have size 4

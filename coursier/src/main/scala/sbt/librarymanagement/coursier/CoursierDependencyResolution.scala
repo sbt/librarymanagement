@@ -66,7 +66,7 @@ class CoursierDependencyResolution private[sbt] extends DependencyResolutionInte
             Cache.file(artifact = a, logger = Some(createLogger())).run.map(t => (a, t)))
         )
         .unsafePerformSync
-      toUpdateReport(module, resolution, localArtifacts, log)
+      toUpdateReport(resolution, localArtifacts, log)
     } else {
       toSbtError(uwconfig, resolution)
     }
@@ -85,8 +85,7 @@ class CoursierDependencyResolution private[sbt] extends DependencyResolutionInte
                moduleID.revision,
                moduleID.configurations.getOrElse(""))
 
-  private def toUpdateReport(module: ModuleDescriptor,
-                             resolution: Resolution,
+  private def toUpdateReport(resolution: Resolution,
                              localArtificats: Seq[(Artifact, FileError \/ File)],
                              log: Logger): Either[UnresolvedWarning, UpdateReport] = {
 
@@ -101,7 +100,7 @@ class CoursierDependencyResolution private[sbt] extends DependencyResolutionInte
 
     val depsByConfig = resolution.dependencies.groupBy(_.configuration).mapValues(_.toSeq)
 
-    val configurations = extractConfigurationTree(module)
+    val configurations = extractConfigurationTree
 
     val configResolutions =
       (depsByConfig.keys ++ configurations.keys).map(k => (k, resolution)).toMap
@@ -139,16 +138,11 @@ class CoursierDependencyResolution private[sbt] extends DependencyResolutionInte
 
   // Key is the name of the configuration (i.e. `compile`) and the values are the name itself plus the
   // names of the configurations that this one depends on.
-  private def extractConfigurationTree(module: ModuleDescriptor): ConfigurationDependencyTree = {
-    val confOpt = module.scalaModuleInfo.map(_.configurations)
-    confOpt
-      .map { confs =>
-        confs
-          .map(c => (c.name, c.extendsConfigs.map(_.name) :+ c.name))
-          .toMap
-          .mapValues(_.toSet)
-      }
-      .getOrElse(Map.empty)
+  private def extractConfigurationTree: ConfigurationDependencyTree = {
+    (Configurations.default ++ Configurations.defaultInternal)
+      .map(c => (c.name, c.extendsConfigs.map(_.name) :+ c.name))
+      .toMap
+      .mapValues(_.toSet)
   }
 
   private def artifactFileOpt(
