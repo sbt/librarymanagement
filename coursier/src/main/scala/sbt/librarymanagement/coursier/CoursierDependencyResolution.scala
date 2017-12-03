@@ -22,6 +22,8 @@ case class CoursierModuleSettings() extends ModuleSettings
 private[sbt] class CoursierDependencyResolution(resolvers: Seq[Resolver])
     extends DependencyResolutionInterface {
 
+  private[coursier] val reorderedResolvers = Resolvers.moveFastToFront(resolvers)
+
   /**
    * Builds a ModuleDescriptor that describes a subproject with dependencies.
    *
@@ -57,7 +59,7 @@ private[sbt] class CoursierDependencyResolution(resolvers: Seq[Resolver])
     val authentication = None // TODO: get correct value
     val ivyConfiguration = Map.empty[String, String] // TODO: get correct value
     val repositories =
-      resolvers.flatMap(r => FromSbt.repository(r, ivyConfiguration, log, authentication))
+      reorderedResolvers.flatMap(r => FromSbt.repository(r, ivyConfiguration, log, authentication))
     val fetch = Fetch.from(repositories, Cache.fetch())
     val resolution = start.process.run(fetch).unsafePerformSync
 
