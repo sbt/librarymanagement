@@ -3,6 +3,7 @@ package sbt.librarymanagement.coursier
 import java.io.{ File, OutputStreamWriter }
 
 import coursier.{ Artifact, MavenRepository, Resolution, _ }
+import sbt.librarymanagement.Configurations.{ CompilerPlugin, Component, ScalaTool }
 import sbt.librarymanagement._
 import sbt.util.Logger
 
@@ -80,10 +81,16 @@ class CoursierDependencyResolution private[sbt] extends DependencyResolutionInte
     t
   }
 
-  private def toCoursierDependency(moduleID: ModuleID): Dependency =
+  private def toCoursierDependency(moduleID: ModuleID): Dependency = {
+    val attrs = moduleID.extraAttributes
+      .map(kv => Attributes(kv._1, kv._2))
+      .headOption
+      .getOrElse(Attributes())
     Dependency(Module(moduleID.organization, moduleID.name),
                moduleID.revision,
-               moduleID.configurations.getOrElse(""))
+               moduleID.configurations.getOrElse(""),
+               attrs)
+  }
 
   private def toUpdateReport(resolution: Resolution,
                              localArtificats: Seq[(Artifact, FileError \/ File)],
@@ -139,7 +146,9 @@ class CoursierDependencyResolution private[sbt] extends DependencyResolutionInte
   // Key is the name of the configuration (i.e. `compile`) and the values are the name itself plus the
   // names of the configurations that this one depends on.
   private def extractConfigurationTree: ConfigurationDependencyTree = {
-    (Configurations.default ++ Configurations.defaultInternal)
+    (Configurations.default ++ Configurations.defaultInternal ++ Seq(ScalaTool,
+                                                                     CompilerPlugin,
+                                                                     Component))
       .map(c => (c.name, c.extendsConfigs.map(_.name) :+ c.name))
       .toMap
       .mapValues(_.toSet)

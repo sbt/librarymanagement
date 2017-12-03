@@ -1,12 +1,17 @@
 package sbt.librarymanagement.coursier
 
+import sbt.librarymanagement.Configurations.Component
 import sbt.librarymanagement.Resolver.{
   DefaultMavenRepository,
   JCenterRepository,
   JavaNet2Repository
 }
 import sbt.librarymanagement.syntax._
-import sbt.librarymanagement.{ Resolver, UnresolvedWarningConfiguration, UpdateConfiguration }
+import sbt.librarymanagement.{
+  Resolver,
+  UnresolvedWarningConfiguration,
+  UpdateConfiguration
+}
 
 class ResolutionSpec extends BaseCoursierSpecification {
   override final val resolvers = Vector(
@@ -32,9 +37,9 @@ class ResolutionSpec extends BaseCoursierSpecification {
 
     resolution should be('right)
     val r = resolution.toOption.get
-    r.configurations.map(_.configuration) should have size 8
+    r.configurations.map(_.configuration) should have size 11
 
-    val compileConfig = r.configurations.find(_.configuration == Runtime.toConfigRef).get
+    val compileConfig = r.configurations.find(_.configuration == Compile.toConfigRef).get
     compileConfig.modules should have size 4
 
     val runtimeConfig = r.configurations.find(_.configuration == Runtime.toConfigRef).get
@@ -42,5 +47,18 @@ class ResolutionSpec extends BaseCoursierSpecification {
 
     val testConfig = r.configurations.find(_.configuration == Test.toConfigRef).get
     testConfig.modules should have size 1
+  }
+
+  it should "resolve compiler bridge" in {
+    val dependencies = Vector("org.scala-sbt" % "compiler-interface" % "1.0.4" % "component")
+    val coursierModule = module(stubModule, dependencies, Some("2.12.4"))
+    val resolution =
+      lmEngine.update(coursierModule, UpdateConfiguration(), UnresolvedWarningConfiguration(), log)
+
+    val r = resolution.toOption.get
+
+    val compileConfig = r.configurations.find(_.configuration == Component.toConfigRef).get
+    compileConfig.modules should have size 1
+
   }
 }
