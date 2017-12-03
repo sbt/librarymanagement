@@ -27,19 +27,19 @@ object Resolvers {
         None
     }
 
-  private def filterRepos(bases: Seq[String],
-                          resolvers: Seq[(Resolver, Option[String])]): Seq[Resolver] =
+  private def filterResolvers(bases: Seq[String],
+                              resolvers: Seq[(Resolver, Option[String])]): Seq[Resolver] =
     resolvers
       .filter(tuple => tuple._2.exists(url => bases.exists(base => url.startsWith(base))))
       .map(_._1)
 
-  def moveFastToFront(repositories: Seq[Resolver]): Seq[Resolver] = {
+  def reorder(resolvers: Seq[Resolver]): Seq[Resolver] = {
 
-    val byUrl = repositories.map(r => (r, url(r)))
+    val byUrl = resolvers.map(r => (r, url(r)))
 
-    val fast = filterRepos(fastReposBase, byUrl)
-    val slow = filterRepos(slowReposBase, byUrl)
-    val rest = repositories.diff(fast).diff(slow)
+    val fast = filterResolvers(fastReposBase, byUrl)
+    val slow = filterResolvers(slowReposBase, byUrl)
+    val rest = resolvers.diff(fast).diff(slow)
 
     fast ++ rest ++ slow
   }

@@ -96,4 +96,15 @@ class ResolutionSpec extends BaseCoursierSpecification {
     resolution should be('right)
   }
 
+  it should "reorder fast and slow resolvers" in {
+    val resolvers = Vector(
+      JavaNet2Repository,
+      Resolver.sbtPluginRepo("releases"),
+      DefaultMavenRepository,
+    )
+    val engine = new CoursierDependencyResolution(resolvers)
+    engine.reorderedResolvers.head.name should be("public")
+    engine.reorderedResolvers.last.name should be("sbt-plugin-releases")
+    engine.reorderedResolvers should have size 3
+  }
 }

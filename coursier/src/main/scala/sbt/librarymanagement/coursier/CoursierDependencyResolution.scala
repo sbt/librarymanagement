@@ -22,7 +22,7 @@ case class CoursierModuleSettings() extends ModuleSettings
 private[sbt] class CoursierDependencyResolution(resolvers: Seq[Resolver])
     extends DependencyResolutionInterface {
 
-  private[coursier] val reorderedResolvers = Resolvers.moveFastToFront(resolvers)
+  private[coursier] val reorderedResolvers = Resolvers.reorder(resolvers)
 
   /**
    * Builds a ModuleDescriptor that describes a subproject with dependencies.
