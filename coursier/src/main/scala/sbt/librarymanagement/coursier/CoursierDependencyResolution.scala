@@ -63,6 +63,8 @@ private[sbt] class CoursierDependencyResolution(resolvers: Seq[Resolver])
     val fetch = Fetch.from(repositories, Cache.fetch())
     val resolution = start.process.run(fetch).unsafePerformSync
 
+    log.debug(s"Using resolvers $repositories")
+
     if (resolution.metadataErrors.isEmpty) {
       val localArtifacts: Seq[(Artifact, FileError \/ File)] = Task
         .gatherUnordered(
@@ -72,7 +74,7 @@ private[sbt] class CoursierDependencyResolution(resolvers: Seq[Resolver])
         .unsafePerformSync
       toUpdateReport(resolution, localArtifacts, log)
     } else {
-      toSbtError(uwconfig, resolution)
+      toSbtError(log, uwconfig, resolution)
     }
   }
 
@@ -200,12 +202,16 @@ private[sbt] class CoursierDependencyResolution(resolvers: Seq[Resolver])
     res
   }
 
-  private def toSbtError(uwconfig: UnresolvedWarningConfiguration, resolution: Resolution) = {
+  private def toSbtError(log: Logger,
+                         uwconfig: UnresolvedWarningConfiguration,
+                         resolution: Resolution) = {
     val failedResolution = resolution.metadataErrors.map {
       case ((failedModule, failedVersion), _) =>
         ModuleID(failedModule.organization, failedModule.name, failedVersion)
     }
     val msgs = resolution.metadataErrors.flatMap(_._2)
+    log.debug(s"Failed resolution: $msgs")
+    log.debug(s"Missing artifcats: $failedResolution")
     val ex = new ResolveException(msgs, failedResolution)
     Left(UnresolvedWarning(ex, uwconfig))
   }
