@@ -72,4 +72,15 @@ class ResolutionSpec extends BaseCoursierSpecification {
     componentConfig.modules.map(_.module.name) should have size 5
   }
 
+  it should "strip e: prefix from plugin attributes" in {
+    val pluginAttributes = Map("e:scalaVersion" -> "2.12", "e:sbtVersion" -> "1.0")
+    val dependencies =
+      Vector(("org.xerial.sbt" % "sbt-sonatype" % "2.0").withExtraAttributes(pluginAttributes))
+    val coursierModule = module(stubModule, dependencies, Some("2.12.4"))
+    val resolution =
+      lmEngine.update(coursierModule, UpdateConfiguration(), UnresolvedWarningConfiguration(), log)
+
+    resolution should be('right)
+  }
+
 }

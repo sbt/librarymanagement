@@ -87,8 +87,13 @@ class CoursierDependencyResolution private[sbt] extends DependencyResolutionInte
       .headOption
       .getOrElse(Attributes())
 
+    // for some reason, sbt adds the prefix "e:" to extraAttributes
+    val extraAttrs = moduleID.extraAttributes.map {
+      case (key, value) => (key.replaceFirst("^e:", ""), value)
+    }
+
     Dependency(
-      Module(moduleID.organization, moduleID.name, moduleID.extraAttributes),
+      Module(moduleID.organization, moduleID.name, extraAttrs),
       moduleID.revision,
       moduleID.configurations.getOrElse(""),
       attrs,
