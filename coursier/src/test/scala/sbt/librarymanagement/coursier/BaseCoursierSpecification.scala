@@ -1,23 +1,13 @@
 package sbt.librarymanagement.coursier
 
-import java.io.File
-
 import sbt.internal.librarymanagement.cross.CrossVersionUtil
 import sbt.internal.util.ConsoleLogger
-import sbt.io.syntax._
 import sbt.librarymanagement.Configurations._
 import sbt.librarymanagement._
 
 trait BaseCoursierSpecification extends UnitSpec {
-  def currentBase: File = new File(".")
-  def currentTarget: File = currentBase / "target" / "ivyhome"
-  def currentManaged: File = currentBase / "target" / "lib_managed"
-  def currentDependency: File = currentBase / "target" / "dependency"
-  def defaultModuleId: ModuleID =
-    ModuleID("com.example", "foo", "0.1.0").withConfigurations(Some("compile"))
-
   lazy val log = ConsoleLogger()
-  val lmEngine = CoursierDependencyResolution()
+  val lmEngine: CoursierDependencyResolution
 
   def configurations = Vector(Compile, Test, Runtime)
   def module(moduleId: ModuleID,
@@ -42,8 +32,6 @@ trait BaseCoursierSpecification extends UnitSpec {
     lmEngine.moduleDescriptor(moduleSetting)
   }
 
-  def resolvers: Vector[Resolver] = Vector(Resolver.mavenCentral)
-
-  def chainResolver = ChainedResolver("sbt-chain", resolvers)
+  def resolvers: Vector[Resolver]
 
 }

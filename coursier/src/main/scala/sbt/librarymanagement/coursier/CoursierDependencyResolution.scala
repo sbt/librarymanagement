@@ -2,7 +2,7 @@ package sbt.librarymanagement.coursier
 
 import java.io.{ File, OutputStreamWriter }
 
-import coursier.{ Artifact, MavenRepository, Resolution, _ }
+import coursier.{ Artifact, Resolution, _ }
 import sbt.librarymanagement.Configurations.{ CompilerPlugin, Component, ScalaTool }
 import sbt.librarymanagement._
 import sbt.util.Logger
@@ -19,11 +19,8 @@ case class CoursierModuleDescriptor(
 
 case class CoursierModuleSettings() extends ModuleSettings
 
-class CoursierDependencyResolution private[sbt] extends DependencyResolutionInterface {
-  val repositories = Seq(
-    Cache.ivy2Local,
-    MavenRepository("https://repo1.maven.org/maven2")
-  )
+private[sbt] class CoursierDependencyResolution(resolvers: Seq[Resolver])
+    extends DependencyResolutionInterface {
 
   /**
    * Builds a ModuleDescriptor that describes a subproject with dependencies.
@@ -57,6 +54,10 @@ class CoursierDependencyResolution private[sbt] extends DependencyResolutionInte
                       log: Logger): Either[UnresolvedWarning, UpdateReport] = {
     val dependencies = module.directDependencies.map(toCoursierDependency).toSet
     val start = Resolution(dependencies)
+    val authentication = None // TODO: get correct value
+    val ivyConfiguration = Map.empty[String, String] // TODO: get correct value
+    val repositories =
+      resolvers.flatMap(r => FromSbt.repository(r, ivyConfiguration, log, authentication))
     val fetch = Fetch.from(repositories, Cache.fetch())
     val resolution = start.process.run(fetch).unsafePerformSync
 
@@ -209,5 +210,6 @@ class CoursierDependencyResolution private[sbt] extends DependencyResolutionInte
 }
 
 object CoursierDependencyResolution {
-  def apply() = DependencyResolution(new CoursierDependencyResolution())
+  def apply(resolvers: Seq[Resolver]) =
+    DependencyResolution(new CoursierDependencyResolution(resolvers))
 }
