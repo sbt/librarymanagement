@@ -82,14 +82,20 @@ class CoursierDependencyResolution private[sbt] extends DependencyResolutionInte
   }
 
   private def toCoursierDependency(moduleID: ModuleID): Dependency = {
-    val attrs = moduleID.extraAttributes
-      .map(kv => Attributes(kv._1, kv._2))
+    val attrs = moduleID.explicitArtifacts
+      .map(a => Attributes(`type` = a.`type`, classifier = a.classifier.getOrElse("")))
       .headOption
       .getOrElse(Attributes())
-    Dependency(Module(moduleID.organization, moduleID.name),
-               moduleID.revision,
-               moduleID.configurations.getOrElse(""),
-               attrs)
+    Dependency(
+      Module(moduleID.organization, moduleID.name),
+      moduleID.revision,
+      moduleID.configurations.getOrElse(""),
+      attrs,
+      exclusions = moduleID.exclusions.map { rule =>
+        (rule.organization, rule.name)
+      }.toSet,
+      transitive = moduleID.isTransitive
+    )
   }
 
   private def toUpdateReport(resolution: Resolution,
