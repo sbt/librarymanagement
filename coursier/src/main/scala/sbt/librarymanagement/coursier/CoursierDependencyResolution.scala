@@ -86,8 +86,9 @@ class CoursierDependencyResolution private[sbt] extends DependencyResolutionInte
       .map(a => Attributes(`type` = a.`type`, classifier = a.classifier.getOrElse("")))
       .headOption
       .getOrElse(Attributes())
+
     Dependency(
-      Module(moduleID.organization, moduleID.name),
+      Module(moduleID.organization, moduleID.name, moduleID.extraAttributes),
       moduleID.revision,
       moduleID.configurations.getOrElse(""),
       attrs,

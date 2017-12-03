@@ -19,8 +19,6 @@ class ResolutionSpec extends BaseCoursierSpecification {
 
   private final val stubModule = "com.example" % "foo" % "0.1.0" % "compile"
 
-  val pluginAttributes = Map("scalaVersion" -> "2.10")
-
   private final val dependencies = Vector(
     "com.typesafe.scala-logging" % "scala-logging_2.12" % "3.7.2" % "compile",
     "org.scalatest" % "scalatest_2.12" % "3.0.4" % "test"
@@ -59,4 +57,19 @@ class ResolutionSpec extends BaseCoursierSpecification {
     componentConfig.modules.head.artifacts should have size 1
     componentConfig.modules.head.artifacts.head._1.classifier should contain("sources")
   }
+
+  it should "resolve plugin" in {
+    val pluginAttributes = Map("scalaVersion" -> "2.12", "sbtVersion" -> "1.0")
+    val dependencies =
+      Vector(("org.xerial.sbt" % "sbt-sonatype" % "2.0").withExtraAttributes(pluginAttributes))
+    val coursierModule = module(stubModule, dependencies, Some("2.12.4"))
+    val resolution =
+      lmEngine.update(coursierModule, UpdateConfiguration(), UnresolvedWarningConfiguration(), log)
+
+    val r = resolution.toOption.get
+
+    val componentConfig = r.configurations.find(_.configuration == Compile.toConfigRef).get
+    componentConfig.modules.map(_.module.name) should have size 5
+  }
+
 }
