@@ -22,7 +22,7 @@ class ResolutionSpec extends BaseCoursierSpecification {
 
   private final val dependencies = Vector(
     "com.typesafe.scala-logging" % "scala-logging_2.12" % "3.7.2" % "compile",
-    "org.scalatest" %% "scalatest_2.12" % "3.0.4" % "test"
+    "org.scalatest" % "scalatest_2.12" % "3.0.4" % "test"
   ).map(_.withIsTransitive(false))
 
   "Coursier dependency resolution" should "resolve very simple module" in {

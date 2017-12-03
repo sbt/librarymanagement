@@ -13,7 +13,6 @@ case class CoursierModuleDescriptor(
     directDependencies: Vector[ModuleID],
     scalaModuleInfo: Option[ScalaModuleInfo],
     moduleSettings: ModuleSettings,
-    configurations: Vector[Configuration],
     extraInputHash: Long
 ) extends ModuleDescriptor
 
@@ -37,7 +36,6 @@ class CoursierDependencyResolution private[sbt] extends DependencyResolutionInte
       moduleSetting.dependencies,
       moduleSetting.scalaModuleInfo,
       CoursierModuleSettings(),
-      moduleSetting.configurations,
       1L // FIXME: use correct value
     )
   }
@@ -68,18 +66,13 @@ class CoursierDependencyResolution private[sbt] extends DependencyResolutionInte
             Cache.file(artifact = a, logger = Some(createLogger())).run.map(t => (a, t)))
         )
         .unsafePerformSync
-      toUpdateReport(toModule(module), resolution, localArtifacts, log)
+      toUpdateReport(module, resolution, localArtifacts, log)
     } else {
       toSbtError(uwconfig, resolution)
     }
   }
 
   // utilities
-
-  private def toModule(module: ModuleDescriptor): CoursierModuleDescriptor =
-    module match {
-      case m: CoursierModuleDescriptor => m
-    }
 
   private def createLogger() = {
     val t = new TermDisplay(new OutputStreamWriter(System.err))
@@ -92,7 +85,7 @@ class CoursierDependencyResolution private[sbt] extends DependencyResolutionInte
                moduleID.revision,
                moduleID.configurations.getOrElse(""))
 
-  private def toUpdateReport(module: CoursierModuleDescriptor,
+  private def toUpdateReport(module: ModuleDescriptor,
                              resolution: Resolution,
                              localArtificats: Seq[(Artifact, FileError \/ File)],
                              log: Logger): Either[UnresolvedWarning, UpdateReport] = {
@@ -108,12 +101,7 @@ class CoursierDependencyResolution private[sbt] extends DependencyResolutionInte
 
     val depsByConfig = resolution.dependencies.groupBy(_.configuration).mapValues(_.toSeq)
 
-    // Key is the name of the configuration (i.e. `compile`) and the values are the name itself plus the
-    // names of the configurations that this one depends on.
-    val configurations = module.configurations
-      .map(c => (c.name, c.extendsConfigs.map(_.name) :+ c.name))
-      .toMap
-      .mapValues(_.toSet)
+    val configurations = extractConfigurationTree(module)
 
     val configResolutions =
       (depsByConfig.keys ++ configurations.keys).map(k => (k, resolution)).toMap
@@ -144,6 +132,23 @@ class CoursierDependencyResolution private[sbt] extends DependencyResolutionInte
       throw new RuntimeException(s"Could not save downloaded dependencies: $erroredArtifacts")
     }
 
+  }
+
+  type ConfigurationName = String
+  type ConfigurationDependencyTree = Map[ConfigurationName, Set[ConfigurationName]]
+
+  // Key is the name of the configuration (i.e. `compile`) and the values are the name itself plus the
+  // names of the configurations that this one depends on.
+  private def extractConfigurationTree(module: ModuleDescriptor): ConfigurationDependencyTree = {
+    val confOpt = module.scalaModuleInfo.map(_.configurations)
+    confOpt
+      .map { confs =>
+        confs
+          .map(c => (c.name, c.extendsConfigs.map(_.name) :+ c.name))
+          .toMap
+          .mapValues(_.toSet)
+      }
+      .getOrElse(Map.empty)
   }
 
   private def artifactFileOpt(

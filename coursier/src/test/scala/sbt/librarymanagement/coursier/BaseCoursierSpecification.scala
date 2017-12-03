@@ -28,7 +28,7 @@ trait BaseCoursierSpecification extends UnitSpec {
       ScalaModuleInfo(
         scalaFullVersion = fv,
         scalaBinaryVersion = CrossVersionUtil.binaryScalaVersion(fv),
-        configurations = Vector.empty,
+        configurations = configurations,
         checkExplicit = true,
         filterImplicit = false,
         overrideScalaVersion = overrideScalaVersion
