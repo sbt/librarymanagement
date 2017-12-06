@@ -65,7 +65,10 @@ private[sbt] class CoursierDependencyResolution(resolvers: Seq[Resolver])
     val authentication = None // TODO: get correct value
     val ivyConfiguration = Map("ivy.home" -> "~/.ivy2/") // TODO: get correct value
     val repositories =
-      reorderedResolvers.flatMap(r => FromSbt.repository(r, ivyConfiguration, log, authentication))
+      reorderedResolvers.flatMap(r => FromSbt.repository(r, ivyConfiguration, log, authentication)) ++ Seq(
+        Cache.ivy2Local,
+        Cache.ivy2Cache)
+
     val fetch = Fetch.from(repositories, Cache.fetch())
     val resolution = start.process.run(fetch).unsafePerformSync
 
