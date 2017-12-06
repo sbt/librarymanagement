@@ -54,16 +54,20 @@ private[sbt] class CoursierDependencyResolution(resolvers: Seq[Resolver])
                       configuration: UpdateConfiguration,
                       uwconfig: UnresolvedWarningConfiguration,
                       log: Logger): Either[UnresolvedWarning, UpdateReport] = {
+
+    if (reorderedResolvers.isEmpty) {
+      log.error(
+        "Dependency resolution is configured with an empty list of resolvers. This is unlikely to work.")
+    }
+
     val dependencies = module.directDependencies.map(toCoursierDependency).toSet
     val start = Resolution(dependencies)
     val authentication = None // TODO: get correct value
-    val ivyConfiguration = Map.empty[String, String] // TODO: get correct value
+    val ivyConfiguration = Map("ivy.home" -> "~/.ivy2/") // TODO: get correct value
     val repositories =
       reorderedResolvers.flatMap(r => FromSbt.repository(r, ivyConfiguration, log, authentication))
     val fetch = Fetch.from(repositories, Cache.fetch())
     val resolution = start.process.run(fetch).unsafePerformSync
-
-    log.debug(s"Using resolvers $repositories")
 
     if (resolution.metadataErrors.isEmpty) {
       val localArtifacts: Seq[(Artifact, FileError \/ File)] = Task
@@ -81,7 +85,7 @@ private[sbt] class CoursierDependencyResolution(resolvers: Seq[Resolver])
   // utilities
 
   private def createLogger() = {
-    val t = new TermDisplay(new OutputStreamWriter(System.err))
+    val t = new TermDisplay(new OutputStreamWriter(System.out))
     t.init()
     t
   }
@@ -211,7 +215,7 @@ private[sbt] class CoursierDependencyResolution(resolvers: Seq[Resolver])
     }
     val msgs = resolution.metadataErrors.flatMap(_._2)
     log.debug(s"Failed resolution: $msgs")
-    log.debug(s"Missing artifcats: $failedResolution")
+    log.debug(s"Missing artifacts: $failedResolution")
     val ex = new ResolveException(msgs, failedResolution)
     Left(UnresolvedWarning(ex, uwconfig))
   }

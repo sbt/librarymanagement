@@ -60,6 +60,18 @@ class ResolutionSpec extends BaseCoursierSpecification {
     componentConfig.modules.head.artifacts.head._1.classifier should contain("sources")
   }
 
+  it should "resolve with default resolvers" in {
+    val dependencies =
+      Vector(("org.scala-sbt" % "compiler-interface" % "1.0.4" % "component").sources())
+    val lmEngine =
+      CoursierDependencyResolution.apply(Resolver.combineDefaultResolvers(Vector.empty))
+    val coursierModule = module(stubModule, dependencies, Some("2.12.4"))
+    val resolution =
+      lmEngine.update(coursierModule, UpdateConfiguration(), UnresolvedWarningConfiguration(), log)
+
+    resolution should be('right)
+  }
+
   it should "resolve plugin" in {
     val pluginAttributes = Map("scalaVersion" -> "2.12", "sbtVersion" -> "1.0")
     val dependencies =
@@ -106,5 +118,12 @@ class ResolutionSpec extends BaseCoursierSpecification {
     engine.reorderedResolvers.head.name should be("public")
     engine.reorderedResolvers.last.name should be("sbt-plugin-releases")
     engine.reorderedResolvers should have size 3
+  }
+
+  it should "reorder default resolvers" in {
+    val resolvers = Resolver.combineDefaultResolvers(Vector.empty)
+    val engine = new CoursierDependencyResolution(resolvers)
+    engine.reorderedResolvers should not be 'empty
+    engine.reorderedResolvers.head.name should be("public")
   }
 }
