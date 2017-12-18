@@ -156,7 +156,7 @@ lazy val lmCoursier = (project in file("coursier"))
   .settings(
     commonSettings,
     name := "librarymanagement-coursier",
-    libraryDependencies ++= Seq(coursier, coursierCache, scalaTest, scalaCheck),
+    libraryDependencies ++= Seq(coursier, coursierCache, coursierShared, scalaTest, scalaCheck),
     managedSourceDirectories in Compile +=
       baseDirectory.value / "src" / "main" / "contraband-scala",
     sourceManaged in (Compile, generateContrabands) := baseDirectory.value / "src" / "main" / "contraband-scala",
