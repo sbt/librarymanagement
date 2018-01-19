@@ -163,8 +163,7 @@ lazy val lmCoursier = (project in file("coursier"))
     sourceManaged in (Compile, generateContrabands) := baseDirectory.value / "src" / "main" / "contraband-scala",
     contrabandFormatsForType in generateContrabands in Compile := DatatypeConfig.getFormats,
     scalacOptions in (Compile, console) --=
-      Vector("-Ywarn-unused-import", "-Ywarn-unused", "-Xlint"),
-    mimaSettings,
+      Vector("-Ywarn-unused-import", "-Ywarn-unused", "-Xlint")
   )
 
 
