@@ -47,8 +47,7 @@ object Dependencies {
 
   val sbtV = "1.0"
   val scalaV = "2.12"
-  val coursierShared =
-    Defaults.sbtPluginExtra("io.get-coursier" %% "sbt-shared" % coursierVersion, sbtV, scalaV)
+  val coursierShared = addSbtPlugin("io.get-coursier" % "sbt-shared" % coursierVersion)
 
   val jsch = "com.jcraft" % "jsch" % "0.1.46" intransitive ()
   val scalaReflect = Def.setting { "org.scala-lang" % "scala-reflect" % scalaVersion.value }

@@ -12,7 +12,7 @@ def commonSettings: Seq[Setting[_]] = Seq(
   // publishArtifact in packageDoc := false,
   resolvers += Resolver.typesafeIvyRepo("releases"),
   resolvers += Resolver.sonatypeRepo("snapshots"),
-  resolvers += Resolver.bintrayRepo("sbt", "sbt-plugin-releases"),
+  resolvers += Resolver.sbtPluginRepo("releases"),
   resolvers += "bintray-sbt-maven-releases" at "https://dl.bintray.com/sbt/maven-releases/",
   // concurrentRestrictions in Global += Util.testExclusiveRestriction,
   testOptions += Tests.Argument(TestFrameworks.ScalaCheck, "-w", "1"),
@@ -158,7 +158,7 @@ lazy val lmCoursier = (project in file("coursier"))
     commonSettings,
     crossScalaVersions := Seq(scala212),
     name := "librarymanagement-coursier",
-    libraryDependencies ++= Seq(coursier, coursierCache, coursierShared, scalaTest, scalaCheck),
+    libraryDependencies ++= Seq(coursier, coursierCache, scalaTest, scalaCheck), coursierShared,
     managedSourceDirectories in Compile +=
       baseDirectory.value / "src" / "main" / "contraband-scala",
     sourceManaged in (Compile, generateContrabands) := baseDirectory.value / "src" / "main" / "contraband-scala",
