@@ -10,7 +10,7 @@ object Dependencies {
   private val utilVersion = "1.1.2"
   private val ioVersion = "1.0.2"
   private val utilVersion = "1.0.3"
-  private val coursierVersion = "1.0.0"
+  private val coursierVersion = "1.0.1-M1"
 
   private val sbtIO = "org.scala-sbt" %% "io" % ioVersion
 
