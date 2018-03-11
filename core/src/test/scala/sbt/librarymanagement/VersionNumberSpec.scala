@@ -111,6 +111,112 @@ class VersionNumberSpec extends FreeSpec with Matchers with Inside {
     assertParsesToError(v)
   }
 
+  "VersionNumber" - {
+    "should have an ordering" in {
+      val versions = List(
+        "2.0.0",
+        "1.1.0",
+        "1.0.2",
+        "1.0.1",
+        "1.0.0"
+      )
+      val expected = List(
+        "1.0.0",
+        "1.0.1",
+        "1.0.2",
+        "1.1.0",
+        "2.0.0"
+      )
+      assertSortTo(versions, expected)
+    }
+
+    "should put a lower precedence to a pre-release version than a normal version" in {
+      val versions = List(
+        "1.0.0",
+        "1.0.1",
+        "1.0.0-SNAPSHOT",
+        "1.0.1-SNAPSHOT"
+      )
+      val expected = List(
+        "1.0.0-SNAPSHOT",
+        "1.0.0",
+        "1.0.1-SNAPSHOT",
+        "1.0.1"
+      )
+      assertSortTo(versions, expected)
+    }
+
+    "should put a higher precedence to a version with larger set of pre-release version's fields " +
+      "than a that with smaller set of the fields, if all of the preceding identifiers are equal" in {
+      val versions = List(
+        "1.0.0-alpha-beta-gamma",
+        "1.0.0-alpha-beta",
+        "1.0.0-alpha-bar",
+        "1.0.0-alpha"
+      )
+      val expected = List(
+        "1.0.0-alpha",
+        "1.0.0-alpha-bar",
+        "1.0.0-alpha-beta",
+        "1.0.0-alpha-beta-gamma"
+      )
+      assertSortTo(versions, expected)
+    }
+
+    "should put a lower precedence to a pre-release version with numerical identifiers " +
+      "than a that with non-numerical identifiers" in {
+      val versions = List(
+        "1.0.0-alpha-3",
+        "1.0.0-alpha-beta",
+        "1.0.0-alpha-1a",
+        "1.0.0-alpha"
+      )
+      val expected = List(
+        "1.0.0-alpha",
+        "1.0.0-alpha-3",
+        "1.0.0-alpha-1a",
+        "1.0.0-alpha-beta"
+      )
+      assertSortTo(versions, expected)
+    }
+
+    "should compare pre-release versions numerically if the pre-release versions have only digits" in {
+      val versions = List(
+        "1.0.0-alpha",
+        "1.0.0-alpha-11",
+        "1.0.0-alpha-3",
+        "1.0.0-alpha-22"
+      )
+      val expected = List(
+        "1.0.0-alpha",
+        "1.0.0-alpha-3",
+        "1.0.0-alpha-11",
+        "1.0.0-alpha-22"
+      )
+      assertSortTo(versions, expected)
+    }
+
+    "should compare pre-release versions that have non-numerical letters in lexical order ignoring their case" in {
+      val versions = List(
+        "1.0.0-SNAPSHOT",
+        "1.0.0",
+        "1.0.0-M1",
+        "1.0.0-M2",
+        "1.0.0-alpha",
+        "1.0.0-BETA"
+      )
+      val expected = List(
+        "1.0.0-alpha",
+        "1.0.0-BETA",
+        "1.0.0-M1",
+        "1.0.0-M2",
+        "1.0.0-SNAPSHOT",
+        "1.0.0"
+      )
+      assertSortTo(versions, expected)
+    }
+  }
+
   ////
 
   private[this] final class VersionString(val value: String)
@@ -194,5 +300,8 @@ class VersionNumberSpec extends FreeSpec with Matchers with Inside {
     s"$prefix be $compatibilityStrategy compatible with $v2" in {
       vnc.isCompatible(VersionNumber(v1.value), VersionNumber(v2)) shouldBe expectOutcome
     }
+  }
+  def assertSortTo(versions: List[String], expected: List[String]) = {
+    versions.map(VersionNumber.apply).sorted shouldBe expected.map(VersionNumber.apply)
   }
 }

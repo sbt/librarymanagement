@@ -1,5 +1,7 @@
 package sbt.librarymanagement
 
+import scala.annotation.tailrec
+
 final class VersionNumber private[sbt] (
     val numbers: Seq[Long],
     val tags: Seq[String],
@@ -12,6 +14,11 @@ final class VersionNumber private[sbt] (
   def _4: Option[Long] = get(3)
   def get(idx: Int): Option[Long] = numbers lift idx
   def size: Int = numbers.size
+
+  def <(o: VersionNumber): Boolean = implicitly[Ordering[VersionNumber]].lt(this, o)
+  def <=(o: VersionNumber): Boolean = implicitly[Ordering[VersionNumber]].lteq(this, o)
+  def >(o: VersionNumber): Boolean = implicitly[Ordering[VersionNumber]].gt(this, o)
+  def >=(o: VersionNumber): Boolean = implicitly[Ordering[VersionNumber]].gteq(this, o)
 
   /** The vector of version numbers from more to less specific from this version number. */
   lazy val cascadingVersions: Vector[VersionNumber] =
@@ -75,6 +82,62 @@ object VersionNumber {
       case NonSpaceString(s) => Some((Vector.empty, Vector.empty, Vector(s)))
       case _                 => None
     }
+  }
+
+  implicit val versionNumberOrdering: Ordering[VersionNumber] =
+    new Ordering[VersionNumber] {
+      def compare(x: VersionNumber, y: VersionNumber): Int = {
+        compareSeq(x.numbers, y.numbers) match {
+          case 0 =>
+            comparePreRelease(x, y) match {
+              case 0      => compareSeq(x.extras, y.extras)
+              case resPre => resPre
+            }
+          case resNormal => resNormal
+        }
+      }
+    }
+
+  @tailrec
+  private def compareSeq[A: Ordering: Zero](a1: Seq[A], a2: Seq[A]): Int =
+    if (a1.isEmpty && a2.isEmpty) 0
+    else if (a1.nonEmpty && a2.isEmpty)
+      implicitly[Ordering[A]].compare(a1.head, implicitly[Zero[A]].zero)
+    else if (a1.isEmpty && a2.nonEmpty)
+      implicitly[Ordering[A]].compare(implicitly[Zero[A]].zero, a2.head)
+    else {
+      val a1head = a1.head
+      val a2head = a2.head
+      if (a1head == a2head) compareSeq(a1.tail, a2.tail)
+      else implicitly[Ordering[A]].compare(a1head, a2head)
+    }
+
+  private def comparePreRelease(v1: VersionNumber, v2: VersionNumber): Int = {
+    implicit val PreReleaseStringOrdering: Ordering[String] = new Ordering[String] {
+      def compare(x: String, y: String): Int = {
+        (x.isEmpty, y.isEmpty) match {
+          case (true, true)  => 0
+          case (false, true) => 1
+          case (true, false) => -1
+          case (false, false) =>
+            (x.matches("""\d+"""), y.matches("""\d+""")) match {
+              // Identifiers consisting of only digits are compared numerically.
+              // Numeric identifiers always have lower precedence than non-numeric identifiers.
+              // Identifiers with letters are compared case insensitive lexical order.
+              case (true, true)   => implicitly[Ordering[Int]].compare(x.toInt, y.toInt)
+              case (false, true)  => 1
+              case (true, false)  => -1
+              case (false, false) => x.toLowerCase.compareTo(y.toLowerCase)
+            }
+        }
+      }
+    }
+    val p1 = v1.tags
+    val p2 = v2.tags
+    if (p1.isEmpty && p2.isEmpty) 0
+    else if (p1.nonEmpty && p2.isEmpty) -1
+    else if (p1.isEmpty && p2.nonEmpty) 1
+    else compareSeq(p1, p2)
   }
 
   /** Strict. Checks everything. */
@@ -177,6 +240,17 @@ object VersionNumber {
         case _                                                    => false
       }
     }
+  }
+
+  private trait Zero[A] {
+    def zero: A
+  }
+  private object Zero {
+    def apply[A](z: => A): Zero[A] = new Zero[A] {
+      def zero: A = z
+    }
+    implicit val StringZero: Zero[String] = Zero[String]("")
+    implicit val LongZero: Zero[Long] = Zero[Long](0L)
   }
 }
 
