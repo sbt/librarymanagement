@@ -3,12 +3,10 @@ package sbt.librarymanagement.coursier
 import java.io.{ File, OutputStreamWriter }
 
 import coursier.{ Artifact, Resolution, _ }
+import coursier.util.{ Task, Gather }
 import sbt.librarymanagement.Configurations.{ CompilerPlugin, Component, ScalaTool }
 import sbt.librarymanagement._
 import sbt.util.Logger
-
-import scalaz.{ -\/, \/, \/- }
-import scalaz.concurrent.Task
 
 case class CoursierModuleDescriptor(
     directDependencies: Vector[ModuleID],
@@ -69,16 +67,19 @@ private[sbt] class CoursierDependencyResolution(resolvers: Seq[Resolver])
         Cache.ivy2Local,
         Cache.ivy2Cache)
 
-    val fetch = Fetch.from(repositories, Cache.fetch())
-    val resolution = start.process.run(fetch).unsafePerformSync
+    import scala.concurrent.ExecutionContext.Implicits.global
 
-    if (resolution.metadataErrors.isEmpty) {
-      val localArtifacts: Seq[(Artifact, FileError \/ File)] = Task
-        .gatherUnordered(
-          resolution.artifacts.map(a =>
-            Cache.file(artifact = a, logger = Some(createLogger())).run.map(t => (a, t)))
+    val fetch = Fetch.from(repositories, Cache.fetch[Task]())
+    val resolution = start.process.run(fetch).unsafeRun()
+
+    import java.io.File
+
+    if (resolution.errors.isEmpty) {
+      val localArtifacts: Seq[Either[FileError, File]] = Gather[Task]
+        .gather(
+          resolution.artifacts.map(Cache.file[Task](_).run)
         )
-        .unsafePerformSync
+        .unsafeRun()
       toUpdateReport(resolution, localArtifacts, log)
     } else {
       toSbtError(log, uwconfig, resolution)
@@ -117,16 +118,16 @@ private[sbt] class CoursierDependencyResolution(resolvers: Seq[Resolver])
   }
 
   private def toUpdateReport(resolution: Resolution,
-                             localArtificats: Seq[(Artifact, FileError \/ File)],
+                             localArtificats: Seq[Either[FileError, File]],
                              log: Logger): Either[UnresolvedWarning, UpdateReport] = {
 
     // can be non empty only if ignoreArtifactErrors is true or some optional artifacts are not found
     val erroredArtifacts = localArtificats.collect {
-      case (artifact, -\/(_)) => artifact
+      case Left(error) => error
     }.toSet
 
     lazy val downloaded = localArtificats.collect {
-      case (artifact, \/-(file)) => (artifact, file)
+      case Right(file) => file
     }
 
     val depsByConfig = resolution.dependencies.groupBy(_.configuration).mapValues(_.toSeq)
