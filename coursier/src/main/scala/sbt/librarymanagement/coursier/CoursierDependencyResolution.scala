@@ -1,6 +1,6 @@
 package sbt.librarymanagement.coursier
 
-import java.io.{ File, OutputStreamWriter }
+import java.io.{ File }
 
 import coursier.{ Artifact, Resolution, _ }
 import coursier.util.{ Task, Gather }
@@ -75,11 +75,14 @@ private[sbt] class CoursierDependencyResolution(resolvers: Seq[Resolver])
     import java.io.File
 
     if (resolution.errors.isEmpty) {
-      val localArtifacts: Seq[Either[FileError, File]] = Gather[Task]
+      val localArtifacts: Map[Artifact, Either[FileError, File]] = Gather[Task]
         .gather(
-          resolution.artifacts.map(Cache.file[Task](_).run)
+          resolution.artifacts.map { a =>
+            Cache.file[Task](a).run.map((a, _))
+          }
         )
         .unsafeRun()
+        .toMap
       toUpdateReport(resolution, localArtifacts, log)
     } else {
       toSbtError(log, uwconfig, resolution)
@@ -88,11 +91,11 @@ private[sbt] class CoursierDependencyResolution(resolvers: Seq[Resolver])
 
   // utilities
 
-  private def createLogger() = {
+  /*private def createLogger() = {
     val t = new TermDisplay(new OutputStreamWriter(System.out))
     t.init()
     t
-  }
+  }*/
 
   private def toCoursierDependency(moduleID: ModuleID): Dependency = {
     val attrs = moduleID.explicitArtifacts
@@ -118,17 +121,29 @@ private[sbt] class CoursierDependencyResolution(resolvers: Seq[Resolver])
   }
 
   private def toUpdateReport(resolution: Resolution,
-                             localArtificats: Seq[Either[FileError, File]],
+                             artifactFilesOrErrors0: Map[Artifact, Either[FileError, File]],
                              log: Logger): Either[UnresolvedWarning, UpdateReport] = {
 
-    // can be non empty only if ignoreArtifactErrors is true or some optional artifacts are not found
-    val erroredArtifacts = localArtificats.collect {
-      case Left(error) => error
-    }.toSet
-
-    lazy val downloaded = localArtificats.collect {
-      case Right(file) => file
+    val artifactFiles = artifactFilesOrErrors0.collect {
+      case (artifact, Right(file)) =>
+        artifact -> file
     }
+
+    val artifactErrors = artifactFilesOrErrors0.toVector
+      .collect {
+        case (a, Left(err)) if !a.isOptional || !err.notFound =>
+          a -> err
+      }
+
+    if (artifactErrors.nonEmpty) {
+      // TODO: handle error the correct sbt way
+      throw new RuntimeException(s"Could not download dependencies: $artifactErrors")
+    }
+
+    // can be non empty only if ignoreArtifactErrors is true or some optional artifacts are not found
+    val erroredArtifacts = artifactFilesOrErrors0.collect {
+      case (a, Left(_)) => a
+    }.toSet
 
     val depsByConfig = resolution.dependencies.groupBy(_.configuration).mapValues(_.toSeq)
 
@@ -139,9 +154,8 @@ private[sbt] class CoursierDependencyResolution(resolvers: Seq[Resolver])
 
     val sbtBootJarOverrides = Map.empty[(Module, String), File] // TODO: get correct values
     val classifiers = None // TODO: get correct values
-    val artifactFiles = downloaded.toMap
 
-    if (erroredArtifacts.isEmpty) {
+    if (artifactErrors.isEmpty) {
       Right(
         ToSbt.updateReport(
           depsByConfig,
@@ -213,11 +227,11 @@ private[sbt] class CoursierDependencyResolution(resolvers: Seq[Resolver])
   private def toSbtError(log: Logger,
                          uwconfig: UnresolvedWarningConfiguration,
                          resolution: Resolution) = {
-    val failedResolution = resolution.metadataErrors.map {
+    val failedResolution = resolution.errors.map {
       case ((failedModule, failedVersion), _) =>
         ModuleID(failedModule.organization, failedModule.name, failedVersion)
     }
-    val msgs = resolution.metadataErrors.flatMap(_._2)
+    val msgs = resolution.errors.flatMap(_._2)
     log.debug(s"Failed resolution: $msgs")
     log.debug(s"Missing artifacts: $failedResolution")
     val ex = new ResolveException(msgs, failedResolution)
