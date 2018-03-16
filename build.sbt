@@ -165,7 +165,7 @@ lazy val lmCoursier = (project in file("coursier"))
   .dependsOn(lmCore)
   .settings(
     commonSettings,
-    crossScalaVersions := Seq(scala212),
+    crossScalaVersions := Seq(scala212, scala211),
     name := "librarymanagement-coursier",
     libraryDependencies ++= Seq(coursier, coursierCache, scalaTest, scalaCheck), coursierShared,
     managedSourceDirectories in Compile +=
