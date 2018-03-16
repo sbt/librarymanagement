@@ -1,14 +1,8 @@
 import Dependencies._
 import Path._
-//import com.typesafe.tools.mima.core._, ProblemFilters._
-
-def baseVersion = "10.0.6-SNAPSHOT"
 
 def commonSettings: Seq[Setting[_]] = Def settings (
   scalaVersion := scala212,
-  // TODO: remove before merging
-  sources in (Compile,doc) := Seq.empty,
-  publishArtifact in (Compile, packageDoc) := false,
   // publishArtifact in packageDoc := false,
   resolvers += Resolver.typesafeIvyRepo("releases"),
   resolvers += Resolver.sonatypeRepo("snapshots"),
