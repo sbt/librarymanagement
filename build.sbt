@@ -4,7 +4,7 @@ import Path._
 
 def baseVersion = "10.0.6-SNAPSHOT"
 
-def commonSettings: Seq[Setting[_]] = Seq(
+def commonSettings: Seq[Setting[_]] = Def settings (
   scalaVersion := scala212,
   // TODO: remove before merging
   sources in (Compile,doc) := Seq.empty,
@@ -28,6 +28,7 @@ def commonSettings: Seq[Setting[_]] = Seq(
       case _                           => old ++ List("-Ywarn-unused", "-Ywarn-unused-import", "-YdisableFlatCpCaching")
     }
   },
+  inCompileAndTest(scalacOptions in console --= Vector("-Ywarn-unused-import", "-Ywarn-unused", "-Xlint")),
   publishArtifact in Compile := true,
   publishArtifact in Test := false,
   parallelExecution in Test := false
@@ -121,8 +122,6 @@ lazy val lmCommonTest = (project in file("common-test"))
     skip in publish := true,
     name := "common-test",
     libraryDependencies ++= Seq(scalaTest, scalaCheck),
-    scalacOptions in (Compile, console) --=
-      Vector("-Ywarn-unused-import", "-Ywarn-unused", "-Xlint"),
     mimaSettings,
   )
 
@@ -195,3 +194,6 @@ inThisBuild(Seq(
   whitesourceFailOnError               := sys.env.contains("WHITESOURCE_PASSWORD"), // fail if pwd is present
   whitesourceForceCheckAllDependencies := true,
 ))
+
+def inCompileAndTest(ss: SettingsDefinition*): Seq[Setting[_]] =
+  Seq(Compile, Test) flatMap (inConfig(_)(Def.settings(ss: _*)))
