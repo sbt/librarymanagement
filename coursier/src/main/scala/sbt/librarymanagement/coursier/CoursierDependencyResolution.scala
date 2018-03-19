@@ -1,6 +1,6 @@
 package sbt.librarymanagement.coursier
 
-import java.io.{ File }
+import java.io.File
 
 import coursier.{ Artifact, Resolution, _ }
 import coursier.util.{ Task, Gather }
@@ -71,8 +71,6 @@ private[sbt] class CoursierDependencyResolution(resolvers: Seq[Resolver])
 
     val fetch = Fetch.from(repositories, Cache.fetch[Task]())
     val resolution = start.process.run(fetch).unsafeRun()
-
-    import java.io.File
 
     if (resolution.errors.isEmpty) {
       val localArtifacts: Map[Artifact, Either[FileError, File]] = Gather[Task]

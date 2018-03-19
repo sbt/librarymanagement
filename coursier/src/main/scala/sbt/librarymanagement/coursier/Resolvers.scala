@@ -41,6 +41,9 @@ object Resolvers {
     val slow = filterResolvers(slowReposBase, byUrl)
     val rest = resolvers.diff(fast).diff(slow)
 
-    fast ++ rest ++ slow
+    val reordered = fast ++ rest ++ slow
+    assert(reordered.size == resolvers.size, "Reordered resolvers should be the same size as the unordered ones.")
+
+    reordered
   }
 }
