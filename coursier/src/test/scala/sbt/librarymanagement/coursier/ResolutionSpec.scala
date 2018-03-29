@@ -32,7 +32,7 @@ class ResolutionSpec extends BaseCoursierSpecification {
       lmEngine.update(coursierModule, UpdateConfiguration(), UnresolvedWarningConfiguration(), log)
 
     resolution should be('right)
-    val r = resolution.toOption.get
+    val r = resolution.right.get
     r.configurations.map(_.configuration) should have size 11
 
     val compileConfig = r.configurations.find(_.configuration == Compile.toConfigRef).get
@@ -52,7 +52,7 @@ class ResolutionSpec extends BaseCoursierSpecification {
     val resolution =
       lmEngine.update(coursierModule, UpdateConfiguration(), UnresolvedWarningConfiguration(), log)
 
-    val r = resolution.toOption.get
+    val r = resolution.right.get
 
     val componentConfig = r.configurations.find(_.configuration == Component.toConfigRef).get
     componentConfig.modules should have size 1
@@ -80,7 +80,7 @@ class ResolutionSpec extends BaseCoursierSpecification {
     val resolution =
       lmEngine.update(coursierModule, UpdateConfiguration(), UnresolvedWarningConfiguration(), log)
 
-    val r = resolution.toOption.get
+    val r = resolution.right.get
 
     val componentConfig = r.configurations.find(_.configuration == Compile.toConfigRef).get
     componentConfig.modules.map(_.module.name) should have size 5
