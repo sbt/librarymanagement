@@ -42,7 +42,8 @@ object Resolvers {
     val rest = resolvers.diff(fast).diff(slow)
 
     val reordered = fast ++ rest ++ slow
-    assert(reordered.size == resolvers.size, "Reordered resolvers should be the same size as the unordered ones.")
+    assert(reordered.size == resolvers.size,
+           "Reordered resolvers should be the same size as the unordered ones.")
 
     reordered
   }

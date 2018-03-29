@@ -160,7 +160,7 @@ lazy val lmCoursier = (project in file("coursier"))
     commonSettings,
     crossScalaVersions := Seq(scala212, scala211),
     name := "librarymanagement-coursier",
-    libraryDependencies ++= Seq(coursier, coursierCache, scalaTest, scalaCheck), coursierShared,
+    libraryDependencies ++= Seq(coursier, coursierCache, scalaTest, scalaCheck),
     managedSourceDirectories in Compile +=
       baseDirectory.value / "src" / "main" / "contraband-scala",
     sourceManaged in (Compile, generateContrabands) := baseDirectory.value / "src" / "main" / "contraband-scala",
