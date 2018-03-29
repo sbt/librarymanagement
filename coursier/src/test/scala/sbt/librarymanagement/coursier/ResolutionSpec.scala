@@ -112,7 +112,7 @@ class ResolutionSpec extends BaseCoursierSpecification {
     val resolvers = Vector(
       JavaNet2Repository,
       Resolver.sbtPluginRepo("releases"),
-      DefaultMavenRepository,
+      DefaultMavenRepository
     )
     val engine = new CoursierDependencyResolution(resolvers)
     engine.reorderedResolvers.head.name should be("public")
