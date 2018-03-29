@@ -265,7 +265,7 @@ object ToSbt {
     }
 
     UpdateReport(
-      null,
+      File.createTempFile("fake-update-report", "json"),
       configReports.toVector,
       UpdateStats(-1L, -1L, -1L, cached = false),
       Map.empty
