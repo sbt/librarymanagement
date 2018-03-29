@@ -1,9 +1,9 @@
 package sbt.librarymanagement.coursier
 
-import java.io.File
+import java.io.{ File, OutputStreamWriter }
 
 import coursier.{ Artifact, Resolution, _ }
-import coursier.util.{ Task, Gather }
+import coursier.util.{ Gather, Task }
 import sbt.librarymanagement.Configurations.{ CompilerPlugin, Component, ScalaTool }
 import sbt.librarymanagement._
 import sbt.util.Logger
@@ -69,7 +69,7 @@ private[sbt] class CoursierDependencyResolution(resolvers: Seq[Resolver])
 
     import scala.concurrent.ExecutionContext.Implicits.global
 
-    val fetch = Fetch.from(repositories, Cache.fetch[Task]())
+    val fetch = Fetch.from(repositories, Cache.fetch[Task](logger = Some(createLogger())))
     val resolution = start.process.run(fetch).unsafeRun()
 
     if (resolution.errors.isEmpty) {
@@ -89,11 +89,11 @@ private[sbt] class CoursierDependencyResolution(resolvers: Seq[Resolver])
 
   // utilities
 
-  /*private def createLogger() = {
+  private def createLogger() = {
     val t = new TermDisplay(new OutputStreamWriter(System.out))
     t.init()
     t
-  }*/
+  }
 
   private def toCoursierDependency(moduleID: ModuleID): Dependency = {
     val attrs = moduleID.explicitArtifacts
