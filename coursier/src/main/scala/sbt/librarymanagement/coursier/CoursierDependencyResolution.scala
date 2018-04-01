@@ -53,8 +53,6 @@ private[sbt] class CoursierDependencyResolution(resolvers: Seq[Resolver])
                       uwconfig: UnresolvedWarningConfiguration,
                       log: Logger): Either[UnresolvedWarning, UpdateReport] = {
 
-    println(s"Resolving ${module.directDependencies}")
-
     if (reorderedResolvers.isEmpty) {
       log.error(
         "Dependency resolution is configured with an empty list of resolvers. This is unlikely to work.")
