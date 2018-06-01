@@ -16,7 +16,6 @@ final class Configuration private[sbt] (
   require(name.nonEmpty, "name cannot be empty")
   require(id != null, "id cannot be null")
   require(id.nonEmpty, "id cannot be empty")
-  require(id.head.isUpper, s"id must be capitalized: $id")
 
   override def equals(o: Any): Boolean = o match {
     case x: Configuration =>
