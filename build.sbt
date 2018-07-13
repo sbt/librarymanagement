@@ -30,7 +30,11 @@ def commonSettings: Seq[Setting[_]] = Def.settings(
   inCompileAndTest(scalacOptions in console --= Vector("-Ywarn-unused-import", "-Ywarn-unused", "-Xlint")),
   publishArtifact in Compile := true,
   publishArtifact in Test := false,
-  parallelExecution in Test := false
+  parallelExecution in Test := false,
+  testOptions in Test += {
+    val log = streams.value.log
+    Tests.Cleanup { loader => cleanupTests(loader, log) }
+  }
 )
 
 val mimaSettings = Def settings (
@@ -275,3 +279,22 @@ inThisBuild(Seq(
 
 def inCompileAndTest(ss: SettingsDefinition*): Seq[Setting[_]] =
   Seq(Compile, Test) flatMap (inConfig(_)(Def.settings(ss: _*)))
+
+
+// TODO move into sbt-house-rules?
+def cleanupTests(loader: ClassLoader, log: sbt.internal.util.ManagedLogger): Unit = {
+  // shutdown Log4J to avoid classloader leaks
+  try {
+    val logManager = Class.forName("org.apache.logging.log4j.LogManager")
+    logManager.getMethod("shutdown").invoke(null)
+  } catch {
+    case _: Throwable =>
+      log.warn("Could not shut down Log4J")
+  }
+  // Scala Test loads property bundles, let's eagerly clear then from the internal cache
+  // TODO move into SBT itself?
+  java.util.ResourceBundle.clearCache(loader)
+  // Scala Test also starts TimerThreads that it doesn't eagerly cancel. This can weakly retain
+  // metaspace until a full GC.
+  System.gc()
+}
