@@ -30,11 +30,7 @@ def commonSettings: Seq[Setting[_]] = Def.settings(
   inCompileAndTest(scalacOptions in console --= Vector("-Ywarn-unused-import", "-Ywarn-unused", "-Xlint")),
   publishArtifact in Compile := true,
   publishArtifact in Test := false,
-  parallelExecution in Test := false,
-  testOptions in Test += {
-    val log = streams.value.log
-    Tests.Cleanup { loader => cleanupTests(loader, log) }
-  }
+  parallelExecution in Test := false
 )
 
 val mimaSettings = Def settings (
@@ -106,6 +102,10 @@ lazy val lmCore = (project in file("core"))
     managedSourceDirectories in Compile +=
       baseDirectory.value / "src" / "main" / "contraband-scala",
     sourceManaged in (Compile, generateContrabands) := baseDirectory.value / "src" / "main" / "contraband-scala",
+    testOptions in Test += {
+      val log = streams.value.log
+      Tests.Cleanup { loader => cleanupTests(loader, log) }
+    },
     contrabandFormatsForType in generateContrabands in Compile := DatatypeConfig.getFormats,
     // WORKAROUND sbt/sbt#2205 include managed sources in packageSrc
     mappings in (Compile, packageSrc) ++= {
@@ -231,6 +231,10 @@ lazy val lmIvy = (project in file("ivy"))
     contrabandFormatsForType in generateContrabands in Compile := DatatypeConfig.getFormats,
     scalacOptions in (Compile, console) --=
       Vector("-Ywarn-unused-import", "-Ywarn-unused", "-Xlint"),
+    testOptions in Test += {
+      val log = streams.value.log
+      Tests.Cleanup { loader => cleanupTests(loader, log) }
+    },
     mimaSettings,
     mimaBinaryIssueFilters ++= Seq(
       exclude[DirectMissingMethodProblem]("sbt.internal.librarymanagement.ivyint.GigahorseUrlHandler#SbtUrlInfo.this"),
@@ -285,11 +289,15 @@ def inCompileAndTest(ss: SettingsDefinition*): Seq[Setting[_]] =
 def cleanupTests(loader: ClassLoader, log: sbt.internal.util.ManagedLogger): Unit = {
   // shutdown Log4J to avoid classloader leaks
   try {
-    val logManager = Class.forName("org.apache.logging.log4j.LogManager")
+    val logManager = Class.forName("org.apache.logging.log4j.LogManager", false, loader)
     logManager.getMethod("shutdown").invoke(null)
+    log.debug("Log4J2 Shutdown successful!")
   } catch {
-    case _: Throwable =>
-      log.warn("Could not shut down Log4J")
+    case _: ClassNotFoundException =>
+      // not in this classloader
+    case t: Throwable =>
+      log.debug("Could not shut down Log4J")
+      log.trace(t)
   }
   // Scala Test loads property bundles, let's eagerly clear then from the internal cache
   // TODO move into SBT itself?
