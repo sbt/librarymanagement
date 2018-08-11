@@ -21,9 +21,9 @@ implicit lazy val ModuleDescriptorConfigurationFormat: JsonFormat[sbt.libraryman
       val ivyXML = unbuilder.readField[scala.xml.NodeSeq]("ivyXML")
       val configurations = unbuilder.readField[Vector[sbt.librarymanagement.Configuration]]("configurations")
       val defaultConfiguration = unbuilder.readField[Option[sbt.librarymanagement.Configuration]]("defaultConfiguration")
-      val conflictManager = unbuilder.readField[sbt.librarymanagement.ConflictManager]("conflictManager")
+      val conflictManagers = unbuilder.readField[Vector[sbt.librarymanagement.ConflictManager]]("conflictManagers")
       unbuilder.endObject()
-      sbt.librarymanagement.ModuleDescriptorConfiguration(validate, scalaModuleInfo, module, moduleInfo, dependencies, overrides, excludes, ivyXML, configurations, defaultConfiguration, conflictManager)
+      sbt.librarymanagement.ModuleDescriptorConfiguration(validate, scalaModuleInfo, module, moduleInfo, dependencies, overrides, excludes, ivyXML, configurations, defaultConfiguration, conflictManagers)
       case None =>
       deserializationError("Expected JsObject but found None")
     }
@@ -40,7 +40,7 @@ implicit lazy val ModuleDescriptorConfigurationFormat: JsonFormat[sbt.libraryman
     builder.addField("ivyXML", obj.ivyXML)
     builder.addField("configurations", obj.configurations)
     builder.addField("defaultConfiguration", obj.defaultConfiguration)
-    builder.addField("conflictManager", obj.conflictManager)
+    builder.addField("conflictManagers", obj.conflictManagers)
     builder.endObject()
   }
 }

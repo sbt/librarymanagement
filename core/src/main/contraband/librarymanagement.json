@@ -570,7 +570,7 @@
               "default": "Option(sbt.librarymanagement.Configurations.Compile)",
               "since": "0.0.1"
              },
-            { "name": "conflictManager",      "type": "sbt.librarymanagement.ConflictManager", "default": "sbt.librarymanagement.ConflictManager.default", "since": "0.0.1" }
+            { "name": "conflictManagers",      "type": "sbt.librarymanagement.ConflictManager*", "default": "Vector(sbt.librarymanagement.ConflictManager.default)", "since": "0.0.1" }
           ],
           "parentsCompanion": "sbt.librarymanagement.InlineConfigurationFunctions"
         }

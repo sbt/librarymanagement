@@ -266,7 +266,9 @@ final class IvySbt(val configuration: IvyConfiguration) { self =>
     private def configureInline(ic: InlineConfiguration, log: Logger) = {
       import ic._
       val moduleID = newConfiguredModuleID(module, moduleInfo, ic.configurations)
-      IvySbt.setConflictManager(moduleID, conflictManager, ivy.getSettings)
+      conflictManagers foreach { conflictManager =>
+        IvySbt.addConflictManager(moduleID, conflictManager, ivy.getSettings)
+      }
       val defaultConf = defaultConfiguration getOrElse Configuration.of(
         "Default",
         ModuleDescriptor.DEFAULT_CONFIGURATION)
@@ -666,7 +668,7 @@ private[sbt] object IvySbt {
     moduleID.setModuleArtifact(artifact)
     moduleID.check()
   }
-  private def setConflictManager(
+  private def addConflictManager(
       moduleID: DefaultModuleDescriptor,
       conflict: ConflictManager,
       is: IvySettings
