@@ -68,7 +68,8 @@ private[sbt] object JsonUtil {
 
   // #1763/#2030. Caller takes up 97% of space, so we need to shrink it down,
   // but there are semantics associated with some of them.
-  def filterOutArtificialCallers(callers: Vector[Caller]): Vector[Caller] =
+  def filterOutArtificialCallers(callers0: Vector[Caller]): Vector[Caller] = {
+    val callers = callers0.filterNot(_.isTransitiveDependency)
     if (callers.isEmpty) callers
     else {
       val nonArtificial = callers filter { c =>
@@ -80,6 +81,7 @@ private[sbt] object JsonUtil {
       }).toVector
       interProj ++ nonArtificial
     }
+  }
 
   def fromLite(lite: UpdateReportLite, cachedDescriptor: File): UpdateReport = {
     val stats = UpdateStats(0L, 0L, 0L, false)
