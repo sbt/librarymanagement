@@ -29,7 +29,7 @@ def commonSettings: Seq[Setting[_]] = Def.settings(
   },
   inCompileAndTest(scalacOptions in console --= Vector("-Ywarn-unused-import", "-Ywarn-unused", "-Xlint")),
   publishArtifact in Compile := true,
-  publishArtifact in Test := false,
+  publishArtifact in Test := true,
   parallelExecution in Test := false
 )
 
@@ -69,6 +69,7 @@ lazy val lmRoot = (project in file("."))
     publish := {},
     publishLocal := {},
     publishArtifact in Compile := false,
+    publishArtifact in Test := false,
     publishArtifact := false,
     customCommands
   )
