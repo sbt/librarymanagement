@@ -225,9 +225,6 @@ private[sbt] case class SbtChainResolver(
 
         if (resolvedModule.getId.getRevision.contains("SNAPSHOT")) {
 
-          Message.warn(
-            "Resolving a snapshot version. It's going to be slow unless you use `updateOptions := updateOptions.value.withLatestSnapshots(false)` options."
-          )
           val resolvers = sortedRevisions.map(_._2.getName)
           sortedRevisions.foreach(h => {
             val (module, resolver) = h

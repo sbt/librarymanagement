@@ -108,7 +108,7 @@ object UpdateOptions {
     new UpdateOptions(
       circularDependencyLevel = CircularDependencyLevel.Warn,
       interProjectFirst = true,
-      latestSnapshots = true,
+      latestSnapshots = false,
       cachedResolution = false,
       gigahorse = LMSysProp.useGigahorse,
       resolverConverter = PartialFunction.empty,
