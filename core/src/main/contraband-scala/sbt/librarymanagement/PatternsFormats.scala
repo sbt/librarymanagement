@@ -7,10 +7,10 @@ package sbt.librarymanagement
 import _root_.sjsonnew.{ Unbuilder, Builder, JsonFormat, deserializationError }
 trait PatternsFormats { self: sjsonnew.BasicJsonProtocol =>
 implicit lazy val PatternsFormat: JsonFormat[sbt.librarymanagement.Patterns] = new JsonFormat[sbt.librarymanagement.Patterns] {
-  override def read[J](jsOpt: Option[J], unbuilder: Unbuilder[J]): sbt.librarymanagement.Patterns = {
-    jsOpt match {
-      case Some(js) =>
-      unbuilder.beginObject(js)
+  override def read[J](__jsOpt: Option[J], unbuilder: Unbuilder[J]): sbt.librarymanagement.Patterns = {
+    __jsOpt match {
+      case Some(__js) =>
+      unbuilder.beginObject(__js)
       val ivyPatterns = unbuilder.readField[Vector[String]]("ivyPatterns")
       val artifactPatterns = unbuilder.readField[Vector[String]]("artifactPatterns")
       val isMavenCompatible = unbuilder.readField[Boolean]("isMavenCompatible")
