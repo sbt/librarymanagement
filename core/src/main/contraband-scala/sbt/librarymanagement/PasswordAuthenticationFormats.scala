@@ -7,10 +7,10 @@ package sbt.librarymanagement
 import _root_.sjsonnew.{ Unbuilder, Builder, JsonFormat, deserializationError }
 trait PasswordAuthenticationFormats { self: sjsonnew.BasicJsonProtocol =>
 implicit lazy val PasswordAuthenticationFormat: JsonFormat[sbt.librarymanagement.PasswordAuthentication] = new JsonFormat[sbt.librarymanagement.PasswordAuthentication] {
-  override def read[J](jsOpt: Option[J], unbuilder: Unbuilder[J]): sbt.librarymanagement.PasswordAuthentication = {
-    jsOpt match {
-      case Some(js) =>
-      unbuilder.beginObject(js)
+  override def read[J](__jsOpt: Option[J], unbuilder: Unbuilder[J]): sbt.librarymanagement.PasswordAuthentication = {
+    __jsOpt match {
+      case Some(__js) =>
+      unbuilder.beginObject(__js)
       val user = unbuilder.readField[String]("user")
       val password = unbuilder.readField[Option[String]]("password")
       unbuilder.endObject()

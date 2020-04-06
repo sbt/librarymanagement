@@ -7,10 +7,10 @@ package sbt.librarymanagement
 import _root_.sjsonnew.{ Unbuilder, Builder, JsonFormat, deserializationError }
 trait ArtifactTypeFilterFormats { self: sjsonnew.BasicJsonProtocol =>
 implicit lazy val ArtifactTypeFilterFormat: JsonFormat[sbt.librarymanagement.ArtifactTypeFilter] = new JsonFormat[sbt.librarymanagement.ArtifactTypeFilter] {
-  override def read[J](jsOpt: Option[J], unbuilder: Unbuilder[J]): sbt.librarymanagement.ArtifactTypeFilter = {
-    jsOpt match {
-      case Some(js) =>
-      unbuilder.beginObject(js)
+  override def read[J](__jsOpt: Option[J], unbuilder: Unbuilder[J]): sbt.librarymanagement.ArtifactTypeFilter = {
+    __jsOpt match {
+      case Some(__js) =>
+      unbuilder.beginObject(__js)
       val types = unbuilder.readField[Set[String]]("types")
       val inverted = unbuilder.readField[Boolean]("inverted")
       unbuilder.endObject()
