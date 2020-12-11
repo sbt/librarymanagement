@@ -255,6 +255,43 @@ object VersionNumber {
         case _                                                  => false
       }
   }
+
+  /** A canonical ordering for a [[VersionNumber]].
+   *
+   * This ordering compares a version number first by comparing the
+   * numbers. Numbers with less components are ordered < longer ones,
+   * e.g. `"1.0" < "1.0.0" == true`. If the [[VersionNumber#numbers]] is
+   * equal then [[VersionNumber#tags]] is compared. If [[VersionNumber#tags]]
+   * is equal then [[VersionNumber#extra]] is compared.
+   *
+   * This ordering will be consistent with [[VersionNumber#equals]].
+   */
+  def ordering: Ordering[VersionNumber] = {
+
+    def foldFunction[A](acc: Int, value: (A, A))(implicit ordering: Ordering[A]): Int =
+      if (acc == 0) {
+        ordering.compare(value._1, value._2)
+      } else {
+        acc
+      }
+
+    new Ordering[VersionNumber] {
+      override def compare(x: VersionNumber, y: VersionNumber): Int =
+        x.numbers
+          .zipAll(y.numbers, Long.MinValue, Long.MinValue)
+          .foldLeft(0)(foldFunction[Long]) match {
+          case 0 =>
+            x.tags.zipAll(y.tags, "", "").foldLeft(0)(foldFunction[String]) match {
+              case 0 =>
+                x.extras.zipAll(y.extras, "", "").foldLeft(0)(foldFunction[String])
+              case otherwise =>
+                otherwise
+            }
+          case otherwise =>
+            otherwise
+        }
+    }
+  }
 }
 
 trait VersionNumberCompatibility {

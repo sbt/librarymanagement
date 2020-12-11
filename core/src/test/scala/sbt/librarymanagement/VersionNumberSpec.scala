@@ -124,6 +124,25 @@ class VersionNumberSpec extends FreeSpec with Matchers with Inside {
     assertParsesToError(v)
   }
 
+  "VersionNumber.ordering" - {
+    "should compare differing values as expected" in {
+      assert(
+        VersionNumber.ordering.compare(
+          VersionNumber("1.0.0"),
+          VersionNumber("2.0.0")
+        ) < 0
+      )
+    }
+    "should be consistent with .equals" in {
+      assert(
+        VersionNumber.ordering.compare(
+          VersionNumber("1.0.0"),
+          VersionNumber("1.0.0")
+        ) == 0
+      )
+    }
+  }
+
   ////
 
   private[this] final class VersionString(val value: String)
