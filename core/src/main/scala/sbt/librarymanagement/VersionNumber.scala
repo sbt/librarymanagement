@@ -260,9 +260,9 @@ object VersionNumber {
    *
    * This ordering compares a version number first by comparing the
    * numbers. Numbers with less components are ordered < longer ones,
-   * e.g. `"1.0" < "1.0.0" == true`. If the [[VersionNumber#numbers]] is
-   * equal then [[VersionNumber#tags]] is compared. If [[VersionNumber#tags]]
-   * is equal then [[VersionNumber#extra]] is compared.
+   * e.g. `"1.0" < "1.0.0" == true`. If the [[VersionNumber#numbers]] is equal
+   * then [[VersionNumber#tags]] is compared. If [[VersionNumber#tags]] is
+   * equal then [[VersionNumber#extras]] is compared.
    *
    * This ordering will be consistent with [[VersionNumber#equals]].
    */
