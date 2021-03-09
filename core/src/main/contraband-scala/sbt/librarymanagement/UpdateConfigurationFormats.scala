@@ -5,7 +5,7 @@
 // DO NOT EDIT MANUALLY
 package sbt.librarymanagement
 import _root_.sjsonnew.{ Unbuilder, Builder, JsonFormat, deserializationError }
-trait UpdateConfigurationFormats { self: sbt.librarymanagement.RetrieveConfigurationFormats with sbt.librarymanagement.UpdateLoggingFormats with sbt.internal.librarymanagement.formats.LogicalClockFormats with sbt.librarymanagement.ArtifactTypeFilterFormats with sjsonnew.BasicJsonProtocol =>
+trait UpdateConfigurationFormats { self: sbt.librarymanagement.RetrieveConfigurationFormats with sbt.librarymanagement.UpdateLoggingFormats with sbt.internal.librarymanagement.formats.LogicalClockFormats with sbt.librarymanagement.ArtifactTypeFilterFormats with sbt.librarymanagement.ModuleIDFormats with sjsonnew.BasicJsonProtocol =>
 implicit lazy val UpdateConfigurationFormat: JsonFormat[sbt.librarymanagement.UpdateConfiguration] = new JsonFormat[sbt.librarymanagement.UpdateConfiguration] {
   override def read[J](__jsOpt: Option[J], unbuilder: Unbuilder[J]): sbt.librarymanagement.UpdateConfiguration = {
     __jsOpt match {
@@ -19,8 +19,9 @@ implicit lazy val UpdateConfigurationFormat: JsonFormat[sbt.librarymanagement.Up
       val artifactFilter = unbuilder.readField[Option[sbt.librarymanagement.ArtifactTypeFilter]]("artifactFilter")
       val offline = unbuilder.readField[Boolean]("offline")
       val frozen = unbuilder.readField[Boolean]("frozen")
+      val protocolHandlerDependencies = unbuilder.readField[Vector[sbt.librarymanagement.ModuleID]]("protocolHandlerDependencies")
       unbuilder.endObject()
-      sbt.librarymanagement.UpdateConfiguration(retrieveManaged, missingOk, logging, logicalClock, metadataDirectory, artifactFilter, offline, frozen)
+      sbt.librarymanagement.UpdateConfiguration(retrieveManaged, missingOk, logging, logicalClock, metadataDirectory, artifactFilter, offline, frozen, protocolHandlerDependencies)
       case None =>
       deserializationError("Expected JsObject but found None")
     }
@@ -35,6 +36,7 @@ implicit lazy val UpdateConfigurationFormat: JsonFormat[sbt.librarymanagement.Up
     builder.addField("artifactFilter", obj.artifactFilter)
     builder.addField("offline", obj.offline)
     builder.addField("frozen", obj.frozen)
+    builder.addField("protocolHandlerDependencies", obj.protocolHandlerDependencies)
     builder.endObject()
   }
 }

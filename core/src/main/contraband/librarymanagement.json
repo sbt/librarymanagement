@@ -67,6 +67,15 @@
           "type": "boolean",
           "default": "false",
           "since": "0.0.1"
+        },
+        {
+          "name": "protocolHandlerDependencies",
+          "doc": [
+            "Dependencies to load to handle custom protocols for dependency resolution"
+          ],
+          "type": "sbt.librarymanagement.ModuleID*", 
+          "default": "Vector.empty", 
+          "since": "1.5.0-M5"
         }
       ]
     },
