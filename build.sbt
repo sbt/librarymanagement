@@ -142,6 +142,10 @@ lazy val lmCore = (project in file("core"))
     managedSourceDirectories in Compile +=
       baseDirectory.value / "src" / "main" / "contraband-scala",
     sourceManaged in (Compile, generateContrabands) := baseDirectory.value / "src" / "main" / "contraband-scala",
+    testOptions in Test += {
+      val log = streams.value.log
+      Tests.Cleanup { loader => cleanupTests(loader, log) }
+    },
     contrabandFormatsForType in generateContrabands in Compile := DatatypeConfig.getFormats,
     // WORKAROUND sbt/sbt#2205 include managed sources in packageSrc
     mappings in (Compile, packageSrc) ++= {
@@ -281,6 +285,10 @@ lazy val lmIvy = (project in file("ivy"))
     contrabandFormatsForType in generateContrabands in Compile := DatatypeConfig.getFormats,
     scalacOptions in (Compile, console) --=
       Vector("-Ywarn-unused-import", "-Ywarn-unused", "-Xlint"),
+    testOptions in Test += {
+      val log = streams.value.log
+      Tests.Cleanup { loader => cleanupTests(loader, log) }
+    },
     mimaSettings,
     mimaBinaryIssueFilters ++= Seq(
       exclude[DirectMissingMethodProblem](
@@ -395,3 +403,26 @@ inThisBuild(
 
 def inCompileAndTest(ss: SettingsDefinition*): Seq[Setting[_]] =
   Seq(Compile, Test) flatMap (inConfig(_)(Def.settings(ss: _*)))
+
+
+// TODO move into sbt-house-rules?
+def cleanupTests(loader: ClassLoader, log: sbt.internal.util.ManagedLogger): Unit = {
+  // shutdown Log4J to avoid classloader leaks
+  try {
+    val logManager = Class.forName("org.apache.logging.log4j.LogManager", false, loader)
+    logManager.getMethod("shutdown").invoke(null)
+    log.debug("Log4J2 Shutdown successful!")
+  } catch {
+    case _: ClassNotFoundException =>
+      // not in this classloader
+    case t: Throwable =>
+      log.debug("Could not shut down Log4J")
+      log.trace(t)
+  }
+  // Scala Test loads property bundles, let's eagerly clear then from the internal cache
+  // TODO move into SBT itself?
+  java.util.ResourceBundle.clearCache(loader)
+  // Scala Test also starts TimerThreads that it doesn't eagerly cancel. This can weakly retain
+  // metaspace until a full GC.
+  System.gc()
+}
