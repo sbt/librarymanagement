@@ -313,7 +313,7 @@ final class IvySbt(
         mod.setHomePage(h.toString)
       }
       moduleInfo.licenses foreach { l =>
-        mod.addLicense(new License(l._1, l._2.toString))
+        mod.addLicense(new License(l.name, l.url.toString))
       }
       IvySbt.addConfigurations(mod, configurations)
       IvySbt.addArtifacts(mod, module.explicitArtifacts)
