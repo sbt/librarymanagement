@@ -23,7 +23,7 @@ object VersionRange {
         case MavenVersionSetPattern(open1, x1, comma, x2, close1, _) =>
           // http://maven.apache.org/components/enforcer/enforcer-rules/versionRanges.html
           (open1, Option(x1), Option(comma), Option(x2), close1) match {
-            case (_, None, _, Some(x2), "]") => Some(x2)
+            case (_, _, _, Some(x2), "]") => Some(x2)
             // a good upper bound is unknown
             case (_, None, _, Some(_), ")") => None
             case (_, Some(x1), _, None, _)  => Some(x1)
