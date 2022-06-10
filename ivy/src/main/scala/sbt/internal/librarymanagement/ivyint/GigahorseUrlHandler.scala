@@ -1,21 +1,17 @@
 package sbt.internal.librarymanagement
 package ivyint
 
-import java.net.{ URL, UnknownHostException }
-import java.io._
-
-import scala.util.control.NonFatal
-
-import okhttp3.{ MediaType, Request, RequestBody }
-import okhttp3.internal.http.HttpDate
-
-import okhttp3.{ JavaNetAuthenticator => _, _ }
+import okhttp3.{ MediaType, Request, RequestBody, JavaNetAuthenticator => _, _ }
 import okio._
-
-import org.apache.ivy.util.{ CopyProgressEvent, CopyProgressListener, Message }
-import org.apache.ivy.util.url.{ AbstractURLHandler, BasicURLHandler, IvyAuthenticator, URLHandler }
 import org.apache.ivy.util.url.URLHandler._
+import org.apache.ivy.util.url.{ AbstractURLHandler, BasicURLHandler, IvyAuthenticator, URLHandler }
+import org.apache.ivy.util.{ CopyProgressEvent, CopyProgressListener, Message }
 import sbt.io.IO
+
+import java.io._
+import java.net.{ URL, UnknownHostException }
+import java.util.Date
+import scala.util.control.NonFatal
 
 // Copied from Ivy's BasicURLHandler.
 class GigahorseUrlHandler(http: OkHttpClient) extends AbstractURLHandler {
@@ -328,11 +324,7 @@ object GigahorseUrlHandler {
     }
 
   private def lastModifiedTimestamp(response: Response): Long = {
-    val lastModifiedDate =
-      Option(response.headers().get("Last-Modified")).flatMap { headerValue =>
-        Option(HttpDate.parse(headerValue))
-      }
-
+    val lastModifiedDate = Option(response.headers().getDate("Last-Modified"))
     lastModifiedDate.map(_.getTime).getOrElse(0)
   }
 
