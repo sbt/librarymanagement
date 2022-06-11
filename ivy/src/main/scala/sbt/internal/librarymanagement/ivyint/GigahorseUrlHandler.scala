@@ -10,7 +10,6 @@ import sbt.io.IO
 
 import java.io._
 import java.net.{ URL, UnknownHostException }
-import java.util.Date
 import scala.util.control.NonFatal
 
 // Copied from Ivy's BasicURLHandler.
