@@ -219,9 +219,20 @@ final class IvySbt(
     else IvySbt.cachedResolutionResolveCache.clean()
   }
 
-  final class Module(rawModuleSettings: ModuleSettings)
+  final class Module(rawModuleSettings: ModuleSettings, appendSbtCrossVersion: Boolean)
       extends sbt.librarymanagement.ModuleDescriptor { self =>
-    val moduleSettings: ModuleSettings = IvySbt.substituteCross(rawModuleSettings)
+
+    def this(rawModuleSettings: ModuleSettings) =
+      this(rawModuleSettings, appendSbtCrossVersion = false)
+
+    val moduleSettings: ModuleSettings =
+      rawModuleSettings match {
+        case ic: InlineConfiguration =>
+          val icWithCross = IvySbt.substituteCross(ic)
+          if (appendSbtCrossVersion) IvySbt.appendSbtCrossVersion(icWithCross)
+          else icWithCross
+        case m => m
+      }
 
     def directDependencies: Vector[ModuleID] =
       moduleSettings match {
@@ -696,32 +707,44 @@ private[sbt] object IvySbt {
     )
   }
 
-  private def substituteCross(m: ModuleSettings): ModuleSettings = {
-    m.scalaModuleInfo match {
-      case None     => m
-      case Some(is) => substituteCross(m, is.scalaFullVersion, is.scalaBinaryVersion)
+  private def substituteCross(ic: InlineConfiguration): InlineConfiguration = {
+    ic.scalaModuleInfo match {
+      case None     => ic
+      case Some(is) => substituteCross(ic, is.scalaFullVersion, is.scalaBinaryVersion)
     }
   }
 
   private def substituteCross(
-      m: ModuleSettings,
+      ic: InlineConfiguration,
       scalaFullVersion: String,
       scalaBinaryVersion: String
-  ): ModuleSettings = {
-    m match {
-      case ic: InlineConfiguration =>
-        val applyCross = CrossVersion(scalaFullVersion, scalaBinaryVersion)
-        def propagateCrossVersion(moduleID: ModuleID): ModuleID = {
-          val crossExclusions: Vector[ExclusionRule] =
-            moduleID.exclusions.map(CrossVersion.substituteCross(_, ic.scalaModuleInfo))
-          applyCross(moduleID)
-            .withExclusions(crossExclusions)
-        }
-        ic.withModule(applyCross(ic.module))
-          .withDependencies(ic.dependencies.map(propagateCrossVersion))
-          .withOverrides(ic.overrides map applyCross)
-      case _ => m
+  ): InlineConfiguration = {
+    val applyCross = CrossVersion(scalaFullVersion, scalaBinaryVersion)
+    def propagateCrossVersion(moduleID: ModuleID): ModuleID = {
+      val crossExclusions: Vector[ExclusionRule] =
+        moduleID.exclusions.map(CrossVersion.substituteCross(_, ic.scalaModuleInfo))
+      applyCross(moduleID)
+        .withExclusions(crossExclusions)
     }
+    ic.withModule(applyCross(ic.module))
+      .withDependencies(ic.dependencies.map(propagateCrossVersion))
+      .withOverrides(ic.overrides map applyCross)
+  }
+
+  private def appendSbtCrossVersion(ic: InlineConfiguration): InlineConfiguration =
+    ic.withModule(appendSbtCrossVersion(ic.module))
+      .withDependencies(ic.dependencies.map(appendSbtCrossVersion))
+      .withOverrides(ic.overrides.map(appendSbtCrossVersion))
+
+  private def appendSbtCrossVersion(mid: ModuleID): ModuleID = {
+    val crossVersion = for {
+      scalaVersion <- mid.extraAttributes.get("e:scalaVersion")
+      sbtVersion <- mid.extraAttributes.get("e:sbtVersion")
+    } yield s"_${scalaVersion}_$sbtVersion"
+    crossVersion
+      .filter(!mid.name.endsWith(_))
+      .map(cv => mid.withName(mid.name + cv))
+      .getOrElse(mid)
   }
 
   private def toIvyArtifact(

@@ -75,6 +75,18 @@ object CustomPomParser {
   private[this] val unqualifiedKeys =
     Set(SbtVersionKey, ScalaVersionKey, ExtraAttributesKey, ApiURLKey, VersionSchemeKey)
 
+  private def removeSbtCrossVersion(
+      properties: Map[String, String],
+      moduleName: String
+  ): String =
+    getSbtCrossVersion(properties).map(moduleName.stripSuffix).getOrElse(moduleName)
+
+  private def getSbtCrossVersion(properties: Map[String, String]): Option[String] =
+    for {
+      sbtVersion <- properties.get(s"e:$SbtVersionKey")
+      scalaVersion <- properties.get(s"e:$ScalaVersionKey")
+    } yield s"_${scalaVersion}_$sbtVersion"
+
   // packagings that should be jars, but that Ivy doesn't handle as jars
   // TODO - move this elsewhere.
   val JarPackagings = Set("eclipse-plugin", "hk2-jar", "orbit", "scala-jar")
@@ -163,9 +175,12 @@ object CustomPomParser {
     import collection.JavaConverters._
     val oldExtra = qualifiedExtra(id)
     val newExtra = (oldExtra ++ properties).asJava
+    // remove the sbt plugin cross version from the resolved ModuleRevisionId
+    // sbt-plugin-example_2.12_1.0 => sbt-plugin-example
+    val nameWithoutCrossVersion = removeSbtCrossVersion(properties, id.getName)
     ModuleRevisionId.newInstance(
       id.getOrganisation,
-      id.getName,
+      nameWithoutCrossVersion,
       id.getBranch,
       id.getRevision,
       newExtra
