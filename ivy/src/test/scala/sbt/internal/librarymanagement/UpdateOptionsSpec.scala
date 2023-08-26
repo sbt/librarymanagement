@@ -15,10 +15,10 @@ class UpdateOptionsSpec extends BasicTestSuite {
       UpdateOptions()
         .withCircularDependencyLevel(CircularDependencyLevel.Error)
         .withCachedResolution(true)
-        .withLatestSnapshots(false)
+        .withCachedSnapshots(true)
         .toString() == """|UpdateOptions(
         |  circularDependencyLevel = error,
-        |  latestSnapshots = false,
+        |  cachedSnapshots = true,
         |  cachedResolution = true
         |)""".stripMargin
     )

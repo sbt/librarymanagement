@@ -227,7 +227,7 @@ private[sbt] case class SbtChainResolver(
         if (resolvedModule.getId.getRevision.contains("SNAPSHOT")) {
 
           Message.warn(
-            "Resolving a snapshot version. It's going to be slow unless you use `updateOptions := updateOptions.value.withLatestSnapshots(false)` options."
+            "Resolving a snapshot version. It's going to be slow unless you use `updateOptions := updateOptions.value.withCachedSnapshots(true)` options."
           )
           val resolvers = sortedRevisions.map(_._2.getName)
           sortedRevisions.foreach(h => {
@@ -328,7 +328,7 @@ private[sbt] case class SbtChainResolver(
      */
     def getDependency(dd: DependencyDescriptor, data0: ResolveData): ResolvedModuleRevision = {
       val isDynamic = dd.isChanging || IvySbt.isChanging(dd.getDependencyRevisionId)
-      val useLatest = isDynamic && updateOptions.latestSnapshots
+      val useLatest = isDynamic && !updateOptions.cachedSnapshots
       if (useLatest) Message.verbose(s"$getName is changing. Checking all resolvers on the chain.")
 
       /* Get the resolved module descriptor from:
