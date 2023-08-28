@@ -66,7 +66,7 @@ object CrossVersionUtil {
   private[sbt] def scalaApiVersion(v: String): Option[(Long, Long)] = v match {
     case ReleaseV(x, y, _, _)                     => Some((x.toLong, y.toLong))
     case BinCompatV(x, y, _, _, _)                => Some((x.toLong, y.toLong))
-    case NonReleaseV_1(x, y, z, _) if z.toInt > 0 => Some((x.toLong, y.toLong))
+    case NonReleaseV_1(x, y, z, _) if z.toLong > 0 => Some((x.toLong, y.toLong))
     case _                                        => None
   }
 
