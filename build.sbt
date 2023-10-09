@@ -54,12 +54,22 @@ def commonSettings: Seq[Setting[_]] = Def.settings(
   resolvers ++= Resolver.sonatypeOssRepos("public"),
   scalacOptions := {
     val old = scalacOptions.value
+    val scala2InlineOptions = List(
+      "-opt-inline-from:<sources>",
+      "-opt:l:inline"
+    )
     scalaVersion.value match {
       case sv if sv.startsWith("2.10") =>
         old diff List("-Xfuture", "-Ywarn-unused", "-Ywarn-unused-import")
       case sv if sv.startsWith("2.11") => old ++ List("-Ywarn-unused", "-Ywarn-unused-import")
       case sv if sv.startsWith("2.12") =>
-        old ++ List("-Ywarn-unused", "-Ywarn-unused-import", "-YdisableFlatCpCaching")
+        old ++ List(
+          "-Ywarn-unused",
+          "-Ywarn-unused-import",
+          "-YdisableFlatCpCaching"
+        ) ++ scala2InlineOptions
+      case sv if sv.startsWith("2.13") =>
+        old ++ scala2InlineOptions
       case _ => old
     }
   },
