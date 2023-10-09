@@ -21,6 +21,19 @@ class IvyDependencyResolution private[sbt] (val ivySbt: IvySbt)
   ): Either[UnresolvedWarning, UpdateReport] =
     IvyActions.updateEither(toModule(module), configuration, uwconfig, log)
 
+  override def withAddedResolvers(
+      resolvers: Seq[Resolver],
+      log: Logger
+  ): IvyDependencyResolution = {
+    val newConfiguration = ivySbt.configuration match {
+      case configuration: ExternalIvyConfiguration =>
+        configuration.withExtraResolvers(configuration.extraResolvers ++ resolvers)
+      case configuration: InlineIvyConfiguration =>
+        configuration.withResolvers(configuration.resolvers ++ resolvers)
+    }
+    new IvyDependencyResolution(new IvySbt(newConfiguration))
+  }
+
   private[sbt] def toModule(module: ModuleDescriptor): Module =
     module match {
       case m: Module @unchecked => m
