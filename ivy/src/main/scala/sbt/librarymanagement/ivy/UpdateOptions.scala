@@ -19,7 +19,7 @@ final class UpdateOptions private[sbt] (
     // If set to true, prioritize inter-project resolver
     val interProjectFirst: Boolean,
     // If set to true, check all resolvers for snapshots.
-    val latestSnapshots: Boolean,
+    val cachedSnapshots: Boolean,
     // If set to true, use cached resolution.
     val cachedResolution: Boolean,
     // If set to true, use Gigahorse
@@ -35,8 +35,11 @@ final class UpdateOptions private[sbt] (
     copy(circularDependencyLevel = circularDependencyLevel)
   def withInterProjectFirst(interProjectFirst: Boolean): UpdateOptions =
     copy(interProjectFirst = interProjectFirst)
+  @deprecated("Use withCachedSnapshots instead with opposite boolean values", "1.9.2")
   def withLatestSnapshots(latestSnapshots: Boolean): UpdateOptions =
-    copy(latestSnapshots = latestSnapshots)
+    withCachedSnapshots(!latestSnapshots)
+  def withCachedSnapshots(cachedSnapshots: Boolean): UpdateOptions =
+    copy(cachedSnapshots = cachedSnapshots)
   def withCachedResolution(cachedResolution: Boolean): UpdateOptions =
     copy(cachedResolution = cachedResolution)
 
@@ -53,7 +56,7 @@ final class UpdateOptions private[sbt] (
   private[sbt] def copy(
       circularDependencyLevel: CircularDependencyLevel = this.circularDependencyLevel,
       interProjectFirst: Boolean = this.interProjectFirst,
-      latestSnapshots: Boolean = this.latestSnapshots,
+      cachedSnapshots: Boolean = this.cachedSnapshots,
       cachedResolution: Boolean = this.cachedResolution,
       gigahorse: Boolean = this.gigahorse,
       resolverConverter: UpdateOptions.ResolverConverter = this.resolverConverter,
@@ -62,7 +65,7 @@ final class UpdateOptions private[sbt] (
     new UpdateOptions(
       circularDependencyLevel,
       interProjectFirst,
-      latestSnapshots,
+      cachedSnapshots,
       cachedResolution,
       gigahorse,
       resolverConverter,
@@ -72,7 +75,7 @@ final class UpdateOptions private[sbt] (
   override def toString(): String =
     s"""UpdateOptions(
         |  circularDependencyLevel = $circularDependencyLevel,
-        |  latestSnapshots = $latestSnapshots,
+        |  cachedSnapshots = $cachedSnapshots,
         |  cachedResolution = $cachedResolution
         |)""".stripMargin
 
@@ -80,7 +83,7 @@ final class UpdateOptions private[sbt] (
     case o: UpdateOptions =>
       this.circularDependencyLevel == o.circularDependencyLevel &&
       this.interProjectFirst == o.interProjectFirst &&
-      this.latestSnapshots == o.latestSnapshots &&
+      this.cachedSnapshots == o.cachedSnapshots &&
       this.cachedResolution == o.cachedResolution &&
       this.gigahorse == o.gigahorse &&
       this.resolverConverter == o.resolverConverter &&
@@ -92,13 +95,17 @@ final class UpdateOptions private[sbt] (
     var hash = 1
     hash = hash * 31 + this.circularDependencyLevel.##
     hash = hash * 31 + this.interProjectFirst.##
-    hash = hash * 31 + this.latestSnapshots.##
+    hash = hash * 31 + this.cachedSnapshots.##
     hash = hash * 31 + this.cachedResolution.##
     hash = hash * 31 + this.gigahorse.##
     hash = hash * 31 + this.resolverConverter.##
     hash = hash * 31 + this.moduleResolvers.##
     hash
   }
+
+  @deprecated("Use cachedSnapshots instead with opposite boolean values", "1.9.2")
+  def latestSnapshots: Boolean = !cachedSnapshots
+
 }
 
 object UpdateOptions {
@@ -108,7 +115,7 @@ object UpdateOptions {
     new UpdateOptions(
       circularDependencyLevel = CircularDependencyLevel.Warn,
       interProjectFirst = true,
-      latestSnapshots = true,
+      cachedSnapshots = false,
       cachedResolution = false,
       gigahorse = LMSysProp.useGigahorse,
       resolverConverter = PartialFunction.empty,
