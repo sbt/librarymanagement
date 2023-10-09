@@ -5,7 +5,7 @@
 // DO NOT EDIT MANUALLY
 package sbt.librarymanagement
 import _root_.sjsonnew.{ Unbuilder, Builder, JsonFormat, deserializationError }
-trait ModuleInfoFormats { self: sbt.librarymanagement.ScmInfoFormats with sbt.librarymanagement.DeveloperFormats with sjsonnew.BasicJsonProtocol =>
+trait ModuleInfoFormats { self: sbt.librarymanagement.LicenseInfoFormats with sbt.librarymanagement.ScmInfoFormats with sbt.librarymanagement.DeveloperFormats with sjsonnew.BasicJsonProtocol =>
 implicit lazy val ModuleInfoFormat: JsonFormat[sbt.librarymanagement.ModuleInfo] = new JsonFormat[sbt.librarymanagement.ModuleInfo] {
   override def read[J](__jsOpt: Option[J], unbuilder: Unbuilder[J]): sbt.librarymanagement.ModuleInfo = {
     __jsOpt match {
@@ -15,7 +15,7 @@ implicit lazy val ModuleInfoFormat: JsonFormat[sbt.librarymanagement.ModuleInfo]
       val description = unbuilder.readField[String]("description")
       val homepage = unbuilder.readField[Option[java.net.URL]]("homepage")
       val startYear = unbuilder.readField[Option[Int]]("startYear")
-      val licenses = unbuilder.readField[Vector[scala.Tuple2[String, java.net.URL]]]("licenses")
+      val licenses = unbuilder.readField[Vector[sbt.librarymanagement.LicenseInfo]]("licenses")
       val organizationName = unbuilder.readField[String]("organizationName")
       val organizationHomepage = unbuilder.readField[Option[java.net.URL]]("organizationHomepage")
       val scmInfo = unbuilder.readField[Option[sbt.librarymanagement.ScmInfo]]("scmInfo")
