@@ -37,7 +37,7 @@ trait BaseIvySpecification extends AbstractEngineSpec {
       deps: Vector[ModuleID],
       scalaFullVersion: Option[String],
       uo: UpdateOptions = UpdateOptions(),
-      overrideScalaVersion: Boolean = true,
+      overrideScalaVersion: Boolean = false,
       appendSbtCrossVersion: Boolean = false
   ): IvySbt#Module = {
     val scalaModuleInfo = scalaFullVersion map { fv =>

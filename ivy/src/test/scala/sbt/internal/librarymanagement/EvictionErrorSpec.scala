@@ -164,6 +164,6 @@ object EvictionErrorSpec extends BaseIvySpecification {
       configurations = Vector.empty,
       checkExplicit = true,
       filterImplicit = false,
-      overrideScalaVersion = true
+      overrideScalaVersion = false
     )
 }

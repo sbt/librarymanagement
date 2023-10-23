@@ -358,6 +358,6 @@ object EvictionWarningSpec extends BaseIvySpecification {
       configurations = Vector.empty,
       checkExplicit = true,
       filterImplicit = false,
-      overrideScalaVersion = true
+      overrideScalaVersion = false
     )
 }
