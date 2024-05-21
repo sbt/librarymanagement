@@ -247,7 +247,16 @@
         { "name": "id",    "type": "String"       },
         { "name": "name",  "type": "String"       },
         { "name": "email", "type": "String"       },
-        { "name": "url",   "type": "java.net.URL" }
+        { "name": "uri",   "type": "java.net.URI"       }
+      ],
+      "generateCodec": false,
+      "extra": [
+        "def this(id: String, name: String, email: String, url: java.net.URL) = this(id, name, email, url.toURI)",
+        "def url: java.net.URL = uri.toURL",
+        "def withUrl(url: java.net.URL): Developer = copy(uri = url.toURI)"
+      ],
+      "extraCompanion": [
+        "def apply(id: String, name: String, email: String, url: java.net.URL): Developer = new Developer(id, name, email, url)"
       ]
     },
     {
