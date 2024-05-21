@@ -34,7 +34,7 @@ private[librarymanagement] abstract class ArtifactFunctions {
       extract(url, DefaultExtension),
       None,
       Vector.empty,
-      Some(url),
+      Some(url.toURI),
       Map.empty,
       None,
       allowInsecureProtocol
@@ -48,7 +48,8 @@ private[librarymanagement] abstract class ArtifactFunctions {
       classifier: Option[String],
       configurations: Vector[ConfigRef],
       url: Option[URL]
-  ): Artifact = Artifact(name, `type`, extension, classifier, configurations, url, empty, None)
+  ): Artifact =
+    Artifact(name, `type`, extension, classifier, configurations, url.map(_.toURI), empty, None)
 
   val DefaultExtension = "jar"
   val DefaultType = "jar"
