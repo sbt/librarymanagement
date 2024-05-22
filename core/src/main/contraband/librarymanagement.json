@@ -733,10 +733,22 @@
       "type": "record",
       "doc": "Basic SCM information for a project module",
       "fields": [
-        { "name": "browseUrl",     "type": "java.net.URL"                                     },
+        { "name": "browseUri",     "type": "java.net.URI"                                     },
         { "name": "connection",    "type": "String"                                           },
         { "name": "devConnection", "type": "String?",     "default": "None", "since": "0.0.1" }
-      ]
+      ],
+      "extra": [
+        "def this(browseUrl: java.net.URL, connection: String) = this(browseUrl.toURI, connection, None)",
+        "def this(browseUrl: java.net.URL, connection: String, devConnection: Option[String]) = this(browseUrl.toURI, connection, devConnection)",
+        "def browseUrl: java.net.URL = browseUri.toURL",
+        "def withBrowseUrl(browseUrl: java.net.URL): ScmInfo = copy(browseUri = browseUrl.toURI)"
+      ],
+      "extraCompanion": [
+        "def apply(browseUrl: java.net.URL, connection: String): ScmInfo = ScmInfo(browseUrl.toURI, connection)",
+        "def apply(browseUrl: java.net.URL, connection: String, devConnection: String): ScmInfo = ScmInfo(browseUrl.toURI, connection, devConnection)",
+        "def apply(browseUrl: java.net.URL, connection: String, devConnection: Option[String]): ScmInfo = ScmInfo(browseUrl.toURI, connection, devConnection)"
+      ],
+      "generateCodec": false
     },
     {
       "name": "SshAuthentication",
