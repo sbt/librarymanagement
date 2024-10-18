@@ -32,6 +32,16 @@ trait DependencyResolutionInterface {
       uwconfig: UnresolvedWarningConfiguration,
       log: Logger
   ): Either[UnresolvedWarning, UpdateReport]
+
+  /**
+   * Returns a new copy of DependencyResolutionInterface which contains the added resolvers.
+   * Useful for when you have resolvers that are outside the context of an sbt scope/project
+   * (i.e. a standalone setting)
+   * @param resolvers The resolvers to add
+   * @param log The logger
+   * @return A copy of DependencyResolutionInterface which contains the added resolvers
+   */
+  def withAddedResolvers(resolvers: Seq[Resolver], log: Logger): DependencyResolutionInterface
 }
 
 /**
