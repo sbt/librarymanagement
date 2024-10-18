@@ -26,7 +26,6 @@ ThisBuild / scmInfo := {
   Some(ScmInfo(url(s"https://github.com/$slug"), s"git@github.com:$slug.git"))
 }
 ThisBuild / licenses := List(("Apache-2.0", url("https://www.apache.org/licenses/LICENSE-2.0")))
-ThisBuild / scalafmtOnCompile := true
 ThisBuild / developers := List(
   Developer("harrah", "Mark Harrah", "@harrah", url("https://github.com/harrah")),
   Developer("eed3si9n", "Eugene Yokota", "@eed3si9n", url("http://eed3si9n.com/")),
@@ -67,8 +66,6 @@ def commonSettings: Seq[Setting[_]] = Def.settings(
   inCompileAndTest(
     (console / scalacOptions) --= Vector("-Ywarn-unused-import", "-Ywarn-unused", "-Xlint")
   ),
-  scalafmtOnCompile := true,
-  Test / scalafmtOnCompile := true,
   Compile / publishArtifact := true,
   Test / publishArtifact := false,
   Test / parallelExecution := false
