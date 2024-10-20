@@ -541,7 +541,7 @@ private[sbt] object IvySbt {
       val delegate = ivyint.SbtChainResolver(delegatedName, rest, settings, updateOptions, log)
       val initialResolvers = projectResolvers :+ delegate
       val freshOptions = UpdateOptions()
-        .withLatestSnapshots(false)
+        .withCachedSnapshots(true)
         .withModuleResolvers(updateOptions.moduleResolvers)
       ivyint.SbtChainResolver(name, initialResolvers, settings, freshOptions, log)
     }

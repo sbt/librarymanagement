@@ -23,7 +23,9 @@ trait UpdateOptionsFormat { self: BasicJsonProtocol with ModuleIDFormats with Re
         (
           uo.circularDependencyLevel.name,
           uo.interProjectFirst,
-          uo.latestSnapshots,
+          // This is for compatibility with old latestSnapshots which had opposite boolean value.
+          // Safe to remove negation for sbt 2.0.x?
+          !uo.cachedSnapshots,
           uo.cachedResolution,
           uo.gigahorse,
           uo.moduleResolvers
@@ -32,7 +34,9 @@ trait UpdateOptionsFormat { self: BasicJsonProtocol with ModuleIDFormats with Re
         new UpdateOptions(
           levels(xs._1),
           xs._2,
-          xs._3,
+          // This is for compatibility with old latestSnapshots which had opposite boolean value.
+          // Safe to remove negation for sbt 2.0.x?
+          !xs._3,
           xs._4,
           xs._5,
           PartialFunction.empty,
