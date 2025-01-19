@@ -315,8 +315,7 @@ object CustomPomParser {
       addExtra(dd, dependencyExtra)
     }
     val withVersionRangeMod: Seq[DependencyDescriptor] =
-      if (LMSysProp.modifyVersionRange) withExtra map { stripVersionRange }
-      else withExtra
+      if (LMSysProp.modifyVersionRange) withExtra map { stripVersionRange } else withExtra
     val unique = IvySbt.mergeDuplicateDefinitions(withVersionRangeMod)
     unique foreach dmd.addDependency
 
