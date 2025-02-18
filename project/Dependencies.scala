@@ -50,7 +50,7 @@ object Dependencies {
     addSbtModule(p, sbtZincPath, "compilerInterface", compilerInterface)
 
   val launcherInterface = "org.scala-sbt" % "launcher-interface" % "1.0.0"
-  val ivy = "org.scala-sbt.ivy" % "ivy" % "2.3.0-sbt-396a783bba347016e7fe30dacc60d355be607fe2"
+  val ivy = "org.scala-sbt.ivy" % "ivy" % "2.3.0-sbt-77cc781d727b367d3761f097d89f5a4762771d41"
 
   val sbtV = "1.0"
   val scalaV = "2.12"
