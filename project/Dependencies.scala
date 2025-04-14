@@ -61,5 +61,5 @@ object Dependencies {
   val sjsonnewScalaJson = Def.setting {
     "com.eed3si9n" %% "sjson-new-scalajson" % contrabandSjsonNewVersion.value
   }
-  val gigahorseApacheHttp = "com.eed3si9n" %% "gigahorse-apache-http" % "0.7.0"
+  val gigahorseApacheHttp = "com.eed3si9n" %% "gigahorse-apache-http" % "0.8.0"
 }
