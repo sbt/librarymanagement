@@ -199,7 +199,7 @@ private[sbt] case class SbtChainResolver(
         val chosenPublicationDate = Option(publicationDate).orElse(Option(descriptorDate))
         chosenPublicationDate match {
           case Some(date) => date.getTime
-          case None =>
+          case None       =>
             val id = rmr.getId
             val resolvedResource = (resolver.findIvyFileRef(descriptor, data), rmr.getDescriptor)
             resolvedResource match {
