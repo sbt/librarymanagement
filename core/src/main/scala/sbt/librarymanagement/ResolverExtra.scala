@@ -109,6 +109,7 @@ private[librarymanagement] abstract class ResolverFunctions {
   val SonatypeS01RepositoryRoot = "https://s01.oss.sonatype.org/content/repositories"
   val SonatypeReleasesRepository =
     "https://oss.sonatype.org/service/local/repositories/releases/content/"
+  val SonatypeCentralRepository = "https://central.sonatype.com/repository"
   val JavaNet2RepositoryName = "java.net Maven2 Repository"
   val JavaNet2RepositoryRoot = javanet2RepositoryRoot(useSecureResolvers)
   val JCenterRepositoryName = "jcenter"
@@ -158,8 +159,11 @@ private[librarymanagement] abstract class ResolverFunctions {
     url("sbt-plugin-" + status, new URI(SbtRepositoryRoot + "/sbt-plugin-" + status + "/").toURL)(
       ivyStylePatterns
     )
+
   @deprecated(
-    """Use sonatypeOssRepos instead e.g. `resolvers ++= Resolver.sonatypeOssRepos("snapshots")`""",
+    """Sonatype OSS Repository Hosting (OSSRH) will be sunset on 2025-06-30; use the following instead:
+  resolvers += Resolver.sonatypeCentralSnapshots
+""",
     "1.7.0"
   )
   def sonatypeRepo(status: String) =
@@ -168,15 +172,41 @@ private[librarymanagement] abstract class ResolverFunctions {
       if (status == "releases") SonatypeReleasesRepository
       else SonatypeRepositoryRoot + "/" + status
     )
+
+  def sonatypeCentralSnapshots: MavenRepository =
+    sonatypeCentralRepo("maven-snapshots")
+
+  def sonatypeCentralRepo(status: String): MavenRepository =
+    MavenRepository(
+      "sonatype-central-" + status,
+      SonatypeCentralRepository + "/" + status
+    )
+
   private def sonatypeS01Repo(status: String) =
     MavenRepository(
       "sonatype-s01-" + status,
       SonatypeS01RepositoryRoot + "/" + status
     )
+
+  @deprecated(
+    """Sonatype OSS Repository Hosting (OSSRH) will be sunset on 2025-06-30; use the following instead:
+  resolvers += Resolver.sonatypeCentralSnapshots""",
+    "1.11.2"
+  )
   def sonatypeOssRepos(status: String) =
     Vector(sonatypeRepo(status): @nowarn("cat=deprecation"), sonatypeS01Repo(status))
+
+  @deprecated(
+    """Bintray was shut down""",
+    "1.11.2"
+  )
   def bintrayRepo(owner: String, repo: String) =
     MavenRepository(s"bintray-$owner-$repo", s"https://dl.bintray.com/$owner/$repo/")
+
+  @deprecated(
+    """Bintray was shut down""",
+    "1.11.2"
+  )
   def bintrayIvyRepo(owner: String, repo: String) =
     url(s"bintray-$owner-$repo", new URI(s"https://dl.bintray.com/$owner/$repo/").toURL)(
       Resolver.ivyStylePatterns
