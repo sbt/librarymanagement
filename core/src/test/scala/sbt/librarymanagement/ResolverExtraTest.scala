@@ -40,6 +40,16 @@ object ResolverExtraTest extends BasicTestSuite {
     assert(Resolver.expandMavenSettings("${env.SOME_PATH}", env) == path)
   }
 
+  test("Resolver.sonatypeCentralRepo") {
+    val r = Resolver.sonatypeCentralRepo("maven-snapshots")
+    assert(r.root == "https://central.sonatype.com/repository/maven-snapshots")
+  }
+
+  test("Resolver.sonatypeCentralSnapshots") {
+    val r = Resolver.sonatypeCentralSnapshots
+    assert(r.root == "https://central.sonatype.com/repository/maven-snapshots")
+  }
+
   // - Helper functions ----------------------------------------------------------------------------
   // -----------------------------------------------------------------------------------------------
   def assertExpansion(input: String, expected: String) =
