@@ -12,7 +12,7 @@ ThisBuild / version := {
   val old = (ThisBuild / version).value
   nightlyVersion match {
     case Some(v) => v
-    case _ =>
+    case _       =>
       if ((ThisBuild / isSnapshot).value) "1.7.2-SNAPSHOT"
       else old
   }

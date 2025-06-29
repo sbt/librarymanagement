@@ -296,10 +296,10 @@ private[sbt] class CachedResolutionResolveCache {
     }
     (conflictCache get ((cf0, cf1))) match {
       case Some((surviving, evicted, mgr)) => reconstructReports(surviving, evicted, mgr)
-      case _ =>
+      case _                               =>
         (conflictCache get ((cf1, cf0))) match {
           case Some((surviving, evicted, mgr)) => reconstructReports(surviving, evicted, mgr)
-          case _ =>
+          case _                               =>
             val (surviving, evicted, mgr) = f
             if (conflictCache.size > maxConflictCacheSize) {
               conflictCache.remove(conflictCache.head._1)
@@ -629,7 +629,7 @@ private[sbt] trait CachedResolutionResolveEngine extends ResolveEngine {
       mutable.Map(allModules0.toSeq: _*)
     @tailrec def breakLoops(loops: List[List[(String, String)]]): Unit =
       loops match {
-        case Nil => ()
+        case Nil          => ()
         case loop :: rest =>
           loop match {
             case Nil =>
@@ -717,7 +717,7 @@ private[sbt] trait CachedResolutionResolveEngine extends ResolveEngine {
         allModules: Map[(String, String), Vector[OrganizationArtifactReport]]
     ): List[OrganizationArtifactReport] =
       cs match {
-        case Nil => Nil
+        case Nil                          => Nil
         case (organization, name) :: rest =>
           val reports = allModules((organization, name))
           reports match {
@@ -820,7 +820,7 @@ private[sbt] trait CachedResolutionResolveEngine extends ResolveEngine {
     val reports: Seq[((String, String), Vector[OrganizationArtifactReport])] =
       reports0.toSeq flatMap {
         case (k, _) if !(pairs.contains[(String, String)](k)) => Seq()
-        case ((organization, name), oars0) =>
+        case ((organization, name), oars0)                    =>
           val oars = oars0 map { oar =>
             val (affected, unaffected) = oar.modules partition { mr =>
               val x = !mr.evicted && mr.problem.isEmpty && isTransitivelyEvicted(mr)
@@ -940,7 +940,7 @@ private[sbt] trait CachedResolutionResolveEngine extends ResolveEngine {
           }
         case None =>
           getSettings.getConflictManager(IvyModuleId.newInstance(organization, name)) match {
-            case ncm: NoConflictManager => (conflicts, Vector(), ncm.toString)
+            case ncm: NoConflictManager   => (conflicts, Vector(), ncm.toString)
             case _: StrictConflictManager =>
               sys.error(
                 (s"conflict was found in $rootModuleConf:$organization:$name " + (conflicts map {
