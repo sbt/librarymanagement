@@ -161,7 +161,7 @@ private[librarymanagement] abstract class ResolverFunctions {
     )
 
   @deprecated(
-    """Sonatype OSS Repository Hosting (OSSRH) will be sunset on 2025-06-30; use the following instead:
+    """Sonatype OSS Repository Hosting (OSSRH) was sunset on 2025-06-30; remove this resolver. If snapshots are required, use:
   resolvers += Resolver.sonatypeCentralSnapshots
 """,
     "1.7.0"
@@ -189,7 +189,7 @@ private[librarymanagement] abstract class ResolverFunctions {
     )
 
   @deprecated(
-    """Sonatype OSS Repository Hosting (OSSRH) will be sunset on 2025-06-30; use the following instead:
+    """Sonatype OSS Repository Hosting (OSSRH) was sunset on 2025-06-30; remove this resolver. If snapshots are required, use:
   resolvers += Resolver.sonatypeCentralSnapshots""",
     "1.11.2"
   )
