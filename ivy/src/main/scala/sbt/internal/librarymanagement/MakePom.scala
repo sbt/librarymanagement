@@ -277,7 +277,7 @@ class MakePom(val log: Logger) {
     module.getAllArtifacts match {
       case Array()  => "pom"
       case Array(x) => x.getType
-      case xs =>
+      case xs       =>
         val types = xs.map(_.getType).toList.filterNot(IgnoreTypes)
         types match {
           case Nil                                     => Artifact.PomType
@@ -479,7 +479,7 @@ class MakePom(val log: Logger) {
         // TODO - Would it be ok if bintray were in the pom?   We should avoid it for now.
         case m: CustomRemoteMavenResolver if m.repo.root == JCenterRepository.root         => Nil
         case m: IBiblioResolver if m.isM2compatible && m.getRoot == JCenterRepository.root => Nil
-        case m: CustomRemoteMavenResolver if m.repo.root != DefaultMavenRepository.root =>
+        case m: CustomRemoteMavenResolver if m.repo.root != DefaultMavenRepository.root    =>
           MavenRepository(m.repo.name, m.repo.root) :: Nil
         case m: IBiblioResolver if m.isM2compatible && m.getRoot != DefaultMavenRepository.root =>
           MavenRepository(m.getName, m.getRoot) :: Nil
