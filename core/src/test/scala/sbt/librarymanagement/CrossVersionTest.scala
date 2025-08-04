@@ -55,7 +55,12 @@ class CrossVersionTest extends UnitSpec {
   it should "for 2.0.0 return Some((2, 0))" in {
     sbtApiVersion("2.0.0") shouldBe Some((2, 0))
   }
-
+  "partialVersion" should "return None for xyz" in {
+    assert(partialVersion("xyz") == None)
+  }
+  it should "return 2 for 2" in {
+    assert(partialVersion("2") == Some((2, 0)))
+  }
   "isSbtApiCompatible" should "for 0.12.0-M1 return false" in {
     isSbtApiCompatible("0.12.0-M1") shouldBe false
   }
@@ -104,6 +109,9 @@ class CrossVersionTest extends UnitSpec {
   }
   it should "for 2.0.0-RC1 return 2" in {
     binarySbtVersion("2.0.0-RC1") shouldBe "2"
+  }
+  it should "for 2 return 2" in {
+    binarySbtVersion("2") shouldBe "2"
   }
   it should "for 2.1.0-M1 return 2" in {
     binarySbtVersion("2.1.0-M1") shouldBe "2"

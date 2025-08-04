@@ -24,6 +24,7 @@ object CrossVersionUtil {
   private val basicVersion = raw"""($longPattern)\.($longPattern)\.($longPattern)"""
   private val tagPattern = raw"""(?:\w+(?:\.\w+)*)"""
   private val ReleaseV = raw"""$basicVersion(-\d+)?""".r
+  private val MajorV = raw"""($longPattern)""".r
   private[sbt] val BinCompatV = raw"""$basicVersion(-$tagPattern)?-bin(-.*)?""".r
   private val CandidateV = raw"""$basicVersion(-RC\d+)""".r
   private val MilestonV = raw"""$basicVersion(-M$tagPattern)""".r
@@ -72,6 +73,7 @@ object CrossVersionUtil {
 
   private[sbt] def partialVersion(s: String): Option[(Long, Long)] =
     s match {
+      case MajorV(major)                => Some((major.toLong, 0L))
       case PartialVersion(major, minor) => Some((major.toLong, minor.toLong))
       case _                            => None
     }
