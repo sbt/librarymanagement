@@ -8,7 +8,6 @@ object ScalaArtifacts {
   final val ActorsID = "scala-actors"
   final val ScalapID = "scalap"
   final val Artifacts = Vector(LibraryID, CompilerID, ReflectID, ActorsID, ScalapID)
-
   final val Scala3LibraryID = "scala3-library"
   final val Scala3CompilerID = "scala3-compiler"
   final val Scala3InterfacesID = "scala3-interfaces"
@@ -16,6 +15,7 @@ object ScalaArtifacts {
   final val ScaladocID = "scaladoc"
   final val Scala3DocID = "scala3doc"
   final val Scala3TastyInspectorID = "scala3-tasty-inspector"
+  final val Scala3_8Artifacts = Vector(LibraryID, Scala3LibraryID)
 
   private[sbt] final val Scala3LibraryPrefix = Scala3LibraryID + "_"
   private[sbt] final val Scala3CompilerPrefix = Scala3CompilerID + "_"
