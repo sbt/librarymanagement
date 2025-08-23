@@ -110,6 +110,7 @@ private[librarymanagement] abstract class ResolverFunctions {
   val SonatypeReleasesRepository =
     "https://oss.sonatype.org/service/local/repositories/releases/content/"
   val SonatypeCentralRepository = "https://central.sonatype.com/repository"
+  val ScalaNightlyRepository = "https://repo.scala-lang.org/artifactory/maven-nightlies/"
   val JavaNet2RepositoryName = "java.net Maven2 Repository"
   val JavaNet2RepositoryRoot = javanet2RepositoryRoot(useSecureResolvers)
   val JCenterRepositoryName = "jcenter"
@@ -122,6 +123,8 @@ private[librarymanagement] abstract class ResolverFunctions {
 
   def mavenCentral: Resolver = DefaultMavenRepository
   def defaults: Vector[Resolver] = Vector(mavenCentral)
+  def scalaNightlyRepository: Resolver =
+    MavenRepository("The Scala Nightly Repository", ScalaNightlyRepository)
 
   // TODO: This switch is only kept for backward compatibility. Hardcode to HTTPS in the future.
   private[sbt] def centralRepositoryRoot(secure: Boolean) =
