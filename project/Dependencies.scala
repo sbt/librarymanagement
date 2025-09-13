@@ -42,7 +42,7 @@ object Dependencies {
     addSbtModule(p, sbtUtilPath, "utilLogging", utilLogging)
   def addSbtUtilCache(p: Project): Project = addSbtModule(p, sbtUtilPath, "utilCache", utilCache)
 
-  val launcherInterface = "org.scala-sbt" % "launcher-interface" % "1.5.0"
+  val launcherInterface = "org.scala-sbt" % "launcher-interface" % "1.5.1"
   val ivy = "org.scala-sbt.ivy" % "ivy" % "2.3.0-sbt-77cc781d727b367d3761f097d89f5a4762771d41"
 
   val sbtV = "1.0"
