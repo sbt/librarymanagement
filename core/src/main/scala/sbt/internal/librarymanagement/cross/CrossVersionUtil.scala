@@ -81,7 +81,7 @@ object CrossVersionUtil {
   private[sbt] def binaryScala3Version(full: String): String = full match {
     case ReleaseV(maj, _, _, _)                                                  => maj
     case NonReleaseV_n(maj, min, patch, _) if min.toLong > 0 || patch.toLong > 0 => maj
-    case BinCompatV(maj, min, patch, stageOrNull, _) =>
+    case BinCompatV(maj, min, patch, stageOrNull, _)                             =>
       val stage = if (stageOrNull != null) stageOrNull else ""
       binaryScala3Version(s"$maj.$min.$patch$stage")
     case _ => full
