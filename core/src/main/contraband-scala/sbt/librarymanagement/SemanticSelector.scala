@@ -73,7 +73,7 @@ final class SemanticSelector private (
   override def toString: String = {
     selectors.map(_.toString).mkString(" || ")
   }
-  private def copy(selectors: Seq[sbt.internal.librarymanagement.SemSelAndChunk] = selectors): SemanticSelector = {
+  private def copy(selectors: Seq[sbt.internal.librarymanagement.SemSelAndChunk]): SemanticSelector = {
     new SemanticSelector(selectors)
   }
   def withSelectors(selectors: Seq[sbt.internal.librarymanagement.SemSelAndChunk]): SemanticSelector = {
