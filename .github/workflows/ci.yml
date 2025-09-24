@@ -40,4 +40,6 @@ jobs:
       if: ${{ matrix.jobtype == 1 }}
       shell: bash
       run: |
-        sbt -v -Dfile.encoding=UTF8 +test +packagedArtifacts
+        find **/src/main/contraband-scala -name "*.scala" -delete || true
+        sbt -v -Dfile.encoding=UTF8 generateContrabands +test +packagedArtifacts
+        git diff --exit-code
