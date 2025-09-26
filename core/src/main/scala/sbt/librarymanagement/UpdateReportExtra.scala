@@ -142,18 +142,25 @@ private[librarymanagement] abstract class UpdateReportExtra {
     }
   }
 
-  def allModuleReports: Vector[ModuleReport] = {
-    configurations.flatMap(_.modules).groupBy(mR => moduleKey(mR.module)).toVector map {
-      case (_, v) =>
-        v reduceLeft { (agg, x) =>
-          agg.withConfigurations(
-            (agg.configurations, x.configurations) match {
-              case (v, _) if v.isEmpty  => x.configurations
-              case (ac, v) if v.isEmpty => ac
-              case (ac, xc)             => ac ++ xc
-            }
-          )
-        }
+  def allModuleReports: Vector[ModuleReport] = allModuleReports(_ => true)
+
+  def allModuleReports(
+      filterConfiguration: ConfigurationReport => Boolean
+  ): Vector[ModuleReport] = {
+    configurations
+      .filter(filterConfiguration)
+      .flatMap(_.modules)
+      .groupBy(mR => moduleKey(mR.module))
+      .toVector map { case (_, v) =>
+      v reduceLeft { (agg, x) =>
+        agg.withConfigurations(
+          (agg.configurations, x.configurations) match {
+            case (v, _) if v.isEmpty  => x.configurations
+            case (ac, v) if v.isEmpty => ac
+            case (ac, xc)             => ac ++ xc
+          }
+        )
+      }
     }
   }
 
