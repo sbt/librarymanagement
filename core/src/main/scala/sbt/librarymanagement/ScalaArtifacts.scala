@@ -15,6 +15,7 @@ object ScalaArtifacts {
   final val ScaladocID = "scaladoc"
   final val Scala3DocID = "scala3doc"
   final val Scala3TastyInspectorID = "scala3-tasty-inspector"
+  final val Scala3ReplID = "scala3-repl"
   final val Scala3_8Artifacts = Vector(LibraryID, Scala3LibraryID)
 
   private[sbt] final val Scala3LibraryPrefix = Scala3LibraryID + "_"
@@ -23,6 +24,7 @@ object ScalaArtifacts {
   private[sbt] final val ScaladocPrefix = ScaladocID + "_"
   private[sbt] final val Scala3DocPrefix = Scala3DocID + "_"
   private[sbt] final val Scala3TastyInspectorPrefix = Scala3TastyInspectorID + "_"
+  private[sbt] final val Scala3ReplPrefix = Scala3ReplID + "_"
 
   def isScala2Artifact(name: String): Boolean = {
     name == LibraryID || name == CompilerID || name == ReflectID || name == ActorsID || name == ScalapID
@@ -34,10 +36,20 @@ object ScalaArtifacts {
     name == Scala3InterfacesID ||
     name.startsWith(ScaladocPrefix) ||
     name.startsWith(Scala3DocPrefix) ||
-    name.startsWith(Scala3TastyInspectorPrefix)
+    name.startsWith(Scala3TastyInspectorPrefix) ||
+    name.startsWith(Scala3ReplPrefix)
   }
 
   def isScala3(scalaVersion: String): Boolean = scalaVersion.startsWith("3.")
+
+  /**
+   * Returns true for pre-release nightlies intentionally.
+   */
+  def isScala3_8Plus(scalaVersion: String): Boolean =
+    isScala3(scalaVersion) && (scalaVersion match {
+      case VersionNumber(numbers, _, _) if numbers.size > 2 && numbers(1) >= 8 => true
+      case _                                                                   => false
+    })
 
   private[sbt] def isScala3M123(scalaVersion: String): Boolean =
     (scalaVersion == "3.0.0-M1") ||
@@ -63,6 +75,18 @@ object ScalaArtifacts {
     else
       ModuleID(org, LibraryID, version)
   }
+
+  private[sbt] def replToolDependencies(
+      org: String,
+      version: String
+  ): Seq[ModuleID] =
+    if (isScala3_8Plus(version))
+      Seq(
+        ModuleID(org, Scala3ReplID, version)
+          .withConfigurations(Some(Configurations.ScalaReplTool.name + "->default(compile)"))
+          .withCrossVersion(CrossVersion.binary)
+      )
+    else Seq.empty
 
   private[sbt] def docToolDependencies(
       org: String,
