@@ -211,25 +211,27 @@ final class EvictionError private[sbt] (
     val out: mutable.ListBuffer[String] = mutable.ListBuffer()
     out += "found version conflict(s) in library dependencies; some are suspected to be binary incompatible:"
     out += ""
-    evictions.foreach({ case a =>
-      val callers: List[String] = a.callers.map { case (caller, rev) =>
-        f"\t    +- ${caller}%-50s (depends on $rev)"
-      }
-      val que = if (assumed) "?" else ""
-      val evictedRevs = a.evicted.map(_.revision)
-      val evictedRevsTitle =
-        if (evictedRevs.size <= 1) evictedRevs.mkString
-        else evictedRevs.mkString("{", ", ", "}")
+    evictions
+      .sortBy(_.configurations.mkString)
+      .foreach({ case a =>
+        val callers: List[String] = a.callers.map { case (caller, rev) =>
+          f"\t    +- ${caller}%-50s (depends on $rev)"
+        }
+        val que = if (assumed) "?" else ""
+        val evictedRevs = a.evicted.map(_.revision)
+        val evictedRevsTitle =
+          if (evictedRevs.size <= 1) evictedRevs.mkString
+          else evictedRevs.mkString("{", ", ", "}")
 
-      val winnerRev =
-        s":${a.winner.revision} (${a.scheme}$que) is selected over ${evictedRevsTitle}"
-      val configurationTitle =
-        if (a.configurations.size <= 1) a.configurations.mkString
-        else a.configurations.mkString("{", ", ", "}")
-      val title = s"\t* ${a.organization}:${a.name}$winnerRev for $configurationTitle"
-      val lines = title :: callers.reverse ::: List("")
-      out ++= lines
-    })
+        val winnerRev =
+          s":${a.winner.revision} (${a.scheme}$que) is selected over ${evictedRevsTitle}"
+        val configurationTitle =
+          if (a.configurations.size <= 1) a.configurations.mkString
+          else a.configurations.mkString("{", ", ", "}")
+        val title = s"\t* ${a.organization}:${a.name}$winnerRev for $configurationTitle"
+        val lines = title :: callers.reverse ::: List("")
+        out ++= lines
+      })
     out.toList
   }
 }
