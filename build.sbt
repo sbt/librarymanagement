@@ -6,7 +6,7 @@ val _ = {
   // https://github.com/sbt/contraband/issues/122
   sys.props += ("line.separator" -> "\n")
 }
-Global / semanticdbEnabled := !(Global / insideCI).value
+Global / semanticdbEnabled := false
 Global / semanticdbVersion := "4.9.9"
 ThisBuild / version := {
   val old = (ThisBuild / version).value

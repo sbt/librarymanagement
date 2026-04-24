@@ -7,7 +7,8 @@ import sbt.librarymanagement.syntax._
 object EvictionWarningSpec extends BaseIvySpecification {
   // This is a specification to check the eviction warnings
 
-  import sbt.util.ShowLines._
+  import TestShowLines._
+
   def scalaVersionDeps = Vector(scala2102, akkaActor230)
 
   test("Eviction of non-overridden scala-library whose scalaVersion should be detected") {
@@ -310,17 +311,23 @@ object EvictionWarningSpec extends BaseIvySpecification {
   }
 
   def akkaActor214 =
-    ModuleID("com.typesafe.akka", "akka-actor", "2.1.4").withConfigurations(
-      Some("compile")
-    ) cross CrossVersion.binary
+    ModuleID("com.typesafe.akka", "akka-actor", "2.1.4")
+      .withConfigurations(
+        Some("compile")
+      )
+      .cross(CrossVersion.binary)
   def akkaActor230 =
-    ModuleID("com.typesafe.akka", "akka-actor", "2.3.0").withConfigurations(
-      Some("compile")
-    ) cross CrossVersion.binary
+    ModuleID("com.typesafe.akka", "akka-actor", "2.3.0")
+      .withConfigurations(
+        Some("compile")
+      )
+      .cross(CrossVersion.binary)
   def akkaActor234 =
-    ModuleID("com.typesafe.akka", "akka-actor", "2.3.4").withConfigurations(
-      Some("compile")
-    ) cross CrossVersion.binary
+    ModuleID("com.typesafe.akka", "akka-actor", "2.3.4")
+      .withConfigurations(
+        Some("compile")
+      )
+      .cross(CrossVersion.binary)
   def scala2102 =
     ModuleID("org.scala-lang", "scala-library", "2.10.2").withConfigurations(Some("compile"))
   def scala2103 =
@@ -335,22 +342,50 @@ object EvictionWarningSpec extends BaseIvySpecification {
       Some("compile")
     ) // uses commons-io 2.4
   def unfilteredUploads080 =
-    ModuleID("net.databinder", "unfiltered-uploads", "0.8.0").withConfigurations(
-      Some("compile")
-    ) cross CrossVersion.binary // uses commons-io 1.4
+    ModuleID("net.databinder", "unfiltered-uploads", "0.8.0")
+      .withConfigurations(
+        Some("compile")
+      )
+      .cross(CrossVersion.binary) // uses commons-io 1.4
   def bananaSesame04 =
-    ModuleID("org.w3", "banana-sesame", "0.4").withConfigurations(
-      Some("compile")
-    ) cross CrossVersion.binary // uses akka-actor 2.1.4
+    ModuleID("org.w3", "banana-sesame", "0.4")
+      .withConfigurations(
+        Some("compile")
+      )
+      .cross(CrossVersion.binary) // uses akka-actor 2.1.4
   def akkaRemote234 =
-    ModuleID("com.typesafe.akka", "akka-remote", "2.3.4").withConfigurations(
-      Some("compile")
-    ) cross CrossVersion.binary // uses akka-actor 2.3.4
+    ModuleID("com.typesafe.akka", "akka-remote", "2.3.4")
+      .withConfigurations(
+        Some("compile")
+      )
+      .cross(CrossVersion.binary) // uses akka-actor 2.3.4
 
   def fullOptions = EvictionWarningOptions.full
   def javaLibDirectDeps = Vector(commonsIo14, commonsIo24)
   def javaLibTransitiveDeps = Vector(unfilteredUploads080, bnfparser10)
   def scalaLibTransitiveDeps = Vector(scala2104, bananaSesame04, akkaRemote234)
+
+  // #6244: oauth2-oidc-sdk and nimbus-jose-jwt both depend on net.minidev:json-smart [1.3.1,2.3];
+  // resolution selects 2.3, which is within the range, so we must not report it as eviction.
+  def oauth2OidcSdk822 =
+    ModuleID("com.nimbusds", "oauth2-oidc-sdk", "8.22").withConfigurations(Some("compile"))
+  def nimbusJoseJwt8201 =
+    ModuleID("com.nimbusds", "nimbus-jose-jwt", "8.20.1").withConfigurations(Some("compile"))
+  def versionIntervalDeps6244 = Vector(oauth2OidcSdk822, nimbusJoseJwt8201)
+
+  test(
+    "When winner satisfies version range [1.3.1,2.3], should not report eviction for json-smart (fixes #6244)"
+  ) {
+    val m = module(defaultModuleId, versionIntervalDeps6244, Some("2.12.12"))
+    val report = ivyUpdate(m)
+    val warning = EvictionWarning(m, fullOptions, report)
+    val jsonSmartEviction =
+      warning.reportedEvictions.find(p => p.organization == "net.minidev" && p.name == "json-smart")
+    assert(
+      jsonSmartEviction.isEmpty,
+      s"#6244: json-smart 2.3 is within range [1.3.1,2.3], should not be reported as eviction. Got:\n${warning.lines.mkString("\n")}"
+    )
+  }
   def dummyScalaModuleInfo(v: String): ScalaModuleInfo =
     ScalaModuleInfo(
       scalaFullVersion = v,
