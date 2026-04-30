@@ -26,7 +26,7 @@ object EvictionErrorSpec extends BaseIvySpecification {
         List(
           "found version conflict(s) in library dependencies; some are suspected to be binary incompatible:",
           "",
-          "\t* com.typesafe.akka:akka-actor_2.10:2.3.0 (pvp) is selected over 2.1.4 for {compile, test}",
+          "\t* com.typesafe.akka:akka-actor_2.10:2.3.0 (pvp) is selected over 2.1.4 for compile",
           "\t    +- com.example:foo:0.1.0                              (depends on 2.1.4)",
           ""
         ),
@@ -38,12 +38,12 @@ object EvictionErrorSpec extends BaseIvySpecification {
     val deps = Vector(`scala2.10.4`, `bananaSesame0.4`, `akkaRemote2.3.4`)
     val m = module(defaultModuleId, deps, Some("2.10.4"))
     val report = ivyUpdate(m)
-    assert(
+    Predef.assert(
       EvictionError(report, m, oldAkkaPvp).lines ==
         List(
           "found version conflict(s) in library dependencies; some are suspected to be binary incompatible:",
           "",
-          "\t* com.typesafe.akka:akka-actor_2.10:2.3.4 (pvp) is selected over 2.1.4 for {compile, test}",
+          "\t* com.typesafe.akka:akka-actor_2.10:2.3.4 (pvp) is selected over 2.1.4 for compile",
           "\t    +- com.typesafe.akka:akka-remote_2.10:2.3.4           (depends on 2.3.4)",
           "\t    +- org.w3:banana-rdf_2.10:0.4                         (depends on 2.1.4)",
           "\t    +- org.w3:banana-sesame_2.10:0.4                      (depends on 2.1.4)",
@@ -62,7 +62,7 @@ object EvictionErrorSpec extends BaseIvySpecification {
         List(
           "found version conflict(s) in library dependencies; some are suspected to be binary incompatible:",
           "",
-          "\t* com.typesafe.akka:akka-actor_2.10:2.3.4 (pvp?) is selected over 2.1.4 for {compile, test}",
+          "\t* com.typesafe.akka:akka-actor_2.10:2.3.4 (pvp?) is selected over 2.1.4 for compile",
           "\t    +- com.typesafe.akka:akka-remote_2.10:2.3.4           (depends on 2.3.4)",
           "\t    +- org.w3:banana-rdf_2.10:0.4                         (depends on 2.1.4)",
           "\t    +- org.w3:banana-sesame_2.10:0.4                      (depends on 2.1.4)",
@@ -82,13 +82,6 @@ object EvictionErrorSpec extends BaseIvySpecification {
           "",
           "\t* org.typelevel:cats-effect_2.13:3.0.0-M4 (early-semver) is selected over {2.0.0, 2.2.0} for compile",
           "\t    +- com.example:foo:0.1.0                              (depends on 3.0.0-M4)",
-          "\t    +- co.fs2:fs2-core_2.13:2.4.5                         (depends on 2.2.0)",
-          "\t    +- org.http4s:http4s-core_2.13:0.21.11                (depends on 2.2.0)",
-          "\t    +- io.chrisdavenport:vault_2.13:2.0.0                 (depends on 2.0.0)",
-          "\t    +- io.chrisdavenport:unique_2.13:2.0.0                (depends on 2.0.0)",
-          "",
-          "\t* org.typelevel:cats-effect_2.13:3.0.0-M4 (early-semver) is selected over {2.0.0, 2.2.0} for test",
-          "\t    +- com.example:foo:0.1.0                              (depends on 2.2.0)",
           "\t    +- co.fs2:fs2-core_2.13:2.4.5                         (depends on 2.2.0)",
           "\t    +- org.http4s:http4s-core_2.13:0.21.11                (depends on 2.2.0)",
           "\t    +- io.chrisdavenport:vault_2.13:2.0.0                 (depends on 2.0.0)",

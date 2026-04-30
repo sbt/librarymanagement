@@ -2,7 +2,6 @@ package sbt.librarymanagement
 
 import collection.mutable
 import Configurations.Compile
-import Configurations.Test
 import ScalaArtifacts.{ LibraryID, CompilerID }
 import sbt.internal.librarymanagement.{ VersionSchemes, VersionRange }
 import sbt.util.Logger
@@ -75,7 +74,7 @@ object EvictionWarningOptions {
   def default: EvictionWarningOptions = summary
   def full: EvictionWarningOptions =
     new EvictionWarningOptions(
-      Vector(Compile, Test),
+      Vector(Compile),
       warnScalaVersionEviction = true,
       warnDirectEvictions = true,
       warnTransitiveEvictions = true,
@@ -86,7 +85,7 @@ object EvictionWarningOptions {
     )
   def summary: EvictionWarningOptions =
     new EvictionWarningOptions(
-      Vector(Compile, Test),
+      Vector(Compile),
       warnScalaVersionEviction = false,
       warnDirectEvictions = false,
       warnTransitiveEvictions = false,
